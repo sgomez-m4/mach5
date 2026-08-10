@@ -35,7 +35,7 @@ jobs:
           service: rss-8k
           region: ${{ secrets.GCP_LOCATION }}
           source: functions/rss-8k
-          flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
+          flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com --command=functions-framework
           env_vars: |
             FUNCTION_TARGET=monitorear_sec_event
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
