@@ -1,15 +1,15 @@
-name: deploy-rss-8k
+name: deploy-extraccion-10k-md
 
 on:
   push:
     branches: [main]
     paths:
-      - "functions/rss-8k/**"
-      - ".github/workflows/deploy-rss-8k.yml"
+      - "functions/extraccion-10k-md/**"
+      - ".github/workflows/deploy-extraccion-10k-md.yml"
   workflow_dispatch:
 
 concurrency:
-  group: deploy-rss-8k
+  group: deploy-extraccion-10k-md
   cancel-in-progress: false
 
 jobs:
@@ -32,14 +32,11 @@ jobs:
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: rss-8k
+          service: extraccion-10k-md
           region: ${{ secrets.GCP_LOCATION }}
-          source: functions/rss-8k
+          source: functions/extraccion-10k-md
           flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
           env_vars: |
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
-            BUCKET_NAME=${{ secrets.BUCKET_NAME }}
-            GCP_LOCATION=${{ secrets.GCP_LOCATION }}
-            CORREO_ORIGEN=${{ secrets.CORREO_ORIGEN }}
-            CORREO_DESTINO=${{ secrets.CORREO_DESTINO }}
-            PASSWORD_APP=${{ secrets.PASSWORD_APP }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            SEC_API_IDENTITY=${{ secrets.SEC_API_IDENTITY_10K }}

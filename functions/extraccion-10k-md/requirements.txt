@@ -1,0 +1,4 @@
+google-cloud-storage
+edgartools
+lxml_html_clean
+functions-framework==3.*

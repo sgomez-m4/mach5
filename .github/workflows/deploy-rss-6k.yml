@@ -1,15 +1,15 @@
-name: deploy-rss-8k
+name: deploy-rss-6k
 
 on:
   push:
     branches: [main]
     paths:
-      - "functions/rss-8k/**"
-      - ".github/workflows/deploy-rss-8k.yml"
+      - "functions/rss-6k/**"
+      - ".github/workflows/deploy-rss-6k.yml"
   workflow_dispatch:
 
 concurrency:
-  group: deploy-rss-8k
+  group: deploy-rss-6k
   cancel-in-progress: false
 
 jobs:
@@ -32,9 +32,9 @@ jobs:
       - id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: rss-8k
-          region: ${{ secrets.GCP_LOCATION }}
-          source: functions/rss-8k
+          service: rss-6k
+          region: europe-west1
+          source: functions/rss-6k
           flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
           env_vars: |
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
