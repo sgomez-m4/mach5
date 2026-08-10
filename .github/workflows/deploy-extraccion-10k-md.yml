@@ -1,4 +1,4 @@
-name: deploy-extraccion-10k-md
+﻿name: deploy-extraccion-10k-md
 
 on:
   push:
@@ -35,9 +35,10 @@ jobs:
           service: extraccion-10k-md
           region: ${{ secrets.GCP_LOCATION }}
           source: functions/extraccion-10k-md
-          flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
+          flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com --clear-base-image
           env_vars: |
             FUNCTION_TARGET=run_edgar_pipeline
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             SEC_API_IDENTITY=${{ secrets.SEC_API_IDENTITY_10K }}
+

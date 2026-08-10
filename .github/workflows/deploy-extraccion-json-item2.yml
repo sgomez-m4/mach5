@@ -1,4 +1,4 @@
-name: deploy-extraccion-json-item2
+﻿name: deploy-extraccion-json-item2
 
 on:
   push:
@@ -35,7 +35,8 @@ jobs:
           service: extraccion-json-item2
           region: ${{ secrets.GCP_LOCATION }}
           source: functions/extraccion-json-item2
-          flags: --port=8080 --memory=2Gi --cpu=2 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
+          flags: --port=8080 --memory=2Gi --cpu=2 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com --clear-base-image
           env_vars: |
             FUNCTION_TARGET=extract_fleet_http
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+

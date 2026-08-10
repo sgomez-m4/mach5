@@ -1,4 +1,4 @@
-name: deploy-revision-diaria-china
+﻿name: deploy-revision-diaria-china
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
           service: revision-diaria-china
           region: ${{ secrets.GCP_LOCATION }}
           source: functions/revision-diaria-china
-          flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
+          flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com --clear-base-image
           env_vars: |
             FUNCTION_TARGET=monitorear_aerolineas_chinas
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
@@ -44,3 +44,4 @@ jobs:
             CORREO_ORIGEN=${{ secrets.CORREO_ORIGEN }}
             CORREO_DESTINO=${{ secrets.CORREO_DESTINO }}
             PASSWORD_APP=${{ secrets.PASSWORD_APP }}
+
