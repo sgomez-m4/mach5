@@ -37,6 +37,7 @@ jobs:
           source: functions/extraccion-tablas-item2
           flags: --port=8080 --memory=2Gi --cpu=2 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
           env_vars: |
+            FUNCTION_TARGET=main
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             SEC_API_IDENTITY=${{ secrets.SEC_API_IDENTITY_TABLAS }}

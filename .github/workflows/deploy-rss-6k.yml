@@ -37,6 +37,7 @@ jobs:
           source: functions/rss-6k
           flags: --port=8080 --memory=1Gi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
           env_vars: |
+            FUNCTION_TARGET=monitorear_sec_event
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
             BUCKET_NAME=${{ secrets.BUCKET_NAME }}
             GCP_LOCATION=${{ secrets.GCP_LOCATION }}

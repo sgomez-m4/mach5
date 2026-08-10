@@ -37,4 +37,5 @@ jobs:
           source: functions/extraccion-20f-md
           flags: --port=8080 --memory=1Gi --cpu=2 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com
           env_vars: |
+            FUNCTION_TARGET=run_edgar_pipeline_20f
             SEC_API_IDENTITY=${{ secrets.SEC_API_IDENTITY_20F }}
