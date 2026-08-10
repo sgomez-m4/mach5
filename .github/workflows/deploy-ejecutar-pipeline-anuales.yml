@@ -1,0 +1,40 @@
+name: deploy-ejecutar-pipeline-anuales
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "functions/ejecutar-pipeline-anuales/**"
+      - ".github/workflows/deploy-ejecutar-pipeline-anuales.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ejecutar-pipeline-anuales
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ejecutar-pipeline-anuales
+          region: europe-west1
+          source: functions/ejecutar-pipeline-anuales
+          flags: --port=8080 --memory=512Mi --cpu=1 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com --clear-base-image
+          env_vars: |
+            FUNCTION_TARGET=ejecutar_pipeline_flota

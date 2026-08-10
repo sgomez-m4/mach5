@@ -1,0 +1,40 @@
+name: deploy-parsing-md-china
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "functions/parsing-md-china/**"
+      - ".github/workflows/deploy-parsing-md-china.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-parsing-md-china
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: parsing-md-china
+          region: us-east1
+          source: functions/parsing-md-china
+          flags: --port=8080 --memory=2Gi --cpu=2 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com --clear-base-image
+          env_vars: |
+            FUNCTION_TARGET=process_china_pdfs_http
