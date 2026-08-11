@@ -34,7 +34,7 @@ PROJECT_ID = os.getenv("GCP_PROJECT_ID", "")
 LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 
 # Modelos disponibles en Vertex AI
-GEMINI_MODEL_PRIMARY = "gemini-2.5-flash"
+GEMINI_MODEL_PRIMARY = "gemini-3-flash-preview"
 GEMINI_MODEL_FALLBACK = "gemini-2.0-flash"
 MAX_CSV_CHARS = 600_000
 # ----------------------------
