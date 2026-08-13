@@ -211,7 +211,7 @@ def generar_analisis_gemini(texto_reporte, titulo_reporte):
 
     try:
         response = ai_client.models.generate_content(
-            model="gemini-3-flash-preview",
+            model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
