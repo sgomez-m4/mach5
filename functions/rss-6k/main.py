@@ -39,7 +39,7 @@ CIKS_A_MONITOREAR = [
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME")
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID")
-LOCATION = os.environ.get("GCP_LOCATION", "us-east1")
+LOCATION = "us-central1"
 
 HEADERS_SEC = {"User-Agent": "MiEmpresaAnalisis santiago@tuemail.com"}
 
