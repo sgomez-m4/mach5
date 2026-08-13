@@ -24,7 +24,7 @@ CORREO_DESTINO = os.environ.get("CORREO_DESTINO", "destino@email.com")
 
 BUCKET_NAME = os.environ.get("BUCKET_NAME", "bucket-edgar")
 PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "mach5-gemini-project")
-LOCATION = os.environ.get("GCP_LOCATION", "us-east1")
+LOCATION = "us-central1"
 
 # ÚNICO archivo que se escribe en el bucket: la guía de ya-procesados.
 HISTORIAL_BLOB = "historial_anuncios_china.txt"
