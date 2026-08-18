@@ -1,0 +1,199 @@
+main:
+  params: [args]
+  steps:
+    - initialize:
+        assign:
+          - respaldo_url: "https://respaldo-anual-upaleadnxq-ue.a.run.app"
+          - descarga_china_url: "https://descarga-anual-china-upaleadnxq-ue.a.run.app"
+          - extraccion_10k_url: "https://extraccion-10k-md-upaleadnxq-ue.a.run.app"
+          - extraccion_20f_url: "https://extraccion-20f-md-upaleadnxq-ew.a.run.app"
+          - parsing_china_url: "https://parsing-md-china-upaleadnxq-ue.a.run.app"
+          - extraer_seccion_china_url: "https://extraer-seccion-china-upaleadnxq-ue.a.run.app"
+          - extraccion_json_china_url: "https://extraccion-json-china-upaleadnxq-ue.a.run.app"
+          - extraccion_item2_10k_url: "https://extraccion-item2-10k-upaleadnxq-ue.a.run.app"
+          - extraccion_json_item2_url: "https://extraccion-json-item2-upaleadnxq-ue.a.run.app"
+          - extraccion_item4_20f_url: "https://extraccion-item4-20f-upaleadnxq-ue.a.run.app"
+          - extraccion_json_item4_url: "https://extraccion-json-item4-upaleadnxq-ue.a.run.app"
+          - pipeline_anuales_url: "https://ejecutar-pipeline-anuales-upaleadnxq-ew.a.run.app"
+    - fase1_respaldo:
+        try:
+          steps:
+            - respaldo:
+                call: http.get
+                args:
+                  url: ${respaldo_url}
+                  auth:
+                    type: OIDC
+                    audience: ${respaldo_url}
+                  timeout: 1800
+                result: respaldo_result
+        retry:
+          predicate: ${http.default_retry_predicate}
+          max_retries: 3
+          backoff:
+            initial_delay: 5
+            max_delay: 60
+            multiplier: 2
+        next: fase2_ingesta
+    - fase2_ingesta:
+        parallel:
+          branches:
+            - descarga_china:
+                steps:
+                  - descargar_china:
+                      call: http.get
+                      args:
+                        url: ${descarga_china_url}
+                        auth:
+                          type: OIDC
+                          audience: ${descarga_china_url}
+                        timeout: 1800
+                      result: descarga_china_result
+            - descarga_10k:
+                steps:
+                  - descargar_10k:
+                      call: http.get
+                      args:
+                        url: ${extraccion_10k_url}
+                        auth:
+                          type: OIDC
+                          audience: ${extraccion_10k_url}
+                        timeout: 1800
+                      result: descarga_10k_result
+            - descarga_20f:
+                steps:
+                  - descargar_20f:
+                      call: http.get
+                      args:
+                        url: ${extraccion_20f_url}
+                        auth:
+                          type: OIDC
+                          audience: ${extraccion_20f_url}
+                        timeout: 1800
+                      result: descarga_20f_result
+        next: fase3_china
+    - fase3_china:
+        try:
+          steps:
+            - parsing_china:
+                call: http.get
+                args:
+                  url: ${parsing_china_url}
+                  auth:
+                    type: OIDC
+                    audience: ${parsing_china_url}
+                  timeout: 1800
+                result: parsing_china_result
+            - extraer_seccion_china:
+                call: http.get
+                args:
+                  url: ${extraer_seccion_china_url}
+                  auth:
+                    type: OIDC
+                    audience: ${extraer_seccion_china_url}
+                  timeout: 1800
+                result: extraer_seccion_china_result
+            - extraccion_json_china:
+                call: http.get
+                args:
+                  url: ${extraccion_json_china_url}
+                  auth:
+                    type: OIDC
+                    audience: ${extraccion_json_china_url}
+                  timeout: 1800
+                result: extraccion_json_china_result
+        retry:
+          predicate: ${http.default_retry_predicate}
+          max_retries: 5
+          backoff:
+            initial_delay: 10
+            max_delay: 120
+            multiplier: 2
+        next: fase4_10k
+    - fase4_10k:
+        try:
+          steps:
+            - extraccion_item2_10k:
+                call: http.get
+                args:
+                  url: ${extraccion_item2_10k_url}
+                  auth:
+                    type: OIDC
+                    audience: ${extraccion_item2_10k_url}
+                  timeout: 1800
+                result: extraccion_item2_10k_result
+            - extraccion_json_item2:
+                call: http.get
+                args:
+                  url: ${extraccion_json_item2_url}
+                  auth:
+                    type: OIDC
+                    audience: ${extraccion_json_item2_url}
+                  timeout: 1800
+                result: extraccion_json_item2_result
+        retry:
+          predicate: ${http.default_retry_predicate}
+          max_retries: 5
+          backoff:
+            initial_delay: 10
+            max_delay: 120
+            multiplier: 2
+        next: fase5_20f
+    - fase5_20f:
+        try:
+          steps:
+            - extraccion_item4_20f:
+                call: http.get
+                args:
+                  url: ${extraccion_item4_20f_url}
+                  auth:
+                    type: OIDC
+                    audience: ${extraccion_item4_20f_url}
+                  timeout: 1800
+                result: extraccion_item4_20f_result
+            - extraccion_json_item4:
+                call: http.get
+                args:
+                  url: ${extraccion_json_item4_url}
+                  auth:
+                    type: OIDC
+                    audience: ${extraccion_json_item4_url}
+                  timeout: 1800
+                result: extraccion_json_item4_result
+        retry:
+          predicate: ${http.default_retry_predicate}
+          max_retries: 5
+          backoff:
+            initial_delay: 10
+            max_delay: 120
+            multiplier: 2
+        next: fase6_unificar
+    - fase6_unificar:
+        try:
+          steps:
+            - pipeline_anuales:
+                call: http.get
+                args:
+                  url: ${pipeline_anuales_url}
+                  auth:
+                    type: OIDC
+                    audience: ${pipeline_anuales_url}
+                  timeout: 1800
+                result: pipeline_anuales_result
+            - registrar_exito:
+                call: sys.log
+                args:
+                  severity: INFO
+                  text: ${pipeline_anuales_result.body}
+        retry:
+          predicate: ${http.default_retry_predicate}
+          max_retries: 3
+          backoff:
+            initial_delay: 5
+            max_delay: 60
+            multiplier: 2
+        next: devolver_resumen
+    - devolver_resumen:
+        return:
+          respaldo: ${respaldo_result.body}
+          unificacion: ${pipeline_anuales_result.body}

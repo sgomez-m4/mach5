@@ -1,0 +1,38 @@
+name: deploy-pipeline-anual-workflow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "workflows/pipeline-anual.yaml"
+      - ".github/workflows/deploy-pipeline-anual-workflow.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-pipeline-anual-workflow
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Deploy Cloud Workflow
+        run: |
+          gcloud workflows deploy pipeline-anual \
+            --source=workflows/pipeline-anual.yaml \
+            --location=us-east1 \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --service-account=workflows-runner@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com
