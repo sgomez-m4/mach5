@@ -29,6 +29,11 @@ PREFIJOS_ARCHIVO = [
     "anual-china-md/",
     "flota-aerolineas-md/",
     "flota-aerolineas-json/",
+    "financial_raw_10k/",
+    "financial_raw_20f/",
+    "financial_raw_china_a/",
+    "financial_raw_china_h/",
+    "financiera-normalizada-json/",
 ]
 
 

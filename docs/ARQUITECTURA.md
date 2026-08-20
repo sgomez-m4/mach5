@@ -1,9 +1,9 @@
 # Arquitectura del Sistema — Monitoreo y Análisis de Flotas Aéreas
 
 > **Proyecto GCP:** `mach5-gemini-project` (número de proyecto `846229407230`)
-> **Repo:** `mach5` (monorepo en GitHub) · **Última actualización:** 2026-08-18
+> **Repo:** `mach5` (monorepo en GitHub) · **Última actualización:** 2026-08-20
 
-Este documento describe **qué hace cada uno de los 16 servicios de Cloud Run**, cómo se
+Este documento describe **qué hace cada uno de los 21 servicios de Cloud Run**, cómo se
 relacionan entre sí y qué infraestructura comparten. Está pensado para dos tipos de
 lectores:
 
@@ -59,6 +59,13 @@ las secciones relevantes, después se convierten a JSON con la ayuda de **Gemini
 tres servicios corren **todos los días a las 8:00 a. m.** para revisar si hay
 **anuncios nuevos** en las bolsas y, si detectan algo relevante para la flota, **envían
 un correo electrónico** automáticamente.
+
+Desde agosto de 2026 el sistema también extrae **métricas financieras** (ingresos,
+EBITDA, deuda, capex, caja, márgenes, etc.) de los mismos reportes: los 10-K y 20-F se
+leen directamente del **XBRL** que publica la SEC (datos exactos, sin IA), mientras que
+las aerolíneas chinas (A/H) se extraen con Gemini por no publicar XBRL. Todos los datos
+crudos se **normalizan a un esquema único en USD millones** mediante un crosswalk de
+etiquetas y se guardan en BigQuery (`financial_fact_raw` y `financial_fact`).
 
 Todo el código vive en un repositorio de GitHub, y **cada cambio en el código se
 despliega automáticamente** a Google Cloud sin intervención manual (CI/CD).
@@ -138,7 +145,7 @@ explicados en el [glosario](#glosario-técnico).
 
 ## Arquitectura general
 
-Los 16 servicios de Cloud Run se organizan en **3 ramas de datos (pipelines)** que
+Los 21 servicios de Cloud Run se organizan en **4 ramas de datos (pipelines)** que
 alimentan un **pipeline final de unificación**, más **3 servicios de monitoreo diario**
 que son independientes. Una **tarea trimestral programada** (Cloud Workflows +
 Cloud Scheduler) respalda los datos y re-ejecuta todo el pipeline anual
@@ -181,6 +188,16 @@ automáticamente.
                                       │   order_book_fact           │
                                       └─────────────────────────────┘
 
+  RAMA FINANCIERA (4ta rama, desde 2026-08):
+    extraccion-xbrl-10k       10-K → XBRL (us-gaap)         → financial_raw_10k/
+    extraccion-xbrl-20f       20-F → XBRL (ifrs-full)       → financial_raw_20f/
+    extraccion-xbrl-china-a   China A-Share → Gemini        → financial_raw_china_a/
+    extraccion-xbrl-china-h   China H-Share → Gemini        → financial_raw_china_h/
+        │
+        ▼
+    normalizacion-financiera  crosswalk + fx_rates → USD_m  → financiera-normalizada-json/
+        │                                                  + BigQuery (financial_fact_raw, financial_fact)
+
   MONITOREO DIARIO (independiente del pipeline anual):
     rss-8k  ──► revisa Form 8-K  ──► correo si hay novedad
     rss-6k  ──► revisa Form 6-K  ──► correo si hay novedad
@@ -195,6 +212,8 @@ automáticamente.
           fase4_10k           extraccion-item2-10k → extraccion-json-item2
           fase5_20f           extraccion-item4-20f → extraccion-json-item4
           fase6_unificar      ejecutar-pipeline-anuales  (→ BigQuery)
+          fase7_financiera    extraccion-xbrl-10k ∥ extraccion-xbrl-20f ∥ extraccion-xbrl-china-a ∥ extraccion-xbrl-china-h  (paralelo)
+          fase8_normalizar    normalizacion-financiera  (→ BigQuery)
 ```
 
 > Nota: cada carpeta (`anual-china/`, `10k-md/`, etc.) es un **prefijo dentro del mismo
@@ -212,8 +231,8 @@ Todos los servicios comparten la siguiente infraestructura en el proyecto
 | Recurso | Valor |
 |---|---|
 | Proyecto GCP | `mach5-gemini-project` (`846229407230`) |
-| Región principal (us-east1) | 13 de 16 servicios |
-| Región secundaria (europe-west1) | 3 de 16 servicios (`rss-6k`, `ejecutar-pipeline-anuales`, `extraccion-20f-md`) |
+| Región principal (us-east1) | 18 de 21 servicios |
+| Región secundaria (europe-west1) | 3 de 21 servicios (`rss-6k`, `ejecutar-pipeline-anuales`, `extraccion-20f-md`) |
 
 ### Storage (bucket de datos)
 
@@ -243,9 +262,18 @@ Todos los servicios comparten la siguiente infraestructura en el proyecto
 ### Base de datos (BigQuery)
 
 - **Dataset:** `dataset_integrado`
-- **Tablas (2):**
+- **Tablas de flota (2):**
   - `current_fleet_fact` — inventario actual de flota (294 filas).
   - `order_book_fact` — pedidos futuros de aviones (148 filas).
+- **Tablas financieras (rama financiera, desde 2026-08):**
+  - `financial_fact_raw` — un registro por fact crudo extraído (trazabilidad completa:
+    taxonomía, fuente, tag, valor, moneda, periodo, `raw_json`).
+  - `financial_fact` — métricas canónicas por empresa/año/métrica en **USD millones**
+    (`value_usd_m`, `data_source` = `xbrl_tag`/`calculated`/`gemini_fallback`,
+    `formula_used`, `source_tags`). WRITE_TRUNCATE en cada corrida.
+  - `xbrl_crosswalk` — catálogo de mapeo `(taxonomy, source_tag) → canonical_metric`
+    (146 filas; espejo de `config/xbrl_crosswalk.json`).
+  - `fx_rates` — tasas de cambio anuales para conversión a USD.
 - Detalle de esquemas en la sección [Base de datos BigQuery](#base-de-datos-bigquery).
 - **Dataset histórico:** `dataset_historico` — guarda los **snapshots inmutables** que
   crea `respaldo-anual` antes de cada corrida anual (tablas
@@ -297,6 +325,11 @@ Todos los servicios comparten la siguiente infraestructura en el proyecto
 | 14 | `rss-8k` | us-east1 | 1 / 1Gi | `monitorear_sec_event` | Monitoreo | Form 8-K → correo |
 | 15 | `rss-6k` | europe-west1 | 1 / 1Gi | `monitorear_sec_event` | Monitoreo | Form 6-K → correo |
 | 16 | `respaldo-anual` | us-east1 | 1 / 512Mi | `ejecutar_respaldo_anual` | Respaldo | Snapshots BQ + archivo GCS |
+| 17 | `extraccion-xbrl-10k` | us-east1 | 2 / 2Gi | `ejecutar_extraccion_financiera` | Financiera | 10-K → XBRL → `financial_raw_10k/` |
+| 18 | `extraccion-xbrl-20f` | us-east1 | 2 / 2Gi | `ejecutar_extraccion_financiera` | Financiera | 20-F → XBRL → `financial_raw_20f/` |
+| 19 | `extraccion-xbrl-china-a` | us-east1 | 2 / 2Gi | `ejecutar_extraccion_financiera` | Financiera | China A-Share → Gemini → `financial_raw_china_a/` |
+| 20 | `extraccion-xbrl-china-h` | us-east1 | 2 / 2Gi | `ejecutar_extraccion_financiera` | Financiera | China H-Share → Gemini → `financial_raw_china_h/` |
+| 21 | `normalizacion-financiera` | us-east1 | 1 / 1Gi | `normalizar_financiera` | Financiera | Crosswalk + fx → USD_m → BigQuery |
 
 ---
 
@@ -618,13 +651,129 @@ carpeta por fecha.
 - **GCS:** mueve (copia + borra) todos los archivos de los prefijos del pipeline
   (`10k-md/`, `10k-item2-md/`, `10k-item2-json/`, `20f-md/`, `20f-flota-md/`,
   `20f-flota-json/`, `anual-china/`, `anual-china-md/`, `flota-aerolineas-md/`,
-  `flota-aerolineas-json/`) a `gs://bucket-edgar/archivo/backup/YYYYMMDD/<prefijo>/`.
+  `flota-aerolineas-json/`, `financial_raw_10k/`, `financial_raw_20f/`,
+  `financial_raw_china_a/`, `financial_raw_china_h/`, `financiera-normalizada-json/`)
+  a `gs://bucket-edgar/archivo/backup/YYYYMMDD/<prefijo>/`.
   Un prefijo ya vacío (por ejemplo `10k-md/` tras haber sido movido en una corrida
   anterior) simplemente reporta 0 archivos.
 - **Parámetro opcional:** `?dry_run=true` — cuenta archivos y valida sin crear snapshots
   ni mover nada.
 - **Respuesta:** JSON con `snapshots[]`, `archivo_gcs{}` y `errores_bq` / `errores_gcs`.
 - **Env vars:** `FUNCTION_TARGET=ejecutar_respaldo_anual` (solo).
+
+---
+
+### 17. `extraccion-xbrl-10k` (rama financiera)
+
+**Rol:** Extraer las métricas financieras de los **10-K** (aerolíneas de EE. UU.)
+directamente del **XBRL** de EDGAR (sin IA), usando los estados financieros consolidados.
+
+- **Región / recursos:** us-east1 · 2 CPU / 2 Gi · entrypoint `ejecutar_extraccion_financiera`
+- **URL:** `https://extraccion-xbrl-10k-846229407230.us-east1.run.app`
+- **Entrada:** API de EDGAR (librería `edgar`/`edgartools`, identidad SEC vía
+  `SEC_API_IDENTITY`).
+- **Aerolíneas (ticker):** `AAL, ALGT, ALK, DAL, JBLU, JETMF, LUV, RJET, SKYW, UAL, ULCC`.
+- **Método:** `xbrl.statements.{income_statement,balance_sheet,cash_flow_statement}()
+  .to_dataframe()` → filtra `dimension==False` y `is_breakdown==False` (consolidados).
+  Usa solo el filing 10-K más reciente (sus columnas de fecha traen N años de historia,
+  `ANIOS_HISTORIA=3`); las partidas de balance usan `period="instant"` y las de resultados
+  `period="FY"`.
+- **Salida:** NDJSON en `gs://bucket-edgar/financial_raw_10k/{ticker}_financial.json`
+  (una fila por fact crudo, `data_source=xbrl_tag`).
+- **Env vars:** `SEC_API_IDENTITY` (`Samuel samuel.gomez@mas4aviation.com`).
+- **Parámetro opcional:** `?dry_run=true` (no sube nada).
+
+---
+
+### 18. `extraccion-xbrl-20f` (rama financiera)
+
+**Rol:** Igual que `extraccion-xbrl-10k` pero para **20-F** (aerolíneas extranjeras
+listadas en EE. UU.), que publican bajo la taxonomía **ifrs-full**.
+
+- **Región / recursos:** us-east1 · 2 CPU / 2 Gi · entrypoint `ejecutar_extraccion_financiera`
+- **URL:** `https://extraccion-xbrl-20f-846229407230.us-east1.run.app`
+- **Aerolíneas (ticker):** `AEROMEX, AZUL, CPA, LTM, VLRS`.
+- **Salida:** NDJSON en `gs://bucket-edgar/financial_raw_20f/{ticker}_financial.json`.
+- **Moneda:** se detecta automáticamente de la unidad (`unit_ref`) del fact de Revenue
+  (fallback `xbrl.units`, default USD) — ej. Copa en USD, Volaris/LATAM/Aeroméxico/Azul
+  en MXN/BRL/COP.
+- **Env vars:** `SEC_API_IDENTITY` (`Samuel Gomez samuelgomezl@hotmail.com`).
+
+---
+
+### 19. `extraccion-xbrl-china-a` (rama financiera)
+
+**Rol:** Extraer las métricas financieras de las aerolíneas **A-Share** chinas
+(bolsas SSE/SZSE). No publican XBRL, por lo que se usa **Gemini** sobre el Markdown del
+reporte anual (`anual-china-md/`).
+
+- **Región / recursos:** us-east1 · 2 CPU / 2 Gi · entrypoint `ejecutar_extraccion_financiera`
+- **URL:** `https://extraccion-xbrl-china-a-846229407230.us-east1.run.app`
+- **Aerolíneas (código):** `601111` Air China, `600115` China Eastern, `600029` China
+  Southern, `600221` Hainan, `601021` Spring, `603885` Juneyao, `002928` China Express.
+- **Método:** se selecciona una **ventana de texto** (60 000 caracteres) desde la primera
+  sección de estados financieros consolidados (`合并资产负债表`/`合并利润表`/`合并现金流量表`,
+  tras el 15% del documento para evitar el índice) y se pide a Gemini el JSON de métricas.
+  Los tags resultantes deben estar en el crosswalk `cas-china` (incluye nombres chinos y
+  alias en inglés, ya que Gemini a veces responde en inglés). Se soporta que `financial_metrics`
+  sea un objeto o una **lista** de objetos, y que el `value` venga en unidades base o en
+  millones (`万`/`亿`), normalizando siempre a yuanes base. Los valores se llevan a
+  **unidades base** (×1e6 si |valor|<1e6).
+- **Modelo de IA:** `gemini-3-flash-preview` (Vertex AI, location `global`), con reintentos
+  ante errores `429 RESOURCE_EXHAUSTED`.
+- **Salida:** NDJSON en `gs://bucket-edgar/financial_raw_china_a/{company}_2025.json`
+  (`data_source=gemini_fallback`, `currency=CNY`).
+- **Filtro de empresa:** `?code=600115` procesa solo esa aerolínea (la corrida completa
+  excede el timeout por request, por eso el workflow la invoca sin filtro con
+  `--timeout=1200` en Cloud Run).
+
+---
+
+### 20. `extraccion-xbrl-china-h` (rama financiera)
+
+**Rol:** Igual que `extraccion-xbrl-china-a` pero para aerolíneas listadas en **Hong
+Kong** (H-Share), que reportan bajo **HKFRS**.
+
+- **Región / recursos:** us-east1 · 2 CPU / 2 Gi · entrypoint `ejecutar_extraccion_financiera`
+- **URL:** `https://extraccion-xbrl-china-h-846229407230.us-east1.run.app`
+- **Aerolíneas (código):** `00293` Cathay Pacific (también H-Shares chinas `00753` Air
+  China, `00670` China Eastern, `01055` China Southern).
+- **Método:** ventana de texto desde las secciones en inglés (`Consolidated statement of
+  financial position` / `profit or loss` / `cash flows`). Mismo post-procesado que china-a
+  (listas, escalas, alias en inglés del crosswalk `hkfrs`).
+- **Salida:** NDJSON en `gs://bucket-edgar/financial_raw_china_h/{company}_2025.json`
+  (`currency=HKD`).
+- **Filtro de empresa:** `?code=00293`.
+
+---
+
+### 21. `normalizacion-financiera` ⭐ (rama financiera — fuente agnóstica)
+
+**Rol:** Leer los datos crudos de las **cuatro** extracciones financieras
+(`financial_raw_10k/`, `financial_raw_20f/`, `financial_raw_china_a/`,
+`financial_raw_china_h/`) y convertirlos a un **esquema canónico único en USD millones**,
+aplicando un **crosswalk** de etiquetas por taxonomía y las tasas de cambio de `fx_rates`.
+
+- **Región / recursos:** us-east1 · 1 CPU / 1 Gi · entrypoint `normalizar_financiera`
+- **URL:** `https://normalizacion-financiera-846229407230.us-east1.run.app`
+- **Configuración versionada en GCS/BQ:**
+  - `config/xbrl_crosswalk.json` (+`.ndjson`) → tabla `dataset_integrado.xbrl_crosswalk`
+    (146 filas: `us-gaap` 50, `ifrs-full` 25, `cas-china` 38, `hkfrs` 33). Un `source_tag`
+    puede mapear a **varias** métricas canónicas (ej. `LongTermDebtAndCapitalLeaseObligations`
+    → `total_debt` y `long_term_debt`); las contribuciones se suman.
+  - `dataset_integrado.fx_rates` → conversión de moneda local a USD por año fiscal.
+- **Conversión:** `raw_value × escala → moneda local → USD ÷ 1e6`; para monedas sin tasa
+  se usa la tasa más cercana disponible. Las fórmulas de métricas derivadas
+  (`operating_income + depreciation_amortization` → EBITDA, `total_debt +
+  operating_lease_liability - cash_equivalents` → net_debt, márgenes, etc.) están fijas en
+  `config/financial_metrics.json` (nunca se delegan a IA).
+- **Salidas:**
+  - GCS: `gs://bucket-edgar/financiera-normalizada-json/resumen_normalizado_*.json`.
+  - BigQuery (`WRITE_TRUNCATE`): `dataset_integrado.financial_fact_raw` (trazabilidad por
+    fact, incluye `raw_json`) y `dataset_integrado.financial_fact` (canónica por
+    empresa/año/métrica con `value_usd_m`, `data_source`, `formula_used`, `source_tags`).
+- **Parámetro opcional:** `?dry_run=true` (cuenta y valida sin cargar).
+- **Env vars:** ninguna (PROJECT_ID fijo; usa la SA de cómputo).
 
 ---
 
@@ -641,6 +790,8 @@ fase3_china        parsing-md-china → extraer-seccion-china → extraccion-jso
 fase4_10k          extraccion-item2-10k → extraccion-json-item2
 fase5_20f          extraccion-item4-20f → extraccion-json-item4
 fase6_unificar     ejecutar-pipeline-anuales          [WRITE_TRUNCATE → BigQuery]
+fase7_financiera   extraccion-xbrl-10k ∥ extraccion-xbrl-20f ∥ extraccion-xbrl-china-a ∥ extraccion-xbrl-china-h   [paralelo]
+fase8_normalizar   normalizacion-financiera           [WRITE_TRUNCATE → BigQuery]
 ```
 
 - **SA de ejecución:** `workflows-runner` (invoca cada servicio con OIDC; requiere
@@ -682,6 +833,16 @@ gs://bucket-edgar/
 ├── 20f-flota-json/                 ← escritura: extraccion-json-item4
 │                                     lectura:  ejecutar-pipeline-anuales
 │
+├── financial_raw_10k/              ← escritura: extraccion-xbrl-10k (XBRL, us-gaap)
+│                                     lectura:  normalizacion-financiera
+├── financial_raw_20f/              ← escritura: extraccion-xbrl-20f (XBRL, ifrs-full)
+│                                     lectura:  normalizacion-financiera
+├── financial_raw_china_a/          ← escritura: extraccion-xbrl-china-a (Gemini, CNY)
+│                                     lectura:  normalizacion-financiera
+├── financial_raw_china_h/          ← escritura: extraccion-xbrl-china-h (Gemini, HKD)
+│                                     lectura:  normalizacion-financiera
+├── financiera-normalizada-json/    ← escritura: normalizacion-financiera (resúmenes)
+│
 ├── Edgar/Tablas_Item2_10k/…        ← escritura: extraccion-tablas-item2 (CSV)
 ├── Aerolineas_Leases_Refinado_Final.csv ← salida consolidada de tablas
 │
@@ -711,6 +872,11 @@ gs://bucket-edgar/
 9. extraccion-item4-20f            (20-F: → 20f-flota-md/)
 10. extraccion-json-item4          (20-F: → 20f-flota-json/)             [Gemini]
 11. ejecutar-pipeline-anuales      (unifica 3 ramas → BigQuery)          [escritura BQ]
+12. extraccion-xbrl-10k            (10-K: XBRL → financial_raw_10k/)     (indep. de EDGAR)
+13. extraccion-xbrl-20f            (20-F: XBRL → financial_raw_20f/)     (indep. de EDGAR)
+14. extraccion-xbrl-china-a        (China A: Gemini → financial_raw_china_a/)
+15. extraccion-xbrl-china-h        (China H: Gemini → financial_raw_china_h/)
+16. normalizacion-financiera       (unifica 4 prefijos → financial_fact) [escritura BQ]
 ```
 
 > **Por qué el respaldo va primero:** el último paso (`ejecutar-pipeline-anuales`) hace
@@ -757,6 +923,45 @@ gs://bucket-edgar/
 | `delivery_period` | STRING | Periodo de entrega |
 
 > ~148 filas · modo de carga `WRITE_TRUNCATE`.
+
+### Tablas `financial_fact_raw` / `financial_fact` — métricas financieras
+
+**`financial_fact_raw`** (trazabilidad; ~747 filas · WRITE_TRUNCATE):
+
+| Campo | Tipo | Significado |
+|---|---|---|
+| `company` | STRING | Empresa (ticker para XBRL, nombre para China) |
+| `fiscal_year` | INTEGER | Año fiscal |
+| `taxonomy` | STRING | `us-gaap` / `ifrs-full` / `cas-china` / `hkfrs` |
+| `source_tag` | STRING | Etiqueta original (concepto XBRL o tag de Gemini) |
+| `raw_value` | FLOAT | Valor en moneda local (unidades base) |
+| `currency` / `unit` | STRING | Moneda local |
+| `period` | STRING | `FY` (resultados) / `instant` (balance) |
+| `context_ref` | STRING | `consolidated` / `parent` |
+| `data_source` | STRING | `xbrl_tag` / `gemini_fallback` |
+| `raw_json` | STRING | JSON original del fact (auditoría) |
+
+**`financial_fact`** (canónica, por empresa/año/métrica; ~854 filas · WRITE_TRUNCATE):
+
+| Campo | Tipo | Significado |
+|---|---|---|
+| `company` | STRING | Empresa |
+| `fiscal_year` | INTEGER | Año fiscal |
+| `canonical_metric` | STRING | Métrica canónica (ingresos, EBITDA, deuda…) |
+| `value_usd_m` | FLOAT | Valor en **millones de USD** |
+| `data_source` | STRING | `xbrl_tag` / `calculated` / `gemini_fallback` |
+| `formula_used` | STRING | Fórmula si es métrica derivada |
+| `source_tags` | STRING[] | Etiquetas fuente que contribuyen |
+| `extraction_ts` | TIMESTAMP | Momento de la corrida |
+
+**Métricas canónicas cubiertas:** ingresos, costos de operación, margen operativo,
+utilidad antes de impuestos, utilidad neta, EBITDA, depreciación/amortización, capex,
+caja, deuda total / corto y largo plazo / bonos, leases, activos, pasivos, patrimonio,
+gastos de personal, gastos de combustible, interés, impuestos, márgenes y deuda neta.
+
+> El **XBRL de la SEC** (10-K/20-F) es la fuente de mayor calidad: `data_source=xbrl_tag`.
+> Las aerolíneas chinas se extraen con **Gemini** (`gemini_fallback`) porque no publican
+> XBRL; su cobertura depende de lo que reporta el estado financiero del PDF.
 
 ### Dataset histórico (`dataset_historico`)
 
@@ -867,8 +1072,9 @@ pesada usan `gemini-3-flash-preview` y se añadieron modelos de **fallback** en
 
 **¿El monitoreo diario alimenta BigQuery?** No. Los tres servicios de monitoreo
 (`rss-8k`, `rss-6k`, `revision-diaria-china`) solo revisan novedades y **envían
-correos**. La única función que escribe en BigQuery es `ejecutar-pipeline-anuales` (y
-`respaldo-anual`, que crea snapshots de respaldo en `dataset_historico`).
+correos**. Las funciones que escriben en BigQuery son `ejecutar-pipeline-anuales`
+(flota), `normalizacion-financiera` (métricas financieras → `financial_fact_raw`/
+`financial_fact`) y `respaldo-anual` (snapshots en `dataset_historico`).
 
 **¿Qué pasa si falla la corrida trimestral?** El workflow `pipeline-anual` hace retries
 en cada paso (3 intentos en descargas, 5 en los pasos de Gemini). Si aún así falla, la
@@ -896,13 +1102,18 @@ de monitoreo para **no re-enviar el mismo anuncio dos veces** (deduplicación po
 
 ## Apéndice — Resumen rápido por persona técnica
 
-- 16 servicios Cloud Run (Python + `functions-framework`, entrypoint HTTP).
-- 3 ramas de pipeline → 1 pipeline de unificación (`ejecutar-pipeline-anuales`) →
-  BigQuery `dataset_integrado` (`current_fleet_fact`, `order_book_fact`,
-  `WRITE_TRUNCATE`).
-- `respaldo-anual`: snapshots BQ (`dataset_historico`) + archivo GCS (`archivo/backup/`).
+- 21 servicios Cloud Run (Python + `functions-framework`, entrypoint HTTP).
+- 4 ramas de pipeline (3 de flota + 1 financiera) → 2 pipelines de unificación
+  (`ejecutar-pipeline-anuales` para flota, `normalizacion-financiera` para métricas
+  financieras) → BigQuery `dataset_integrado` (`current_fleet_fact`, `order_book_fact`,
+  `financial_fact_raw`, `financial_fact`; `WRITE_TRUNCATE`).
+- Rama financiera: 10-K/20-F desde XBRL (SEC, sin IA) + China A/H con Gemini;
+  normalización fuente-agnóstica con crosswalk (`xbrl_crosswalk`) y `fx_rates` → USD_m.
+- `respaldo-anual`: snapshots BQ (`dataset_historico`) + archivo GCS (`archivo/backup/`),
+  incluye los 5 prefijos financieros.
 - Pipeline anual orquestado por el workflow `pipeline-anual` (Cloud Workflows), disparado
-  trimestralmente por el job `revision-anual-sec` (Cloud Scheduler, `0 6 1 1,4,7,10 *`).
+  trimestralmente por el job `revision-anual-sec` (Cloud Scheduler, `0 6 1 1,4,7,10 *`);
+  ahora con `fase7_financiera` (4 extracciones en paralelo) y `fase8_normalizar`.
 - Bucket único de intercambio: `gs://bucket-edgar` (prefijos por etapa).
 - Gemini `gemini-3-flash-preview` vía Vertex AI (us-east1), con fallbacks
   `gemini-2.5-flash` / `gemini-2.0-flash`.

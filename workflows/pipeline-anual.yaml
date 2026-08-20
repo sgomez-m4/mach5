@@ -15,6 +15,11 @@ main:
           - extraccion_item4_20f_url: "https://extraccion-item4-20f-upaleadnxq-ue.a.run.app"
           - extraccion_json_item4_url: "https://extraccion-json-item4-upaleadnxq-ue.a.run.app"
           - pipeline_anuales_url: "https://ejecutar-pipeline-anuales-upaleadnxq-ew.a.run.app"
+          - extraccion_xbrl_10k_url: "https://extraccion-xbrl-10k-846229407230.us-east1.run.app"
+          - extraccion_xbrl_20f_url: "https://extraccion-xbrl-20f-846229407230.us-east1.run.app"
+          - extraccion_xbrl_china_a_url: "https://extraccion-xbrl-china-a-846229407230.us-east1.run.app"
+          - extraccion_xbrl_china_h_url: "https://extraccion-xbrl-china-h-846229407230.us-east1.run.app"
+          - normalizacion_url: "https://normalizacion-financiera-846229407230.us-east1.run.app"
     - fase1_respaldo:
         try:
           steps:
@@ -192,8 +197,82 @@ main:
             initial_delay: 5
             max_delay: 60
             multiplier: 2
+        next: fase7_financiera
+    - fase7_financiera:
+        parallel:
+          branches:
+            - extraccion_xbrl_10k:
+                steps:
+                  - extraer_xbrl_10k:
+                      call: http.get
+                      args:
+                        url: ${extraccion_xbrl_10k_url}
+                        auth:
+                          type: OIDC
+                          audience: ${extraccion_xbrl_10k_url}
+                        timeout: 1800
+                      result: extraccion_xbrl_10k_result
+            - extraccion_xbrl_20f:
+                steps:
+                  - extraer_xbrl_20f:
+                      call: http.get
+                      args:
+                        url: ${extraccion_xbrl_20f_url}
+                        auth:
+                          type: OIDC
+                          audience: ${extraccion_xbrl_20f_url}
+                        timeout: 1800
+                      result: extraccion_xbrl_20f_result
+            - extraccion_xbrl_china_a:
+                steps:
+                  - extraer_xbrl_china_a:
+                      call: http.get
+                      args:
+                        url: ${extraccion_xbrl_china_a_url}
+                        auth:
+                          type: OIDC
+                          audience: ${extraccion_xbrl_china_a_url}
+                        timeout: 1800
+                      result: extraccion_xbrl_china_a_result
+            - extraccion_xbrl_china_h:
+                steps:
+                  - extraer_xbrl_china_h:
+                      call: http.get
+                      args:
+                        url: ${extraccion_xbrl_china_h_url}
+                        auth:
+                          type: OIDC
+                          audience: ${extraccion_xbrl_china_h_url}
+                        timeout: 1800
+                      result: extraccion_xbrl_china_h_result
+        next: fase8_normalizar
+    - fase8_normalizar:
+        try:
+          steps:
+            - normalizar:
+                call: http.get
+                args:
+                  url: ${normalizacion_url}
+                  auth:
+                    type: OIDC
+                    audience: ${normalizacion_url}
+                  timeout: 1800
+                result: normalizacion_result
+            - registrar_normalizacion:
+                call: sys.log
+                args:
+                  severity: INFO
+                  text: ${normalizacion_result.body}
+        retry:
+          predicate: ${http.default_retry_predicate}
+          max_retries: 3
+          backoff:
+            initial_delay: 5
+            max_delay: 60
+            multiplier: 2
         next: devolver_resumen
     - devolver_resumen:
         return:
           respaldo: ${respaldo_result.body}
           unificacion: ${pipeline_anuales_result.body}
+          normalizacion: ${normalizacion_result.body}

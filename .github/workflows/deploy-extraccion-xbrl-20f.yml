@@ -1,0 +1,40 @@
+name: deploy-extraccion-xbrl-20f
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "functions/extraccion-xbrl-20f/**"
+      - ".github/workflows/deploy-extraccion-xbrl-20f.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-extraccion-xbrl-20f
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: extraccion-xbrl-20f
+          region: us-east1
+          source: functions/extraccion-xbrl-20f
+          flags: --port=8080 --memory=2Gi --cpu=2 --concurrency=80 --service-account=846229407230-compute@developer.gserviceaccount.com --clear-base-image --timeout=900
+          env_vars: |
+            SEC_API_IDENTITY=${{ secrets.SEC_API_IDENTITY_20F }}
