@@ -55,8 +55,15 @@ MAPEO_INCOME = [
     (["营业成本"], "cost_of_revenue", "FY"),
     (["营业利润"], "operating_income", "FY"),
     (["利润总额"], "pretax_income", "FY"),
-    (["净利润"], "net_income", "FY"),
-    (["财务费用"], "interest_expense", "FY"),
+    # net_income debe ser el atribuible a la matriz para ser comparable con el
+    # NetIncomeLoss de us-gaap. 净利润 incluye los intereses minoritarios y en
+    # varias emisoras difiere de forma material (China Southern FY2025:
+    # 857M atribuible vs 2,685M total). Se conserva como fallback.
+    (["归属于母公司所有者的净利润", "归属于母公司股东的净利润", "净利润"], "net_income", "FY"),
+    # 利息费用 es el gasto bruto por intereses; 财务费用 es el resultado
+    # financiero neto (intereses - ingresos financieros +/- tipo de cambio).
+    (["利息费用", "利息支出"], "interest_expense", "FY"),
+    (["财务费用"], "interest_expense_net", "FY"),
 ]
 
 MAPEO_BALANCE = [
@@ -76,6 +83,13 @@ MAPEO_CASHFLOW = [
     (["购建固定资产、无形资产和其他长期资产所支付的现金",
       "购建固定资产无形资产和其他长期资产支付的现金"], "capex", "FY"),
 ]
+
+# source_tags cuya convencion de signo en CAS es opuesta a la de us-gaap.
+# CAS reporta las salidas de caja de inversion como positivas; el XBRL de
+# us-gaap (PaymentsToAcquirePropertyPlantAndEquipment) las trae negativas.
+# Sin esta inversion capex queda con signos mezclados entre regiones y
+# capex_depreciation_ratio cambia de signo segun la aerolinea.
+SOURCE_TAGS_INVERTIR_SIGNO = {"capex"}
 
 # El estado de flujo de efectivo de Sina no trae la linea de depreciacion.
 # Se obtiene del flujo de efectivo de Eastmoney, que si expone los componentes.
@@ -143,6 +157,8 @@ def primera_columna_disponible(fila, candidatas):
 
 def construir_registro(company, anio, source_tag, valor, period, columna_origen,
                        data_source=DATA_SOURCE, currency="CNY"):
+    if source_tag in SOURCE_TAGS_INVERTIR_SIGNO:
+        valor = -valor
     return {
         "company": company,
         "fiscal_year": anio,
@@ -416,6 +432,11 @@ def procesar_archivo_gemini(blob, crosswalk_hkfrs, company):
                 valor = valor * 1e6
 
             currency = str(entrada.get("currency", "HKD"))
+            # capex es siempre una salida de caja; Gemini devuelve el signo de
+            # forma inconsistente segun como lo presente el reporte (parentesis
+            # o no), asi que se normaliza a negativo como en us-gaap.
+            if tag in SOURCE_TAGS_INVERTIR_SIGNO:
+                valor = -abs(valor)
             registros.append({
                 "company": company,
                 "fiscal_year": anio,
