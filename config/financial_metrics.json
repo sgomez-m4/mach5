@@ -2,11 +2,9 @@
   "version": "1.0",
   "updated": "2026-08-18",
   "base_unit": "USD_m",
-  "description": "Diccionario de métricas financieras canónicas. formulas usa nombres de canonical_metric. Nunca delegar calculos a Gemini.",
+  "description": "Diccionario de métricas financieras canónicas. formulas usa nombres de canonical_metric. Nunca delegar calculos a Gemini. Se eliminaron métricas sin datos en BigQuery (passenger_revenue, cargo_revenue, available_seat_miles, rask, cask, ebitdar, operating_lease_expense, finance_lease_liability). Fallback total_debt: si un (company, fiscal_year) no reporta total_debt pero sí long_term_debt y/o short_term_debt, la normalización sintetiza total_debt = long_term_debt + short_term_debt (data_source=calculated_fallback); esto habilita net_debt = total_debt + operating_lease_liability - cash_equivalents para las aerolíneas chinas, que reportan la deuda desagregada bajo CAS. bonds_payable se conserva porque las emisoras A-Share sí lo reportan.",
   "metrics": {
     "revenue": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
-    "passenger_revenue": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
-    "cargo_revenue": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "cost_of_revenue": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "operating_expenses": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "operating_income": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
@@ -21,8 +19,6 @@
     "bonds_payable": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "lease_liabilities": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "operating_lease_liability": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
-    "finance_lease_liability": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
-    "operating_lease_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "interest_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "interest_expense_net": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "income_tax": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
@@ -33,16 +29,12 @@
     "labor_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "fuel_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "maintenance_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
-    "available_seat_miles": {"formula": null, "unit": "raw", "sources": ["xbrl_tag"]},
 
     "ebitda": {"formula": "operating_income + depreciation_amortization", "unit": "USD_m", "sources": ["calculated"]},
-    "ebitdar": {"formula": "ebitda + operating_lease_expense", "unit": "USD_m", "sources": ["calculated"]},
     "net_debt": {"formula": "total_debt + operating_lease_liability - cash_equivalents", "unit": "USD_m", "sources": ["calculated"]},
     "net_debt_ratio": {"formula": "net_debt / ebitda", "unit": "ratio", "sources": ["calculated"]},
     "operating_margin": {"formula": "operating_income / revenue", "unit": "ratio", "sources": ["calculated"]},
     "net_margin": {"formula": "net_income / revenue", "unit": "ratio", "sources": ["calculated"]},
-    "capex_depreciation_ratio": {"formula": "capex / depreciation_amortization", "unit": "ratio", "sources": ["calculated"]},
-    "rask": {"formula": "revenue / available_seat_miles", "unit": "USD_cent", "sources": ["calculated", "needs_fleet"]},
-    "cask": {"formula": "operating_expenses / available_seat_miles", "unit": "USD_cent", "sources": ["calculated", "needs_fleet"]}
+    "capex_depreciation_ratio": {"formula": "capex / depreciation_amortization", "unit": "ratio", "sources": ["calculated"]}
   }
 }

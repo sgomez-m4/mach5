@@ -19,11 +19,32 @@ CONFIG_METRICS_BLOB = "config/financial_metrics.json"
 SOURCE_PREFIXES = [
     "financial_raw_10k/",
     "financial_raw_20f/",
-    "financial_raw_china_a/",
-    "financial_raw_china_h/",
+    "financial_raw_china/",
 ]
 
 TARGET_PREFIX = "financiera-normalizada-json/"
+
+# =========================================================
+# QA: metricas Tier 1 que toda empresa deberia tener
+# =========================================================
+TIER1_METRICAS = [
+    "revenue",
+    "operating_income",
+    "operating_margin",
+    "net_income",
+    "net_margin",
+    "ebitda",
+    "total_assets",
+    "total_liabilities",
+    "equity",
+    "cash_equivalents",
+    "long_term_debt",
+    "net_debt",
+    "capex",
+    "depreciation_amortization",
+]
+TIER1_MINIMO = 10
+METRICAS_OBLIGATORIAS = ["revenue", "net_income", "total_assets"]
 
 
 # =========================================================
@@ -165,6 +186,120 @@ def convertir_a_usd_millions(registro, fx_rates):
     return round(valor_usd_m, 4)
 
 
+def filtrar_ultimo_anio_por_empresa(registros):
+    """
+    Conserva unicamente los registros del ejercicio fiscal mas reciente de cada empresa.
+    Se aplica ANTES de la acumulacion para evitar mezclar anios en financial_fact.
+    """
+    ultimo_anio = {}
+    for r in registros:
+        company = r.get("company")
+        anio = r.get("fiscal_year")
+        if company is None or anio is None:
+            continue
+        try:
+            anio = int(anio)
+        except (ValueError, TypeError):
+            continue
+        if anio > ultimo_anio.get(company, 0):
+            ultimo_anio[company] = anio
+
+    filtrados = []
+    for r in registros:
+        company = r.get("company")
+        anio = r.get("fiscal_year")
+        if company is None or anio is None:
+            continue
+        try:
+            anio = int(anio)
+        except (ValueError, TypeError):
+            continue
+        if anio == ultimo_anio.get(company):
+            r["fiscal_year"] = anio
+            filtrados.append(r)
+
+    for company, anio in sorted(ultimo_anio.items()):
+        print(f"  → {company}: ultimo ejercicio fiscal = {anio}")
+    return filtrados, ultimo_anio
+
+
+def aplicar_fallback_total_debt(acumulado, data_source_por_metrica, source_tags_por_metrica):
+    """
+    Si un (company, anio) no reporta total_debt pero si long_term_debt y/o short_term_debt,
+    sintetiza total_debt = long_term_debt + short_term_debt.
+    Las aerolineas chinas (CAS) reportan la deuda desagregada, sin una linea agregada;
+    sin esto net_debt queda sin calcular.
+    Analogamente, si falta operating_lease_liability pero existe lease_liabilities,
+    se usa esta ultima (bajo CAS/IFRS16 la obligacion de arrendamiento es una sola linea).
+    """
+    por_clave = {}
+    for (company, anio, metric), valor in acumulado.items():
+        por_clave.setdefault((company, anio), {})[metric] = valor
+
+    sintetizados = []
+    for (company, anio), valores in por_clave.items():
+        if "total_debt" not in valores:
+            partes = [m for m in ("long_term_debt", "short_term_debt") if m in valores]
+            if partes:
+                total = sum(valores[m] for m in partes)
+                clave = (company, anio, "total_debt")
+                acumulado[clave] = total
+                data_source_por_metrica[clave] = "calculated_fallback"
+                source_tags_por_metrica[clave] = list(partes)
+                sintetizados.append({"company": company, "fiscal_year": anio,
+                                     "metric": "total_debt", "desde": partes})
+                print(f"    ↳ total_debt sintetizado para {company} {anio} desde {partes}")
+
+        if "operating_lease_liability" not in valores and "lease_liabilities" in valores:
+            clave = (company, anio, "operating_lease_liability")
+            acumulado[clave] = valores["lease_liabilities"]
+            data_source_por_metrica[clave] = "calculated_fallback"
+            source_tags_por_metrica[clave] = ["lease_liabilities"]
+            sintetizados.append({"company": company, "fiscal_year": anio,
+                                 "metric": "operating_lease_liability",
+                                 "desde": ["lease_liabilities"]})
+
+    return sintetizados
+
+
+def validar_qa(filas_fact):
+    """
+    Valida la calidad de financial_fact por empresa:
+    - Cobertura minima de metricas Tier 1
+    - revenue / net_income / total_assets no nulos
+    - revenue estrictamente positivo
+    Devuelve la lista de advertencias (no aborta la carga).
+    """
+    advertencias = []
+    por_empresa = {}
+    for f in filas_fact:
+        clave = (f.get("company"), f.get("fiscal_year"))
+        por_empresa.setdefault(clave, {})[f.get("canonical_metric")] = f.get("value_usd_m")
+
+    for (company, anio), metricas in sorted(por_empresa.items(), key=lambda x: str(x[0])):
+        presentes = [m for m in TIER1_METRICAS if metricas.get(m) is not None]
+        if len(presentes) < TIER1_MINIMO:
+            faltantes = [m for m in TIER1_METRICAS if metricas.get(m) is None]
+            advertencias.append(
+                f"{company} {anio}: solo {len(presentes)}/{len(TIER1_METRICAS)} metricas Tier 1 "
+                f"(minimo {TIER1_MINIMO}); faltan: {', '.join(faltantes)}"
+            )
+
+        for metrica in METRICAS_OBLIGATORIAS:
+            if metricas.get(metrica) is None:
+                advertencias.append(f"{company} {anio}: {metrica} es null")
+
+        revenue = metricas.get("revenue")
+        if revenue is not None and revenue <= 0:
+            advertencias.append(f"{company} {anio}: revenue no es positivo ({revenue})")
+
+    for a in advertencias:
+        print(f"  ⚠ [QA] {a}")
+    if not advertencias:
+        print("  ✓ [QA] Sin advertencias")
+    return advertencias
+
+
 def resolver_formula(expr, valores):
     """
     Resuelve una formula simple tipo "op + dep" sobre dict de metricas canonicas.
@@ -201,6 +336,11 @@ def normalizar_financiera(request):
     # 1. Leer todos los raw
     raw_registros = leer_todos_raw()
     print(f"[RAW] {len(raw_registros)} registros crudos leidos")
+
+    # 1b. Conservar solo el ultimo ejercicio fiscal de cada empresa (antes de acumular)
+    raw_registros, ultimo_anio_por_empresa = filtrar_ultimo_anio_por_empresa(raw_registros)
+    print(f"[FILTRO ANIO] {len(raw_registros)} registros del ultimo ejercicio "
+          f"| {len(ultimo_anio_por_empresa)} empresas")
 
     # 2. Normalizar cada registro -> fila financial_fact_raw
     filas_raw = []
@@ -250,6 +390,12 @@ def normalizar_financiera(request):
 
     print(f"[MAPEO] {len(filas_raw)} filas raw mapeadas | {len(unmapped)} tags sin mapping")
 
+    # 2b. Fallbacks de deuda antes de derivar (habilita net_debt en aerolineas chinas)
+    sintetizados = aplicar_fallback_total_debt(
+        acumulado, data_source_por_metrica, source_tags_por_metrica
+    )
+    print(f"[FALLBACK] {len(sintetizados)} metricas sintetizadas")
+
     # 3. Calcular metricas derivadas y construir financial_fact
     filas_fact = []
     ts = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -294,6 +440,10 @@ def normalizar_financiera(request):
 
     print(f"[RESULTADO] {len(filas_fact)} filas canonicales | {len(filas_raw)} filas raw")
 
+    # 3b. Validacion QA sobre financial_fact
+    print("[QA] Validando cobertura y consistencia por empresa")
+    qa_warnings = validar_qa(filas_fact)
+
     # 4. Subir JSON normalizado a GCS y cargar a BQ
     if not dry_run:
         storage_client = storage.Client(project=PROJECT_ID)
@@ -302,7 +452,8 @@ def normalizar_financiera(request):
         # JSON de resumen por empresa
         resumen_blob = bucket.blob(f"{TARGET_PREFIX}resumen_normalizado_{datetime.now().strftime('%Y%m%d%H%M%S')}.json")
         resumen_blob.upload_from_string(
-            json.dumps({"filas_fact": filas_fact, "filas_raw": filas_raw, "unmapped": unmapped}, ensure_ascii=False),
+            json.dumps({"filas_fact": filas_fact, "filas_raw": filas_raw,
+                        "unmapped": unmapped, "qa_warnings": qa_warnings}, ensure_ascii=False),
             content_type="application/json",
         )
 
@@ -338,6 +489,9 @@ def normalizar_financiera(request):
         "total_filas_fact": len(filas_fact),
         "tags_sin_mapping": len(unmapped),
         "unmapped_sample": sorted(set(unmapped))[:20],
+        "ultimo_anio_por_empresa": ultimo_anio_por_empresa,
+        "metricas_sintetizadas": sintetizados,
+        "qa_warnings": qa_warnings,
         "carga_raw": r1,
         "carga_fact": r2,
         "tiempo_segundos": t_total,
