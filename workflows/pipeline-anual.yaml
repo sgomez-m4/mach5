@@ -17,8 +17,7 @@ main:
           - pipeline_anuales_url: "https://ejecutar-pipeline-anuales-upaleadnxq-ew.a.run.app"
           - extraccion_xbrl_10k_url: "https://extraccion-xbrl-10k-846229407230.us-east1.run.app"
           - extraccion_xbrl_20f_url: "https://extraccion-xbrl-20f-846229407230.us-east1.run.app"
-          - extraccion_xbrl_china_a_url: "https://extraccion-xbrl-china-a-846229407230.us-east1.run.app"
-          - extraccion_xbrl_china_h_url: "https://extraccion-xbrl-china-h-846229407230.us-east1.run.app"
+          - extraccion_financiera_china_url: "https://extraccion-financiera-china-846229407230.us-east1.run.app"
           - normalizacion_url: "https://normalizacion-financiera-846229407230.us-east1.run.app"
     - fase1_respaldo:
         try:
@@ -223,28 +222,17 @@ main:
                           audience: ${extraccion_xbrl_20f_url}
                         timeout: 1800
                       result: extraccion_xbrl_20f_result
-            - extraccion_xbrl_china_a:
+            - extraccion_financiera_china:
                 steps:
-                  - extraer_xbrl_china_a:
+                  - extraer_financiera_china:
                       call: http.get
                       args:
-                        url: ${extraccion_xbrl_china_a_url}
+                        url: ${extraccion_financiera_china_url}
                         auth:
                           type: OIDC
-                          audience: ${extraccion_xbrl_china_a_url}
+                          audience: ${extraccion_financiera_china_url}
                         timeout: 1800
-                      result: extraccion_xbrl_china_a_result
-            - extraccion_xbrl_china_h:
-                steps:
-                  - extraer_xbrl_china_h:
-                      call: http.get
-                      args:
-                        url: ${extraccion_xbrl_china_h_url}
-                        auth:
-                          type: OIDC
-                          audience: ${extraccion_xbrl_china_h_url}
-                        timeout: 1800
-                      result: extraccion_xbrl_china_h_result
+                      result: extraccion_financiera_china_result
         next: fase8_normalizar
     - fase8_normalizar:
         try:
