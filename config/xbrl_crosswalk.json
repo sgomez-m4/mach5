@@ -109,6 +109,8 @@
   {"taxonomy": "cas-china", "source_tag": "long_term_debt", "canonical_metric": "long_term_debt", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "bonds_payable", "canonical_metric": "bonds_payable", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "lease_liabilities", "canonical_metric": "lease_liabilities", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "cas-china", "source_tag": "interest_expense", "canonical_metric": "interest_expense", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "cas-china", "source_tag": "interest_expense_net", "canonical_metric": "interest_expense_net", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "total_assets", "canonical_metric": "total_assets", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "total_liabilities", "canonical_metric": "total_liabilities", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "equity", "canonical_metric": "equity", "unit_hint": "millions", "is_derived": false},
