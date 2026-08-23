@@ -1,13 +1,9 @@
 name: deploy-normalizacion-financiera
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "functions/normalizacion-financiera/**"
-      - "config/xbrl_crosswalk.json"
-      - "config/xbrl_crosswalk.ndjson"
-      - ".github/workflows/deploy-normalizacion-financiera.yml"
+  # Lo invoca .github/workflows/deploy-cloud-run.yml, que serializa los
+  # despliegues. Se conserva workflow_dispatch para lanzarlo a mano.
+  workflow_call:
   workflow_dispatch:
 
 concurrency:

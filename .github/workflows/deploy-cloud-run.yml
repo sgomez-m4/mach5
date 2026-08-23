@@ -1,0 +1,238 @@
+name: deploy-cloud-run
+
+# Despliega los servicios de Cloud Run cuyo codigo cambio, de uno en uno.
+#
+# Antes cada servicio tenia su propio disparador push y un merge que tocara
+# varios lanzaba todos en paralelo. Cinco a la vez agotaban la cuota de
+# "Build and Operation Get requests per minute per user" de Cloud Build y los
+# deploys fallaban con 429.
+#
+# Un unico grupo de concurrency compartido entre los 22 workflows no sirve:
+# GitHub cancela el run pendiente anterior cuando llega otro al mismo grupo, asi
+# que de cinco encolados solo sobrevivirian el primero y el ultimo. De ahi el
+# encadenado explicito con needs, que respeta el orden y no descarta ninguno.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "functions/**"
+  workflow_dispatch:
+    inputs:
+      servicio:
+        description: "Servicio a desplegar. Vacio despliega los que cambiaron; 'todos' fuerza el despliegue completo."
+        required: false
+        default: ""
+
+concurrency:
+  group: deploy-cloud-run
+  cancel-in-progress: false
+
+jobs:
+  cambios:
+    runs-on: ubuntu-latest
+    outputs:
+      descarga_anual_china: ${{ steps.detectar.outputs.descarga_anual_china }}
+      ejecutar_pipeline_anuales: ${{ steps.detectar.outputs.ejecutar_pipeline_anuales }}
+      extraccion_10k_md: ${{ steps.detectar.outputs.extraccion_10k_md }}
+      extraccion_20f_md: ${{ steps.detectar.outputs.extraccion_20f_md }}
+      extraccion_financiera_china: ${{ steps.detectar.outputs.extraccion_financiera_china }}
+      extraccion_item2_10k: ${{ steps.detectar.outputs.extraccion_item2_10k }}
+      extraccion_item4_20f: ${{ steps.detectar.outputs.extraccion_item4_20f }}
+      extraccion_json_china: ${{ steps.detectar.outputs.extraccion_json_china }}
+      extraccion_json_item2: ${{ steps.detectar.outputs.extraccion_json_item2 }}
+      extraccion_json_item4: ${{ steps.detectar.outputs.extraccion_json_item4 }}
+      extraccion_tablas_item2: ${{ steps.detectar.outputs.extraccion_tablas_item2 }}
+      extraccion_xbrl_10k: ${{ steps.detectar.outputs.extraccion_xbrl_10k }}
+      extraccion_xbrl_20f: ${{ steps.detectar.outputs.extraccion_xbrl_20f }}
+      extraccion_xbrl_china_a: ${{ steps.detectar.outputs.extraccion_xbrl_china_a }}
+      extraccion_xbrl_china_h: ${{ steps.detectar.outputs.extraccion_xbrl_china_h }}
+      extraer_seccion_china: ${{ steps.detectar.outputs.extraer_seccion_china }}
+      normalizacion_financiera: ${{ steps.detectar.outputs.normalizacion_financiera }}
+      parsing_md_china: ${{ steps.detectar.outputs.parsing_md_china }}
+      respaldo_anual: ${{ steps.detectar.outputs.respaldo_anual }}
+      revision_diaria_china: ${{ steps.detectar.outputs.revision_diaria_china }}
+      rss_6k: ${{ steps.detectar.outputs.rss_6k }}
+      rss_8k: ${{ steps.detectar.outputs.rss_8k }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: detectar
+        env:
+          FORZAR: ${{ github.event.inputs.servicio }}
+        run: |
+          set -euo pipefail
+
+          SERVICIOS="descarga-anual-china ejecutar-pipeline-anuales extraccion-10k-md extraccion-20f-md extraccion-financiera-china extraccion-item2-10k extraccion-item4-20f extraccion-json-china extraccion-json-item2 extraccion-json-item4 extraccion-tablas-item2 extraccion-xbrl-10k extraccion-xbrl-20f extraccion-xbrl-china-a extraccion-xbrl-china-h extraer-seccion-china normalizacion-financiera parsing-md-china respaldo-anual revision-diaria-china rss-6k rss-8k"
+
+          if [ -n "$FORZAR" ]; then
+            echo "Despliegue manual: $FORZAR"
+            CAMBIADOS=""
+          else
+            BASE="${{ github.event.before }}"
+            if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE=$(git rev-parse "${{ github.sha }}^" 2>/dev/null || echo "")
+            fi
+            if [ -n "$BASE" ] && git cat-file -e "$BASE" 2>/dev/null; then
+              CAMBIADOS=$(git diff --name-only "$BASE" "${{ github.sha }}")
+            else
+              # Sin base comparable no se puede saber que cambio; se despliega
+              # todo antes que arriesgar dejar un servicio sin actualizar.
+              echo "::warning::Sin base de comparacion, se despliegan todos"
+              CAMBIADOS=$(printf 'functions/%s/x\n' $SERVICIOS)
+            fi
+          fi
+
+          for svc in $SERVICIOS; do
+            key=$(echo "$svc" | tr '-' '_')
+            if [ "$FORZAR" = "todos" ] || [ "$FORZAR" = "$svc" ]; then
+              valor=true
+            elif [ -n "$FORZAR" ]; then
+              valor=false
+            elif echo "$CAMBIADOS" | grep -q "^functions/$svc/"; then
+              valor=true
+            else
+              valor=false
+            fi
+            echo "$key=$valor" >> "$GITHUB_OUTPUT"
+            [ "$valor" = "true" ] && echo "  desplegar: $svc" || true
+          done
+
+      - name: Resumen
+        run: |
+          echo "Los servicios marcados se despliegan de uno en uno para no" \
+               "agotar la cuota de Cloud Build."
+
+  descarga_anual_china:
+    needs: [cambios]
+    if: ${{ !cancelled() && needs.cambios.outputs.descarga_anual_china == 'true' }}
+    uses: ./.github/workflows/deploy-descarga-anual-china.yml
+    secrets: inherit
+
+  ejecutar_pipeline_anuales:
+    needs: [cambios, descarga_anual_china]
+    if: ${{ !cancelled() && needs.cambios.outputs.ejecutar_pipeline_anuales == 'true' }}
+    uses: ./.github/workflows/deploy-ejecutar-pipeline-anuales.yml
+    secrets: inherit
+
+  extraccion_10k_md:
+    needs: [cambios, ejecutar_pipeline_anuales]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_10k_md == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-10k-md.yml
+    secrets: inherit
+
+  extraccion_20f_md:
+    needs: [cambios, extraccion_10k_md]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_20f_md == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-20f-md.yml
+    secrets: inherit
+
+  extraccion_financiera_china:
+    needs: [cambios, extraccion_20f_md]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_financiera_china == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-financiera-china.yml
+    secrets: inherit
+
+  extraccion_item2_10k:
+    needs: [cambios, extraccion_financiera_china]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_item2_10k == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-item2-10k.yml
+    secrets: inherit
+
+  extraccion_item4_20f:
+    needs: [cambios, extraccion_item2_10k]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_item4_20f == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-item4-20f.yml
+    secrets: inherit
+
+  extraccion_json_china:
+    needs: [cambios, extraccion_item4_20f]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_json_china == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-json-china.yml
+    secrets: inherit
+
+  extraccion_json_item2:
+    needs: [cambios, extraccion_json_china]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_json_item2 == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-json-item2.yml
+    secrets: inherit
+
+  extraccion_json_item4:
+    needs: [cambios, extraccion_json_item2]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_json_item4 == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-json-item4.yml
+    secrets: inherit
+
+  extraccion_tablas_item2:
+    needs: [cambios, extraccion_json_item4]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_tablas_item2 == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-tablas-item2.yml
+    secrets: inherit
+
+  extraccion_xbrl_10k:
+    needs: [cambios, extraccion_tablas_item2]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_xbrl_10k == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-xbrl-10k.yml
+    secrets: inherit
+
+  extraccion_xbrl_20f:
+    needs: [cambios, extraccion_xbrl_10k]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_xbrl_20f == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-xbrl-20f.yml
+    secrets: inherit
+
+  extraccion_xbrl_china_a:
+    needs: [cambios, extraccion_xbrl_20f]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_xbrl_china_a == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-xbrl-china-a.yml
+    secrets: inherit
+
+  extraccion_xbrl_china_h:
+    needs: [cambios, extraccion_xbrl_china_a]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraccion_xbrl_china_h == 'true' }}
+    uses: ./.github/workflows/deploy-extraccion-xbrl-china-h.yml
+    secrets: inherit
+
+  extraer_seccion_china:
+    needs: [cambios, extraccion_xbrl_china_h]
+    if: ${{ !cancelled() && needs.cambios.outputs.extraer_seccion_china == 'true' }}
+    uses: ./.github/workflows/deploy-extraer-seccion-china.yml
+    secrets: inherit
+
+  normalizacion_financiera:
+    needs: [cambios, extraer_seccion_china]
+    if: ${{ !cancelled() && needs.cambios.outputs.normalizacion_financiera == 'true' }}
+    uses: ./.github/workflows/deploy-normalizacion-financiera.yml
+    secrets: inherit
+
+  parsing_md_china:
+    needs: [cambios, normalizacion_financiera]
+    if: ${{ !cancelled() && needs.cambios.outputs.parsing_md_china == 'true' }}
+    uses: ./.github/workflows/deploy-parsing-md-china.yml
+    secrets: inherit
+
+  respaldo_anual:
+    needs: [cambios, parsing_md_china]
+    if: ${{ !cancelled() && needs.cambios.outputs.respaldo_anual == 'true' }}
+    uses: ./.github/workflows/deploy-respaldo-anual.yml
+    secrets: inherit
+
+  revision_diaria_china:
+    needs: [cambios, respaldo_anual]
+    if: ${{ !cancelled() && needs.cambios.outputs.revision_diaria_china == 'true' }}
+    uses: ./.github/workflows/deploy-revision-diaria-china.yml
+    secrets: inherit
+
+  rss_6k:
+    needs: [cambios, revision_diaria_china]
+    if: ${{ !cancelled() && needs.cambios.outputs.rss_6k == 'true' }}
+    uses: ./.github/workflows/deploy-rss-6k.yml
+    secrets: inherit
+
+  rss_8k:
+    needs: [cambios, rss_6k]
+    if: ${{ !cancelled() && needs.cambios.outputs.rss_8k == 'true' }}
+    uses: ./.github/workflows/deploy-rss-8k.yml
+    secrets: inherit

@@ -1,11 +1,9 @@
 ﻿name: deploy-extraccion-10k-md
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "functions/extraccion-10k-md/**"
-      - ".github/workflows/deploy-extraccion-10k-md.yml"
+  # Lo invoca .github/workflows/deploy-cloud-run.yml, que serializa los
+  # despliegues. Se conserva workflow_dispatch para lanzarlo a mano.
+  workflow_call:
   workflow_dispatch:
 
 concurrency:

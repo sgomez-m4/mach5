@@ -1,11 +1,9 @@
 ﻿name: deploy-revision-diaria-china
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "functions/revision-diaria-china/**"
-      - ".github/workflows/deploy-revision-diaria-china.yml"
+  # Lo invoca .github/workflows/deploy-cloud-run.yml, que serializa los
+  # despliegues. Se conserva workflow_dispatch para lanzarlo a mano.
+  workflow_call:
   workflow_dispatch:
 
 concurrency:

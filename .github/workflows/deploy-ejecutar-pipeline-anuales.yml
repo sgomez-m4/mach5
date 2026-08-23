@@ -1,11 +1,9 @@
 name: deploy-ejecutar-pipeline-anuales
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "functions/ejecutar-pipeline-anuales/**"
-      - ".github/workflows/deploy-ejecutar-pipeline-anuales.yml"
+  # Lo invoca .github/workflows/deploy-cloud-run.yml, que serializa los
+  # despliegues. Se conserva workflow_dispatch para lanzarlo a mano.
+  workflow_call:
   workflow_dispatch:
 
 concurrency:

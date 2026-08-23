@@ -1,11 +1,9 @@
 name: deploy-extraccion-xbrl-china-h
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "functions/extraccion-xbrl-china-h/**"
-      - ".github/workflows/deploy-extraccion-xbrl-china-h.yml"
+  # Lo invoca .github/workflows/deploy-cloud-run.yml, que serializa los
+  # despliegues. Se conserva workflow_dispatch para lanzarlo a mano.
+  workflow_call:
   workflow_dispatch:
 
 concurrency:
