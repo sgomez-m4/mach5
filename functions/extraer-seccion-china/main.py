@@ -14,7 +14,15 @@ PATRON_PAGINA = re.compile(r'(<!-- Página \d+ -->)')
 # ------------------------------------------------------------------------------
 
 # Inicio de la sección de flota (MD&A / Business Review)
-PATRONES_INICIO = [
+# Los patrones se agrupan por especificidad. Los del primer nivel llevan numero
+# de seccion o estan en chino tradicional, y son inequivocos. Los del segundo son
+# solo el titulo: alcanzan reportes que no numeran sus secciones -Air China no
+# lleva numeracion alguna- pero tambien coinciden con el indice y con menciones
+# sueltas, asi que solo se usan si el primer nivel no dio una seccion valida.
+
+SEPARADOR_BLOQUES = "\n\n"
+
+PATRONES_INICIO_ESPECIFICOS = [
     re.compile(r'第三节\s*[|\s:：]*\s*管理层讨论与分析', re.IGNORECASE),
     re.compile(r'第\s*3\s*节\s*[|\s:：]*\s*管理层讨论与分析', re.IGNORECASE),
     re.compile(r'管理層討論及分析', re.IGNORECASE),
@@ -22,14 +30,30 @@ PATRONES_INICIO = [
     re.compile(r'(?:Management\s+Discussion\s*(?:&|and)\s*Analysis|Business\s+Review)', re.IGNORECASE),
 ]
 
-# Fin de la sección (inicio de la siguiente sección principal)
-PATRONES_FIN = [
+PATRONES_INICIO_AMPLIOS = [
+    re.compile(r'\u7ecf\u8425\u60c5\u51b5\u8ba8\u8bba\u4e0e\u5206\u6790', re.IGNORECASE),
+    re.compile(r'\u7ba1\u7406\u5c42\u8ba8\u8bba\u4e0e\u5206\u6790', re.IGNORECASE),
+    re.compile(r'\u4e1a\u52a1\u56de\u987e', re.IGNORECASE),
+    re.compile(r'\u8463\u4e8b\u4f1a\u62a5\u544a', re.IGNORECASE),
+]
+
+PATRONES_FIN_ESPECIFICOS = [
     re.compile(r'第四节\s*[|\s:：]*\s*公司治理', re.IGNORECASE),
     re.compile(r'第\s*4\s*节\s*[|\s:：]*\s*公司治理', re.IGNORECASE),
     re.compile(r'企業管治', re.IGNORECASE),
     re.compile(r'財務報表', re.IGNORECASE),
     re.compile(r'(?:Corporate\s+Governance|Financial\s+Statements)', re.IGNORECASE),
 ]
+
+PATRONES_FIN_AMPLIOS = [
+    re.compile(r'\u516c\u53f8\u6cbb\u7406', re.IGNORECASE),
+    re.compile(r'\u8d22\u52a1\u62a5\u8868', re.IGNORECASE),
+    re.compile(r'\u8d22\u52a1\u62a5\u544a', re.IGNORECASE),
+]
+
+# Compatibilidad con cualquier consumidor externo de estas listas
+PATRONES_INICIO = PATRONES_INICIO_ESPECIFICOS + PATRONES_INICIO_AMPLIOS
+PATRONES_FIN = PATRONES_FIN_ESPECIFICOS + PATRONES_FIN_AMPLIOS
 
 
 # ------------------------------------------------------------------------------
@@ -88,66 +112,74 @@ def encontrar_pagina_seccion(paginas: list[dict], patrones: list[re.Pattern],
     return None
 
 
-def extraer_seccion_flota(content: str) -> str | None:
-    """
-    Extrae la sección de flota/MD&A usando los marcadores de página como delimitadores.
-    
-    Estrategia:
-    1. Dividir el documento en páginas por <!-- Página X -->
-    2. Saltar las primeras páginas (TOC/portada) → buscar desde página 3+
-    3. Encontrar la página donde inicia "第三节 管理层讨论与分析"
-    4. Encontrar la página donde inicia "第四节 公司治理"
-    5. Extraer todas las páginas entre ambas
-    """
-    paginas = dividir_por_paginas(content)
-    
-    if len(paginas) < 5:
-        # Documento demasiado corto, probablemente no es un reporte anual completo
-        return None
-    
-    # --- PASO 1: Encontrar inicio de sección ---
-    # Buscar desde la página índice 2 (página 3) para saltar portada y TOC
-    idx_inicio = encontrar_pagina_seccion(paginas, PATRONES_INICIO, buscar_desde=2)
-    
-    if idx_inicio is None:
-        # Intentar desde el inicio por si no tiene TOC separado
-        idx_inicio = encontrar_pagina_seccion(paginas, PATRONES_INICIO, buscar_desde=0)
-    
-    if idx_inicio is None:
-        return None
-    
-    # --- PASO 2: Encontrar fin de sección ---
-    # Buscar la siguiente sección principal DESPUÉS del inicio
-    idx_fin = encontrar_pagina_seccion(paginas, PATRONES_FIN, buscar_desde=idx_inicio + 1)
-    
-    if idx_fin is None:
-        # Si no encontramos el fin, tomar hasta el 50% restante del documento
-        idx_fin = min(idx_inicio + (len(paginas) - idx_inicio) // 2, len(paginas) - 1)
-    
-    # --- PASO 3: Unir las páginas de la sección ---
+def _construir_seccion(paginas, idx_inicio, idx_fin):
+    """Une las paginas del rango y devuelve el texto, o None si es demasiado corto."""
     paginas_seccion = paginas[idx_inicio:idx_fin]
-    
-    # Construir el texto final preservando los marcadores de página
+    if not paginas_seccion:
+        return None
+
     bloques = []
     for pag in paginas_seccion:
         bloques.append(pag['marcador'])
         bloques.append(pag['contenido'].strip())
-    
-    texto_seccion = "\n\n".join(bloques).strip()
-    
-    # Validación mínima (una sección MD&A real tiene al menos ~2000 caracteres)
+    texto_seccion = SEPARADOR_BLOQUES.join(bloques).strip()
+
+    # Una seccion MD&A real tiene al menos ~2000 caracteres
     if len(texto_seccion) < 2000:
         return None
-    
-    # Agregar encabezado
+
     header = (
-        f"# Sección: Flota y Operaciones (MD&A)\n\n"
-        f"*Páginas {paginas_seccion[0]['numero']} a {paginas_seccion[-1]['numero']} "
-        f"({len(paginas_seccion)} páginas extraídas)*\n\n"
-        f"---\n\n"
+        "# Seccion: Flota y Operaciones (MD&A)" + SEPARADOR_BLOQUES
+        + "*Paginas {} a {} ({} paginas extraidas)*".format(
+            paginas_seccion[0]['numero'],
+            paginas_seccion[-1]['numero'],
+            len(paginas_seccion))
+        + SEPARADOR_BLOQUES + "---" + SEPARADOR_BLOQUES
     )
-    
     return header + texto_seccion
+
+
+def extraer_seccion_flota(content: str) -> str | None:
+    """
+    Extrae la seccion de flota/MD&A usando los marcadores de pagina como delimitadores.
+
+    Se prueban las combinaciones de patrones de mas especifica a mas amplia y se
+    devuelve la primera que produce una seccion valida. Buscar con todos los
+    patrones a la vez no funciona: los amplios coinciden antes -en el indice o en
+    una mencion suelta- y recortan la seccion por debajo del minimo, que es justo
+    lo que dejaria fuera a China Express y Juneyao.
+    """
+    paginas = dividir_por_paginas(content)
+
+    if len(paginas) < 5:
+        # Documento demasiado corto, probablemente no es un reporte anual completo
+        return None
+
+    for patrones_ini in (PATRONES_INICIO_ESPECIFICOS, PATRONES_INICIO_AMPLIOS):
+        # Desde la pagina 3 para saltar portada e indice; si no, desde el inicio
+        idx_inicio = encontrar_pagina_seccion(paginas, patrones_ini, buscar_desde=2)
+        if idx_inicio is None:
+            idx_inicio = encontrar_pagina_seccion(paginas, patrones_ini, buscar_desde=0)
+        if idx_inicio is None:
+            continue
+
+        candidatos_fin = []
+        for patrones_fin in (PATRONES_FIN_ESPECIFICOS, PATRONES_FIN_AMPLIOS):
+            idx_fin = encontrar_pagina_seccion(paginas, patrones_fin,
+                                               buscar_desde=idx_inicio + 1)
+            if idx_fin is not None:
+                candidatos_fin.append(idx_fin)
+        # Ultimo recurso: la mitad de lo que queda del documento
+        candidatos_fin.append(
+            min(idx_inicio + (len(paginas) - idx_inicio) // 2, len(paginas) - 1)
+        )
+
+        for idx_fin in candidatos_fin:
+            seccion = _construir_seccion(paginas, idx_inicio, idx_fin)
+            if seccion is not None:
+                return seccion
+
+    return None
 
 
 # ------------------------------------------------------------------------------
