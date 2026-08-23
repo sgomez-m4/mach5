@@ -1,0 +1,68 @@
+name: sync-config-gcs
+
+# Los servicios leen sus configuraciones desde gs://<bucket>/config/, no del repo.
+# Sin este workflow, cambiar un archivo en config/ no surte ningun efecto hasta que
+# alguien lo sube a mano, y el repo queda como documentacion de algo que no esta
+# corriendo. Este job cierra esa brecha: cada merge a main que toque config/
+# respalda lo que hay en GCS y sube la version del repo.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "config/**"
+      - ".github/workflows/sync-config-gcs.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-config-gcs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Respaldar la configuracion actual
+        run: |
+          TS=$(date -u +%Y%m%dT%H%M%SZ)
+          echo "Respaldando en config/backup/ con sufijo $TS"
+          for f in config/*.json config/*.ndjson; do
+            [ -e "$f" ] || continue
+            NAME=$(basename "$f")
+            BASE="${NAME%.*}"
+            EXT="${NAME##*.}"
+            if gcloud storage ls "gs://${{ secrets.BUCKET_NAME }}/config/$NAME" >/dev/null 2>&1; then
+              gcloud storage cp \
+                "gs://${{ secrets.BUCKET_NAME }}/config/$NAME" \
+                "gs://${{ secrets.BUCKET_NAME }}/config/backup/${BASE}_${TS}.${EXT}"
+            else
+              echo "  (nuevo, sin respaldo previo): $NAME"
+            fi
+          done
+
+      - name: Subir la configuracion del repo
+        run: |
+          for f in config/*.json config/*.ndjson; do
+            [ -e "$f" ] || continue
+            gcloud storage cp "$f" "gs://${{ secrets.BUCKET_NAME }}/config/$(basename "$f")"
+          done
+
+      - name: Verificar
+        run: |
+          echo "Contenido de gs://${{ secrets.BUCKET_NAME }}/config/"
+          gcloud storage ls -l "gs://${{ secrets.BUCKET_NAME }}/config/"

@@ -1,12 +1,28 @@
 import io
 import functions_framework
 import json
+import re
+import unicodedata
 from google.cloud import storage
 from google.cloud import bigquery
 
 # Configuraciones fijas
 BUCKET_NAME = "bucket-edgar"
 DATASET_ID = "dataset_integrado"
+
+CONFIG_DIM_AIRLINE = "config/dim_airline.json"
+
+# Patrones de aircraft_type que representan un agregado del propio reporte
+# (p.ej. "Total Fleet (Includes B737-800NG and E190)") o una cubeta sin detalle
+# de modelo ("Commercial Aircraft"). Se conservan para el conteo de flota pero
+# se marcan para poder excluirlas del analisis por tipo.
+PATRONES_FILA_AGREGADA = [
+    r"total\s+fleet",
+    r"commercial\s+aircraft",
+    r"mixed\s+models",
+    r"^aircraft$",
+    r"^fleet$",
+]
 
 # Lista de prefijos a procesar (10-K, 20-F y Aerolíneas Chinas)
 SOURCE_PREFIXES = [
@@ -26,6 +42,75 @@ CHINESE_AIRLINES = [
     "Juneyao Airlines",
     "China Express Airlines"
 ]
+
+
+def clave_aerolinea(nombre):
+    """Normaliza un nombre de aerolinea para comparar: sin acentos, sin puntuacion,
+    en minusculas. 'Aeroméxico Connect' y 'aeromexico connect' dan la misma clave."""
+    if not nombre:
+        return ""
+    txt = unicodedata.normalize("NFKD", str(nombre))
+    txt = "".join(c for c in txt if not unicodedata.combining(c))
+    return "".join(c for c in txt.lower() if c.isalnum())
+
+
+def cargar_indice_aerolineas(bucket):
+    """Construye el indice clave_normalizada -> entidad desde config/dim_airline.json.
+
+    Sin este indice el pipeline escribia el nombre literal que devolvia Gemini, que
+    varia entre corridas ('United' vs 'United Airlines', 'Copa Holdings' vs
+    'Copa Airlines'). Eso rompia el join con la dimension aguas abajo y fragmentaba
+    grupos como American o Aeromexico en varias entidades.
+    """
+    blob = bucket.blob(CONFIG_DIM_AIRLINE)
+    raw = blob.download_as_text(encoding="utf-8").strip().lstrip('\ufeff')
+    cfg = json.loads(raw)
+
+    indice = {}
+    for a in cfg.get("airlines", []):
+        entidad = {
+            "airline_id": a["airline_id"],
+            "group_id": a.get("parent_id") or a["airline_id"],
+            "display_name": a["display_name"],
+        }
+        for variante in a.get("name_variants", []):
+            indice[clave_aerolinea(variante)] = entidad
+        indice[clave_aerolinea(a["display_name"])] = entidad
+        indice[clave_aerolinea(a["airline_id"])] = entidad
+    return indice
+
+
+def es_fila_agregada(aircraft_type):
+    """True si la fila es un agregado del reporte y no un tipo de aeronave real."""
+    if not aircraft_type:
+        return False
+    txt = str(aircraft_type).lower()
+    return any(re.search(p, txt) for p in PATRONES_FILA_AGREGADA)
+
+
+def resolver_identidad(fila, indice, no_resueltos):
+    """Añade airline_id / group_id / airline_canonical a la fila.
+
+    Si el nombre no esta en el catalogo se conserva la fila y se registra el nombre
+    en no_resueltos, para que aparezca como advertencia en la respuesta en vez de
+    degradar en silencio.
+    """
+    nombre = (fila.get("airline") or "").strip()
+    entidad = indice.get(clave_aerolinea(nombre))
+
+    if entidad is None:
+        if nombre:
+            no_resueltos.add(nombre)
+        fila["airline_id"] = None
+        fila["group_id"] = None
+        fila["airline_canonical"] = nombre or None
+    else:
+        fila["airline_id"] = entidad["airline_id"]
+        fila["group_id"] = entidad["group_id"]
+        fila["airline_canonical"] = entidad["display_name"]
+
+    fila["es_fila_agregada"] = es_fila_agregada(fila.get("aircraft_type"))
+    return fila
 
 
 @functions_framework.http
@@ -59,9 +144,13 @@ def ejecutar_pipeline_flota(request):
     storage_client = storage.Client()
     bq_client = bigquery.Client()
     bucket = storage_client.bucket(BUCKET_NAME)
+
+    indice_aerolineas = cargar_indice_aerolineas(bucket)
+    print(f"[DIM] {len(indice_aerolineas)} claves de aerolinea cargadas del catalogo")
     
     current_rows = []
     commitment_rows = []
+    aerolineas_no_resueltas = set()
     
     # Estadísticas por fuente
     stats = {
@@ -94,9 +183,12 @@ def ejecutar_pipeline_flota(request):
                     for r in data["current_fleet"]:
                         cleaned = limpiar_fila(r)
                         if cleaned:
+                            cleaned = resolver_identidad(
+                                cleaned, indice_aerolineas, aerolineas_no_resueltas
+                            )
                             current_rows.append(cleaned)
-                            # Trackear aerolínea
-                            airline = cleaned.get("airline", "").strip()
+                            # Trackear aerolínea ya canonizada
+                            airline = cleaned.get("airline_canonical") or ""
                             if airline:
                                 stats["aerolineas_detectadas"].add(airline)
                         
@@ -105,6 +197,9 @@ def ejecutar_pipeline_flota(request):
                     for r in data["future_commitments"]:
                         cleaned = limpiar_fila(r)
                         if cleaned:
+                            cleaned = resolver_identidad(
+                                cleaned, indice_aerolineas, aerolineas_no_resueltas
+                            )
                             commitment_rows.append(cleaned)
                 
                 stats["archivos_leidos"] += 1
@@ -129,6 +224,14 @@ def ejecutar_pipeline_flota(request):
     print(f"  Filas order_book: {len(commitment_rows)}")
     print(f"  Aerolíneas detectadas: {sorted(stats['aerolineas_detectadas'])}")
 
+    sin_id = sum(1 for r in current_rows + commitment_rows if not r.get("airline_id"))
+    if aerolineas_no_resueltas:
+        print(f"  ⚠ {len(aerolineas_no_resueltas)} nombres sin resolver contra el catalogo "
+              f"({sin_id} filas afectadas): {sorted(aerolineas_no_resueltas)}")
+        print("    → agregar la variante a config/dim_airline.json y resincronizar a GCS")
+    else:
+        print("  ✓ Todos los nombres resolvieron contra el catalogo")
+
     # Modo dry_run: solo reportar sin cargar
     if dry_run:
         return {
@@ -138,7 +241,9 @@ def ejecutar_pipeline_flota(request):
             "filas_order_book": len(commitment_rows),
             "aerolineas_detectadas": sorted(stats["aerolineas_detectadas"]),
             "archivos_leidos": stats["archivos_leidos"],
-            "archivos_con_error": stats["archivos_con_error"]
+            "archivos_con_error": stats["archivos_con_error"],
+            "aerolineas_sin_resolver": sorted(aerolineas_no_resueltas),
+            "filas_sin_airline_id": sin_id
         }, 200
 
     # Cargar a BigQuery
@@ -164,7 +269,9 @@ def ejecutar_pipeline_flota(request):
         "estadisticas": {
             "archivos_leidos": stats["archivos_leidos"],
             "archivos_con_error": stats["archivos_con_error"],
-            "aerolineas_detectadas": sorted(stats["aerolineas_detectadas"])
+            "aerolineas_detectadas": sorted(stats["aerolineas_detectadas"]),
+            "aerolineas_sin_resolver": sorted(aerolineas_no_resueltas),
+            "filas_sin_airline_id": sin_id
         },
         "detalles_carga": resultados
     }, 200
