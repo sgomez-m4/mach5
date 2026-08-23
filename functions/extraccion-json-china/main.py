@@ -74,7 +74,7 @@ Campos obligatorios:
 """
 
 
-def process_with_gemini(text_content: str) -> str:
+def process_with_gemini(text_content: str, thinking_level: str = "LOW") -> str:
     """Envía el contenido markdown a Gemini para extracción estructurada."""
     client = genai.Client(
         vertexai=True,
@@ -102,7 +102,7 @@ def process_with_gemini(text_content: str) -> str:
             types.SafetySetting(category="HARM_CATEGORY_HARASSMENT", threshold="OFF")
         ],
         thinking_config=types.ThinkingConfig(
-            thinking_level="HIGH"
+            thinking_level=thinking_level
         )
     )
 
@@ -111,7 +111,23 @@ def process_with_gemini(text_content: str) -> str:
         contents=contents,
         config=generate_content_config,
     )
-    
+
+    # El presupuesto de max_output_tokens lo comparten el "thinking" y la salida.
+    # Con thinking_level alto el modelo puede gastar casi todo pensando y truncar
+    # el JSON a medias: China Eastern gastaba 62,911 tokens de razonamiento y solo
+    # 2,610 de salida, cortando el JSON a medio string. Si eso pasa, se reintenta
+    # con menos razonamiento, que para extraccion de tablas basta y sobra.
+    candidato = response.candidates[0] if response.candidates else None
+    finish = getattr(candidato, "finish_reason", None)
+    if finish is not None and "MAX_TOKENS" in str(finish):
+        uso = response.usage_metadata
+        print(f"      ⚠️  Respuesta truncada (finish_reason=MAX_TOKENS): "
+              f"thinking={getattr(uso, 'thoughts_token_count', '?')} tokens, "
+              f"salida={getattr(uso, 'candidates_token_count', '?')} tokens")
+        if thinking_level != "LOW":
+            print("      ↻ Reintentando con thinking_level=LOW")
+            return process_with_gemini(text_content, thinking_level="LOW")
+
     return response.text
 
 
