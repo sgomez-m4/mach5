@@ -30,6 +30,17 @@ PATRONES_INICIO_ESPECIFICOS = [
     re.compile(r'(?:Management\s+Discussion\s*(?:&|and)\s*Analysis|Business\s+Review)', re.IGNORECASE),
 ]
 
+# Air China numera sus divisiones con 章 (capitulo) en vez de 节 (seccion)
+PATRONES_INICIO_CAPITULO = [
+    re.compile(r'\u7b2c\u4e09\u7ae0\s*[|\s:\uff1a]*\s*\u7ba1\u7406\u5c42\u8ba8\u8bba\u4e0e\u5206\u6790', re.IGNORECASE),
+    re.compile(r'\u7b2c\s*3\s*\u7ae0\s*[|\s:\uff1a]*\s*\u7ba1\u7406\u5c42\u8ba8\u8bba\u4e0e\u5206\u6790', re.IGNORECASE),
+]
+
+PATRONES_FIN_CAPITULO = [
+    re.compile(r'\u7b2c\u56db\u7ae0\s*[|\s:\uff1a]*\s*\u516c\u53f8\u6cbb\u7406', re.IGNORECASE),
+    re.compile(r'\u7b2c\s*4\s*\u7ae0\s*[|\s:\uff1a]*\s*\u516c\u53f8\u6cbb\u7406', re.IGNORECASE),
+]
+
 PATRONES_INICIO_AMPLIOS = [
     re.compile(r'\u7ecf\u8425\u60c5\u51b5\u8ba8\u8bba\u4e0e\u5206\u6790', re.IGNORECASE),
     re.compile(r'\u7ba1\u7406\u5c42\u8ba8\u8bba\u4e0e\u5206\u6790', re.IGNORECASE),
@@ -52,8 +63,10 @@ PATRONES_FIN_AMPLIOS = [
 ]
 
 # Compatibilidad con cualquier consumidor externo de estas listas
-PATRONES_INICIO = PATRONES_INICIO_ESPECIFICOS + PATRONES_INICIO_AMPLIOS
-PATRONES_FIN = PATRONES_FIN_ESPECIFICOS + PATRONES_FIN_AMPLIOS
+PATRONES_INICIO = (PATRONES_INICIO_ESPECIFICOS + PATRONES_INICIO_CAPITULO
+                   + PATRONES_INICIO_AMPLIOS)
+PATRONES_FIN = (PATRONES_FIN_ESPECIFICOS + PATRONES_FIN_CAPITULO
+                + PATRONES_FIN_AMPLIOS)
 
 
 # ------------------------------------------------------------------------------
@@ -89,8 +102,9 @@ def dividir_por_paginas(content: str) -> list[dict]:
     return paginas
 
 
-def encontrar_pagina_seccion(paginas: list[dict], patrones: list[re.Pattern], 
-                              buscar_desde: int = 0) -> int | None:
+def encontrar_pagina_seccion(paginas: list[dict], patrones: list[re.Pattern],
+                              buscar_desde: int = 0,
+                              patrones_excluir: list[re.Pattern] | None = None) -> int | None:
     """
     Busca en qué página aparece cualquiera de los patrones.
     
@@ -104,6 +118,12 @@ def encontrar_pagina_seccion(paginas: list[dict], patrones: list[re.Pattern],
     """
     for idx in range(buscar_desde, len(paginas)):
         texto_pagina = paginas[idx]['contenido']
+
+        # El indice lista todas las divisiones a la vez, asi que una pagina
+        # que contiene el titulo de la seccion siguiente no es el inicio de
+        # esta sino la tabla de contenidos.
+        if patrones_excluir and any(p.search(texto_pagina) for p in patrones_excluir):
+            continue
         
         for patron in patrones:
             if patron.search(texto_pagina):
@@ -155,16 +175,29 @@ def extraer_seccion_flota(content: str) -> str | None:
         # Documento demasiado corto, probablemente no es un reporte anual completo
         return None
 
-    for patrones_ini in (PATRONES_INICIO_ESPECIFICOS, PATRONES_INICIO_AMPLIOS):
+    # El segundo elemento indica si hay que descartar las paginas que tambien
+    # contienen el titulo de la seccion siguiente, que es lo que caracteriza
+    # al indice. Solo aplica a los niveles menos especificos: en el primero
+    # el patron ya es inequivoco, y filtrar ahi recortaba secciones que se
+    # venian extrayendo bien.
+    niveles = (
+        (PATRONES_INICIO_ESPECIFICOS, None),
+        (PATRONES_INICIO_CAPITULO, PATRONES_FIN_CAPITULO),
+        (PATRONES_INICIO_AMPLIOS, PATRONES_FIN_AMPLIOS),
+    )
+    for patrones_ini, patrones_par in niveles:
         # Desde la pagina 3 para saltar portada e indice; si no, desde el inicio
-        idx_inicio = encontrar_pagina_seccion(paginas, patrones_ini, buscar_desde=2)
+        idx_inicio = encontrar_pagina_seccion(paginas, patrones_ini, buscar_desde=2,
+                                              patrones_excluir=patrones_par)
         if idx_inicio is None:
-            idx_inicio = encontrar_pagina_seccion(paginas, patrones_ini, buscar_desde=0)
+            idx_inicio = encontrar_pagina_seccion(paginas, patrones_ini, buscar_desde=0,
+                                                  patrones_excluir=patrones_par)
         if idx_inicio is None:
             continue
 
         candidatos_fin = []
-        for patrones_fin in (PATRONES_FIN_ESPECIFICOS, PATRONES_FIN_AMPLIOS):
+        for patrones_fin in (PATRONES_FIN_ESPECIFICOS, PATRONES_FIN_CAPITULO,
+                             PATRONES_FIN_AMPLIOS):
             idx_fin = encontrar_pagina_seccion(paginas, patrones_fin,
                                                buscar_desde=idx_inicio + 1)
             if idx_fin is not None:
