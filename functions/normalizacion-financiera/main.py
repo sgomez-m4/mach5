@@ -87,7 +87,7 @@ def cargar_fx_rates():
     rates = {}
     for row in result:
         anio = row.rate_date.year
-        rates[(row.currency, anio)] = row.rate_to_usd
+        rates[(str(row.currency).upper(), anio)] = row.rate_to_usd
     return rates
 
 
@@ -133,7 +133,11 @@ def convertir_a_usd_millions(registro, fx_rates):
       normaliza.
     - Para otras monedas: multiplica por fx_rate y divide por 1e6.
     """
-    currency = registro.get("currency", "USD")
+    # Los raw de 20-F traen el codigo de moneda en minusculas ("usd", "brl"),
+    # mientras que fx_rates lo guarda en mayusculas. Sin normalizar, la
+    # comparacion con "USD" falla y la busqueda en fx_rates no encuentra la
+    # tasa, por lo que el registro se descartaba en silencio (AZUL, CPA, LTM).
+    currency = str(registro.get("currency") or "USD").upper()
     raw_value = registro.get("raw_value")
     unit = registro.get("unit", currency)
 
