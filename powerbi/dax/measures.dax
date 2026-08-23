@@ -1,0 +1,169 @@
+// Medidas para el modelo migrado a las vistas de dataset_integrado.
+//
+// Todas las que desglosan por tipo, modelo o generacion excluyen es_fila_agregada:
+// son filas donde el propio reporte declara un agregado ("Total Fleet (Includes
+// B737-800NG and E190)", "Commercial Aircraft") y no un tipo real de aeronave.
+// Se conservan en la tabla para no perder aeronaves del conteo total, pero
+// contarlas como si fueran un modelo distorsiona cualquier desglose.
+
+// =========================================================
+// FLOTA
+// =========================================================
+
+Total Flota =
+SUM ( v_fleet_normalized[quantity] )
+
+Total Flota Real =
+CALCULATE (
+    SUM ( v_fleet_normalized[quantity] ),
+    v_fleet_normalized[es_fila_agregada] = FALSE
+)
+
+// Ponderada por cantidad de aeronaves. La version anterior era
+// AVERAGE(current_fleet_fact[average_age_years]): un promedio simple donde una
+// fila de 3 aeronaves pesaba igual que una de 300.
+Edad Promedio Flota =
+DIVIDE (
+    SUMX (
+        v_fleet_normalized,
+        v_fleet_normalized[quantity] * v_fleet_normalized[average_age_years]
+    ),
+    SUMX (
+        v_fleet_normalized,
+        IF ( ISBLANK ( v_fleet_normalized[average_age_years] ), 0, v_fleet_normalized[quantity] )
+    )
+)
+
+Vida Remanente Promedio =
+DIVIDE (
+    SUMX (
+        v_fleet_normalized,
+        v_fleet_normalized[quantity] * v_fleet_normalized[remaining_replacement_life]
+    ),
+    SUMX (
+        v_fleet_normalized,
+        IF ( ISBLANK ( v_fleet_normalized[remaining_replacement_life] ), 0, v_fleet_normalized[quantity] )
+    )
+)
+
+// =========================================================
+// ARRENDAMIENTO
+// =========================================================
+
+Flota Arrendada =
+CALCULATE (
+    SUM ( v_fleet_normalized[quantity] ),
+    v_fleet_normalized[es_arrendada] = TRUE
+)
+
+% Flota Arrendada =
+DIVIDE ( [Flota Arrendada], [Total Flota] )
+
+% Arrendamiento Operativo =
+DIVIDE (
+    CALCULATE (
+        SUM ( v_fleet_normalized[quantity] ),
+        v_fleet_normalized[tipo_propiedad] = "Operating Lease"
+    ),
+    [Total Flota]
+)
+
+% Arrendamiento Financiero =
+DIVIDE (
+    CALCULATE (
+        SUM ( v_fleet_normalized[quantity] ),
+        v_fleet_normalized[tipo_propiedad] = "Finance Lease"
+    ),
+    [Total Flota]
+)
+
+// =========================================================
+// REEMPLAZO
+// =========================================================
+
+Flota en Ventana Reemplazo =
+CALCULATE (
+    SUM ( v_fleet_normalized[quantity] ),
+    v_fleet_normalized[fleet_replacement_status] IN { "Replace Now", "Critical" }
+)
+
+% Flota en Ventana Reemplazo =
+DIVIDE ( [Flota en Ventana Reemplazo], [Total Flota] )
+
+// Sin edad reportada no se puede afirmar que la flota este sana. El modelo
+// anterior mezclaba "sin dato" con "Healthy"; la vista los separa y esta medida
+// hace visible cuanta flota queda sin evaluar.
+Flota Sin Dato de Edad =
+CALCULATE (
+    SUM ( v_fleet_normalized[quantity] ),
+    v_fleet_normalized[fleet_replacement_status] = "Sin dato"
+)
+
+// =========================================================
+// PORTAFOLIO
+// =========================================================
+
+Modelos Distintos =
+CALCULATE (
+    DISTINCTCOUNT ( v_fleet_normalized[aircraft_model] ),
+    v_fleet_normalized[es_fila_agregada] = FALSE
+)
+
+Fabricantes Distintos =
+CALCULATE (
+    DISTINCTCOUNT ( v_fleet_normalized[manufacturer] ),
+    v_fleet_normalized[es_fila_agregada] = FALSE
+)
+
+// Conviven generacion previa y actual dentro de la flota (ceo junto a neo,
+// NG junto a MAX): duplica procesos tecnicos, repuestos y entrenamiento.
+Mezcla de Generaciones =
+VAR previas =
+    CALCULATE (
+        COUNTROWS ( v_fleet_normalized ),
+        v_fleet_normalized[generation] = "previous",
+        v_fleet_normalized[es_fila_agregada] = FALSE
+    )
+VAR actuales =
+    CALCULATE (
+        COUNTROWS ( v_fleet_normalized ),
+        v_fleet_normalized[generation] = "current",
+        v_fleet_normalized[es_fila_agregada] = FALSE
+    )
+RETURN
+    IF ( previas > 0 && actuales > 0, 1, 0 )
+
+// =========================================================
+// PEDIDOS
+// =========================================================
+
+Total Pedidos =
+SUM ( order_book_fact[quantity_committed] )
+
+Ratio Pedidos Flota =
+DIVIDE ( [Total Pedidos], [Total Flota Real] )
+
+// =========================================================
+// PROSPECCION
+// =========================================================
+
+Prospect Score =
+AVERAGE ( v_prospect_score[prospect_score] )
+
+Score Leasing =
+AVERAGE ( v_prospect_score[score_leasing] )
+
+Score Reemplazo =
+AVERAGE ( v_prospect_score[score_reemplazo] )
+
+Prospectos de Leasing =
+CALCULATE (
+    DISTINCTCOUNT ( v_prospect_score[grupo] ),
+    v_prospect_score[segmento_prospecto] = "Leasing"
+)
+
+Prospectos Tecnicos =
+CALCULATE (
+    DISTINCTCOUNT ( v_prospect_score[grupo] ),
+    v_prospect_score[segmento_prospecto] = "Tecnico / Reemplazo"
+)
