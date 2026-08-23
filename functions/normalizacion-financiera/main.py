@@ -243,7 +243,8 @@ def aplicar_fallback_total_debt(acumulado, data_source_por_metrica, source_tags_
     Las aerolineas chinas (CAS) reportan la deuda desagregada, sin una linea agregada;
     sin esto net_debt queda sin calcular.
     Analogamente, si falta operating_lease_liability pero existe lease_liabilities,
-    se usa esta ultima (bajo CAS/IFRS16 la obligacion de arrendamiento es una sola linea).
+    se usa esta ultima (bajo CAS/IFRS16 la obligacion de arrendamiento es una sola linea),
+    y si falta total_liabilities se deriva de total_assets - equity.
     """
     por_clave = {}
     for (company, anio, metric), valor in acumulado.items():
@@ -262,6 +263,21 @@ def aplicar_fallback_total_debt(acumulado, data_source_por_metrica, source_tags_
                 sintetizados.append({"company": company, "fiscal_year": anio,
                                      "metric": "total_debt", "desde": partes})
                 print(f"    ↳ total_debt sintetizado para {company} {anio} desde {partes}")
+
+        # Muchos emisores US no etiquetan Liabilities: el balance presenta
+        # "Total liabilities and stockholders' equity" y el subtotal de pasivos
+        # queda sin tag propio (LUV, JBLU y SKYW son asi). La identidad contable
+        # lo determina de forma exacta, no aproximada.
+        if ("total_liabilities" not in valores
+                and "total_assets" in valores and "equity" in valores):
+            derivado = valores["total_assets"] - valores["equity"]
+            clave = (company, anio, "total_liabilities")
+            acumulado[clave] = derivado
+            data_source_por_metrica[clave] = "calculated_fallback"
+            source_tags_por_metrica[clave] = ["total_assets", "equity"]
+            sintetizados.append({"company": company, "fiscal_year": anio,
+                                 "metric": "total_liabilities",
+                                 "desde": ["total_assets", "equity"]})
 
         if "operating_lease_liability" not in valores and "lease_liabilities" in valores:
             clave = (company, anio, "operating_lease_liability")
