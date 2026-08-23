@@ -1,11 +1,9 @@
 ﻿name: deploy-rss-6k
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "functions/rss-6k/**"
-      - ".github/workflows/deploy-rss-6k.yml"
+  # Lo invoca .github/workflows/deploy-cloud-run.yml, que serializa los
+  # despliegues. Se conserva workflow_dispatch para lanzarlo a mano.
+  workflow_call:
   workflow_dispatch:
 
 concurrency:

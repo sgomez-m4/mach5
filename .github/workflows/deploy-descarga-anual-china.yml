@@ -1,11 +1,9 @@
 name: deploy-descarga-anual-china
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "functions/descarga-anual-china/**"
-      - ".github/workflows/deploy-descarga-anual-china.yml"
+  # Lo invoca .github/workflows/deploy-cloud-run.yml, que serializa los
+  # despliegues. Se conserva workflow_dispatch para lanzarlo a mano.
+  workflow_call:
   workflow_dispatch:
 
 concurrency:
