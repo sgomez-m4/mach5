@@ -44,6 +44,11 @@ TIER1_METRICAS = [
     "depreciation_amortization",
 ]
 TIER1_MINIMO = 10
+
+# Pasadas maximas al resolver formulas derivadas. Con 4 alcanza para cadenas como
+# net_debt -> net_debt_ratio; el bucle corta solo en cuanto una pasada no resuelve
+# nada nuevo, asi que este tope es solo una red contra dependencias circulares.
+MAX_PASADAS_DERIVADAS = 4
 METRICAS_OBLIGATORIAS = ["revenue", "net_income", "total_assets"]
 
 
@@ -422,25 +427,49 @@ def normalizar_financiera(request):
     for (company, anio, metric), valor in acumulado.items():
         claves_con_valor.setdefault((company, anio), {})[metric] = valor
 
+    # Resolucion iterativa: una formula puede depender de otra derivada.
+    # net_debt_ratio = net_debt / ebitda necesita que net_debt y ebitda ya esten
+    # calculadas, y ambas son derivadas a su vez. Con una sola pasada contra las
+    # metricas acumuladas directamente esas formulas nunca resolvian.
     for (company, anio), valores in claves_con_valor.items():
-        for metric, def_metrica in metrics_def.items():
-            formula = def_metrica.get("formula")
-            if not formula:
-                continue
-            resultado = resolver_formula(formula, valores)
-            if resultado is None:
-                print(f"    ⚠ No se pudo calcular {metric} para {company} {anio} (dependencias incompletas)")
-                continue
+        derivadas = {}
+        for _ in range(MAX_PASADAS_DERIVADAS):
+            nuevas = 0
+            disponibles = dict(valores)
+            disponibles.update(derivadas)
+            for metric, def_metrica in metrics_def.items():
+                formula = def_metrica.get("formula")
+                if not formula:
+                    continue
+                # No recalcular lo ya resuelto ni pisar un valor reportado directamente
+                if metric in derivadas or metric in valores:
+                    continue
+                resultado = resolver_formula(formula, disponibles)
+                if resultado is None:
+                    continue
+                derivadas[metric] = resultado
+                nuevas += 1
+            if nuevas == 0:
+                break
+
+        for metric, resultado in derivadas.items():
             filas_fact.append({
                 "company": company,
                 "fiscal_year": anio,
                 "canonical_metric": metric,
                 "value_usd_m": round(resultado, 4),
                 "data_source": "calculated",
-                "formula_used": formula,
+                "formula_used": metrics_def[metric].get("formula"),
                 "source_tags": [],
                 "extraction_ts": ts,
             })
+
+        no_resueltas = [
+            m for m, d in metrics_def.items()
+            if d.get("formula") and m not in derivadas and m not in valores
+        ]
+        if no_resueltas:
+            print(f"    ⚠ {company} {anio}: sin dependencias para {', '.join(sorted(no_resueltas))}")
 
     print(f"[RESULTADO] {len(filas_fact)} filas canonicales | {len(filas_raw)} filas raw")
 

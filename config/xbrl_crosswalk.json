@@ -49,7 +49,6 @@
   {"taxonomy": "us-gaap", "source_tag": "AvailableSeatMiles", "canonical_metric": "available_seat_miles", "unit_hint": "raw", "is_derived": false},
   {"taxonomy": "us-gaap", "source_tag": "RevenuePerAvailableSeatMile", "canonical_metric": "rask", "unit_hint": "cents", "is_derived": false},
   {"taxonomy": "us-gaap", "source_tag": "CostPerAvailableSeatMile", "canonical_metric": "cask", "unit_hint": "cents", "is_derived": false},
-
   {"taxonomy": "ifrs-full", "source_tag": "Revenue", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "ifrs-full", "source_tag": "ProfitLossFromOperatingActivities", "canonical_metric": "operating_income", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "ifrs-full", "source_tag": "ProfitLossBeforeTax", "canonical_metric": "pretax_income", "unit_hint": "millions", "is_derived": false},
@@ -75,7 +74,6 @@
   {"taxonomy": "ifrs-full", "source_tag": "NumberOfSharesOutstanding", "canonical_metric": "shares_outstanding", "unit_hint": "raw", "is_derived": false},
   {"taxonomy": "ifrs-full", "source_tag": "EmployeeBenefitsExpense", "canonical_metric": "labor_expense", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "ifrs-full", "source_tag": "FuelExpense", "canonical_metric": "fuel_expense", "unit_hint": "millions", "is_derived": false},
-
   {"taxonomy": "cas-china", "source_tag": "营业收入", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "营业总收入", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "营业成本", "canonical_metric": "cost_of_revenue", "unit_hint": "millions", "is_derived": false},
@@ -116,7 +114,6 @@
   {"taxonomy": "cas-china", "source_tag": "equity", "canonical_metric": "equity", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "labor_expense", "canonical_metric": "labor_expense", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "cas-china", "source_tag": "fuel_expense", "canonical_metric": "fuel_expense", "unit_hint": "millions", "is_derived": false},
-
   {"taxonomy": "hkfrs", "source_tag": "Revenue", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "hkfrs", "source_tag": "ProfitLossFromOperatingActivities", "canonical_metric": "operating_income", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "hkfrs", "source_tag": "ProfitLossBeforeTax", "canonical_metric": "pretax_income", "unit_hint": "millions", "is_derived": false},
@@ -149,5 +146,14 @@
   {"taxonomy": "hkfrs", "source_tag": "total_liabilities", "canonical_metric": "total_liabilities", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "hkfrs", "source_tag": "equity", "canonical_metric": "equity", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "hkfrs", "source_tag": "labor_expense", "canonical_metric": "labor_expense", "unit_hint": "millions", "is_derived": false},
-  {"taxonomy": "hkfrs", "source_tag": "fuel_expense", "canonical_metric": "fuel_expense", "unit_hint": "millions", "is_derived": false}
+  {"taxonomy": "hkfrs", "source_tag": "fuel_expense", "canonical_metric": "fuel_expense", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths", "canonical_metric": "lease_maturity_y1", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearTwo", "canonical_metric": "lease_maturity_y2", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearThree", "canonical_metric": "lease_maturity_y3", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearFour", "canonical_metric": "lease_maturity_y4", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearFive", "canonical_metric": "lease_maturity_y5", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "LesseeOperatingLeaseLiabilityPaymentsDueAfterYearFive", "canonical_metric": "lease_maturity_after_y5", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "LesseeOperatingLeaseLiabilityPaymentsDue", "canonical_metric": "lease_maturity_total", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "FinanceLeaseLiabilityPaymentsDueNextTwelveMonths", "canonical_metric": "finance_lease_maturity_y1", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "FinanceLeaseLiabilityPaymentsDue", "canonical_metric": "finance_lease_maturity_total", "unit_hint": "millions", "is_derived": false}
 ]

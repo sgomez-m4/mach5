@@ -1,8 +1,8 @@
 {
   "version": "1.0",
-  "updated": "2026-08-18",
+  "updated": "2026-08-23",
   "base_unit": "USD_m",
-  "description": "Diccionario de métricas financieras canónicas. formulas usa nombres de canonical_metric. Nunca delegar calculos a Gemini. Se eliminaron métricas sin datos en BigQuery (passenger_revenue, cargo_revenue, available_seat_miles, rask, cask, ebitdar, operating_lease_expense, finance_lease_liability). Fallback total_debt: si un (company, fiscal_year) no reporta total_debt pero sí long_term_debt y/o short_term_debt, la normalización sintetiza total_debt = long_term_debt + short_term_debt (data_source=calculated_fallback); esto habilita net_debt = total_debt + operating_lease_liability - cash_equivalents para las aerolíneas chinas, que reportan la deuda desagregada bajo CAS. bonds_payable se conserva porque las emisoras A-Share sí lo reportan. Convenciones normalizadas en la extracción China: net_income es el atribuible a la matriz (归属于母公司所有者的净利润), no el total con minoritarios, para ser comparable con NetIncomeLoss de us-gaap; capex se emite con signo negativo (salida de caja) como en us-gaap, invirtiendo la convención positiva de CAS; interest_expense es el gasto bruto por intereses (利息费用) e interest_expense_net el resultado financiero neto (财务费用).",
+  "description": "Diccionario de métricas financieras canónicas. formulas usa nombres de canonical_metric. Nunca delegar calculos a Gemini. Se eliminaron métricas sin datos en BigQuery (passenger_revenue, cargo_revenue, available_seat_miles, rask, cask, ebitdar, operating_lease_expense, finance_lease_liability). Fallback total_debt: si un (company, fiscal_year) no reporta total_debt pero sí long_term_debt y/o short_term_debt, la normalización sintetiza total_debt = long_term_debt + short_term_debt (data_source=calculated_fallback); esto habilita net_debt = total_debt + operating_lease_liability - cash_equivalents para las aerolíneas chinas, que reportan la deuda desagregada bajo CAS. bonds_payable se conserva porque las emisoras A-Share sí lo reportan. Convenciones normalizadas en la extracción China: net_income es el atribuible a la matriz (归属于母公司所有者的净利润), no el total con minoritarios, para ser comparable con NetIncomeLoss de us-gaap; capex se emite con signo negativo (salida de caja) como en us-gaap, invirtiendo la convención positiva de CAS; interest_expense es el gasto bruto por intereses (利息费用) e interest_expense_net el resultado financiero neto (财务费用). Calendario de vencimientos de arrendamientos: lease_maturity_y1..y5 y lease_maturity_after_y5 vienen del footnote de arrendamientos bajo ASC 842, que no aparece en la cara de los estados financieros; extraccion-xbrl-10k los toma del universo completo de hechos XBRL. lease_maturity_concentracion_3y mide que proporcion de la obligacion vence en los proximos tres anios, que es la señal de acantilado relevante para renegociacion y devolucion de aeronaves.",
   "metrics": {
     "revenue": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "cost_of_revenue": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
@@ -29,12 +29,21 @@
     "labor_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "fuel_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
     "maintenance_expense": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
-
     "ebitda": {"formula": "operating_income + depreciation_amortization", "unit": "USD_m", "sources": ["calculated"]},
     "net_debt": {"formula": "total_debt + operating_lease_liability - cash_equivalents", "unit": "USD_m", "sources": ["calculated"]},
     "net_debt_ratio": {"formula": "net_debt / ebitda", "unit": "ratio", "sources": ["calculated"]},
     "operating_margin": {"formula": "operating_income / revenue", "unit": "ratio", "sources": ["calculated"]},
     "net_margin": {"formula": "net_income / revenue", "unit": "ratio", "sources": ["calculated"]},
-    "capex_depreciation_ratio": {"formula": "capex / depreciation_amortization", "unit": "ratio", "sources": ["calculated"]}
+    "capex_depreciation_ratio": {"formula": "capex / depreciation_amortization", "unit": "ratio", "sources": ["calculated"]},
+    "lease_maturity_y1": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "lease_maturity_y2": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "lease_maturity_y3": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "lease_maturity_y4": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "lease_maturity_y5": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "lease_maturity_after_y5": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "lease_maturity_total": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "finance_lease_maturity_y1": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "finance_lease_maturity_total": {"formula": null, "unit": "USD_m", "sources": ["xbrl_tag"]},
+    "lease_maturity_concentracion_3y": {"formula": "(lease_maturity_y1 + lease_maturity_y2 + lease_maturity_y3) / lease_maturity_total", "unit": "ratio", "sources": ["calculated"]}
   }
 }
