@@ -24,6 +24,13 @@ on:
         required: false
         default: ""
 
+# Los workflows llamados piden id-token: write para autenticar con Workload
+# Identity. Un workflow reutilizable no puede pedir mas permisos de los que le
+# concede quien lo llama, asi que sin esto la validacion falla antes de arrancar.
+permissions:
+  contents: read
+  id-token: write
+
 concurrency:
   group: deploy-cloud-run
   cancel-in-progress: false
