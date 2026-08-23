@@ -99,6 +99,36 @@ def extraer_anio_desde_nombre(nombre_blob):
     return datetime.now().year - 1
 
 
+
+def advertir_si_truncado(response):
+    """Avisa si la respuesta se corto por agotar max_output_tokens.
+
+    El presupuesto de max_output_tokens lo comparten el razonamiento y la salida.
+    Con thinking_level alto el modelo puede gastar casi todo pensando y devolver
+    un JSON cortado a medias, que aguas abajo aparece como un generico "no es
+    JSON valido" sin pista de la causa. Paso en extraccion-json-china: 62,911
+    tokens de razonamiento contra 2,610 de salida.
+
+    Si esto se dispara, la correccion es bajar thinking_level; extraccion-json-china
+    tiene el reintento automatico como referencia.
+    """
+    try:
+        candidato = response.candidates[0] if response.candidates else None
+        finish = getattr(candidato, "finish_reason", None)
+        if finish is None or "MAX_TOKENS" not in str(finish):
+            return
+        uso = response.usage_metadata
+        print(
+            "      ⚠️  Respuesta truncada por limite de tokens: "
+            f"razonamiento={getattr(uso, 'thoughts_token_count', '?')}, "
+            f"salida={getattr(uso, 'candidates_token_count', '?')}. "
+            "Bajar thinking_level en este servicio."
+        )
+    except Exception:
+        # La advertencia nunca debe romper la extraccion
+        pass
+
+
 def extraer_con_gemini(texto, reintentos=3):
     client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
     contents = (
@@ -122,6 +152,7 @@ def extraer_con_gemini(texto, reintentos=3):
     for intento in range(reintentos):
         try:
             response = client.models.generate_content(model=MODEL_NAME, contents=contents, config=config)
+            advertir_si_truncado(response)
             return response.text
         except Exception as e:
             if intento < reintentos - 1:
