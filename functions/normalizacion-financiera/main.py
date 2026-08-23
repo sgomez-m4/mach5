@@ -266,18 +266,36 @@ def aplicar_fallback_total_debt(acumulado, data_source_por_metrica, source_tags_
 
         # Muchos emisores US no etiquetan Liabilities: el balance presenta
         # "Total liabilities and stockholders' equity" y el subtotal de pasivos
-        # queda sin tag propio (LUV, JBLU y SKYW son asi). La identidad contable
-        # lo determina de forma exacta, no aproximada.
-        if ("total_liabilities" not in valores
-                and "total_assets" in valores and "equity" in valores):
+        # queda sin tag propio (LUV, JBLU y SKYW son asi). Lo unico etiquetado
+        # es LiabilitiesCurrent, asi que el problema no es que falte el valor
+        # sino que el que hay es solo la porcion corriente.
+        #
+        # total_assets - equity determina el pasivo de forma exacta, asi que se
+        # usa tanto cuando falta como cuando el valor recogido contradice la
+        # identidad por mas del margen de redondeo.
+        if "total_assets" in valores and "equity" in valores:
             derivado = valores["total_assets"] - valores["equity"]
-            clave = (company, anio, "total_liabilities")
-            acumulado[clave] = derivado
-            data_source_por_metrica[clave] = "calculated_fallback"
-            source_tags_por_metrica[clave] = ["total_assets", "equity"]
-            sintetizados.append({"company": company, "fiscal_year": anio,
-                                 "metric": "total_liabilities",
-                                 "desde": ["total_assets", "equity"]})
+            reportado = valores.get("total_liabilities")
+            activos = valores["total_assets"] or 0
+
+            if reportado is None:
+                motivo = "ausente"
+            elif activos and abs(derivado - reportado) / abs(activos) > 0.01:
+                motivo = "incompleto ({:,.0f} reportado vs {:,.0f} por identidad)".format(
+                    reportado, derivado)
+            else:
+                motivo = None
+
+            if motivo:
+                clave = (company, anio, "total_liabilities")
+                acumulado[clave] = derivado
+                data_source_por_metrica[clave] = "calculated_fallback"
+                source_tags_por_metrica[clave] = ["total_assets", "equity"]
+                sintetizados.append({"company": company, "fiscal_year": anio,
+                                     "metric": "total_liabilities",
+                                     "desde": ["total_assets", "equity"],
+                                     "motivo": motivo})
+                print(f"    ↳ total_liabilities derivado para {company} {anio}: {motivo}")
 
         if "operating_lease_liability" not in valores and "lease_liabilities" in valores:
             clave = (company, anio, "operating_lease_liability")
