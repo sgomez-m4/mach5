@@ -69,6 +69,10 @@ def cargar_crosswalk():
     blob = bucket.blob("config/xbrl_crosswalk.json")
     raw = blob.download_as_text(encoding="utf-8").strip().lstrip('\ufeff')
     data = json.loads(raw)
+    # El orden del archivo expresa la preferencia entre alternativas que miden
+    # lo mismo por vias distintas; se conserva para poder desempatar.
+    for i, item in enumerate(data):
+        item["_orden"] = i
     # Lista completa; un (taxonomy, source_tag) puede mapear a varias metricas
     return data
 
@@ -357,6 +361,7 @@ def normalizar_financiera(request):
     acumulado = {}
     source_tags_por_metrica = {}
     data_source_por_metrica = {}
+    candidatos_por_metrica = {}
     unmapped = []
 
     for r in raw_registros:
@@ -389,13 +394,42 @@ def normalizar_financiera(request):
         for m in mappings:
             canonical = m["canonical_metric"]
             clave_acum = (r.get("company"), r.get("fiscal_year"), canonical)
-            acumulado.setdefault(clave_acum, 0.0)
-            acumulado[clave_acum] += valor_usd_m
-            source_tags_por_metrica.setdefault(clave_acum, [])
-            if src not in data_source_por_metrica or data_source_por_metrica[clave_acum] == "xbrl_tag":
-                data_source_por_metrica[clave_acum] = src
-            if r.get("source_tag") not in source_tags_por_metrica[clave_acum]:
-                source_tags_por_metrica[clave_acum].append(r.get("source_tag"))
+            rol = m.get("rol") or "alternativa"
+            candidatos_por_metrica.setdefault(clave_acum, []).append({
+                "valor": valor_usd_m,
+                "rol": rol,
+                "source_tag": r.get("source_tag"),
+                "data_source": src,
+                "orden": m.get("_orden", 0),
+            })
+
+    # Consolidar los candidatos de cada metrica segun el rol de su tag.
+    # Antes se sumaba todo lo que mapeara a la misma metrica canonica, lo que
+    # duplicaba cuando el filing declara a la vez el agregado y sus partes
+    # (OperatingLeaseLiability junto a ...Current y ...Noncurrent), y era
+    # directamente incorrecto entre alternativas que miden lo mismo de dos
+    # formas (dos tags distintos de ingresos, o efectivo con y sin restringido).
+    for clave_acum, candidatos in candidatos_por_metrica.items():
+        totales = [c for c in candidatos if c["rol"] == "total"]
+        componentes = [c for c in candidatos if c["rol"] == "componente"]
+
+        if totales:
+            # El agregado ya contiene a sus partes: gana solo.
+            elegidos = [max(totales, key=lambda c: abs(c["valor"]))]
+        elif componentes:
+            # Sin agregado, las partes se suman entre si.
+            elegidos = componentes
+        else:
+            # Alternativas: miden lo mismo por vias distintas, se toma una sola.
+            # Se respeta el orden del crosswalk, que expresa la preferencia.
+            elegidos = [min(candidatos, key=lambda c: c["orden"])]
+
+        acumulado[clave_acum] = round(sum(c["valor"] for c in elegidos), 6)
+        source_tags_por_metrica[clave_acum] = [c["source_tag"] for c in elegidos]
+        fuentes = {c["data_source"] for c in elegidos}
+        data_source_por_metrica[clave_acum] = (
+            "xbrl_tag" if "xbrl_tag" in fuentes else sorted(fuentes)[0]
+        )
 
     print(f"[MAPEO] {len(filas_raw)} filas raw mapeadas | {len(unmapped)} tags sin mapping")
 
