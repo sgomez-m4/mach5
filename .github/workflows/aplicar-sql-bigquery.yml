@@ -1,0 +1,83 @@
+name: aplicar-sql-bigquery
+
+# Las vistas y la UDF de dataset_integrado viven en sql/ como fuente de verdad,
+# pero hasta ahora habia que aplicarlas a mano en BigQuery: el repo describia un
+# estado que no necesariamente era el desplegado. Este job cierra esa brecha,
+# igual que sync-config-gcs lo hace con config/.
+#
+# Todo el SQL de sql/ es CREATE OR REPLACE, asi que aplicarlo es idempotente y no
+# destruye datos: las vistas se recalculan al consultarse y la UDF no tiene estado.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sql/**"
+      - ".github/workflows/aplicar-sql-bigquery.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: aplicar-sql-bigquery
+  cancel-in-progress: false
+
+jobs:
+  aplicar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Aplicar en orden de dependencia
+        run: |
+          set -euo pipefail
+          # El orden importa: v_fleet_normalized usa la UDF, y v_prospect_score
+          # usa la vista. Se declara explicitamente en vez de depender del orden
+          # alfabetico, que hoy coincide por casualidad.
+          ORDEN="
+            sql/normalizar_modelo_aeronave.sql
+            sql/v_fleet_normalized.sql
+            sql/v_prospect_score.sql
+          "
+          for f in $ORDEN; do
+            if [ ! -f "$f" ]; then
+              echo "::warning::$f no existe, se omite"
+              continue
+            fi
+            echo "--- aplicando $f"
+            bq query --use_legacy_sql=false --format=none --project_id="${{ secrets.GCP_PROJECT_ID }}" < "$f"
+          done
+
+          # Cualquier .sql que no este en la lista se aplica despues, para que
+          # agregar uno nuevo no exija tocar este workflow.
+          for f in sql/*.sql; do
+            case "$ORDEN" in
+              *"$f"*) continue ;;
+            esac
+            echo "--- aplicando $f (no listado)"
+            bq query --use_legacy_sql=false --format=none --project_id="${{ secrets.GCP_PROJECT_ID }}" < "$f"
+          done
+
+      - name: Verificar que las vistas responden
+        run: |
+          set -euo pipefail
+          for v in v_fleet_normalized v_prospect_score; do
+            n=$(bq query --use_legacy_sql=false --format=csv --project_id="${{ secrets.GCP_PROJECT_ID }}" \
+                  "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.dataset_integrado.$v\`" | tail -1)
+            echo "$v: $n filas"
+            if [ "$n" = "0" ]; then
+              echo "::error::$v quedo vacia"
+              exit 1
+            fi
+          done
