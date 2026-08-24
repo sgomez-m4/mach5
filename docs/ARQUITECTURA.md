@@ -271,7 +271,7 @@ Cuatro workflows escuchan `push` a `main`; los 22 de servicio son reutilizables
 | Workflow | Se dispara con | Qué hace |
 |---|---|---|
 | `deploy-cloud-run` | `functions/**` | Detecta qué servicios cambiaron y los despliega de uno en uno |
-| `sync-config-gcs` | `config/**` | Respalda lo que hay en GCS y sube la versión del repo |
+| `sync-config-gcs` | `config/**` | Respalda lo que hay en GCS, sube la versión del repo y carga `dim_airline` y `dim_aircraft_type` en BigQuery |
 | `aplicar-sql-bigquery` | `sql/**` | Aplica UDF y vistas en orden de dependencia, y verifica que devuelvan filas |
 | `deploy-pipeline-anual-workflow` | `workflows/**` | Despliega la definición del Cloud Workflow |
 
