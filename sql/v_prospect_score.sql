@@ -79,6 +79,7 @@ fin AS (
   SELECT
     company,
     MAX(IF(canonical_metric = 'lease_maturity_concentracion_3y', value_usd_m, NULL)) AS lease_conc_3y,
+    MAX(IF(canonical_metric = 'lease_maturity_concentracion_1y', value_usd_m, NULL)) AS lease_conc_1y,
     MAX(IF(canonical_metric = 'lease_maturity_total',            value_usd_m, NULL)) AS lease_venc_total,
     MAX(IF(canonical_metric = 'lease_maturity_y1',               value_usd_m, NULL)) AS lease_venc_y1,
     MAX(IF(canonical_metric = 'net_debt_ratio',                  value_usd_m, NULL)) AS net_debt_ebitda,
@@ -95,6 +96,7 @@ base AS (
     IFNULL(p.pedidos_proximos_2a, 0) AS pedidos_proximos_2a,
     SAFE_DIVIDE(IFNULL(p.pedidos_total, 0), f.flota_total) AS ratio_pedidos_flota,
     fn.lease_conc_3y,
+    fn.lease_conc_1y,
     fn.lease_venc_total,
     fn.lease_venc_y1,
     fn.net_debt_ebitda,
@@ -112,14 +114,23 @@ componentes AS (
     -- (1) EXPOSICION A LEASING  — linea de servicio: gestion de arrendamientos.
     -- El arrendamiento operativo pesa mas que el financiero: genera devoluciones,
     -- condiciones de retorno y renegociaciones, que es donde entra la consultora.
-    -- La concentracion de vencimientos a 3 anios añade urgencia; cuando no se
-    -- conoce se reparte el peso entre las otras dos señales en vez de asumir cero.
+    -- La urgencia de vencimiento se toma de la escalera a 3 anios cuando existe.
+    -- Solo us-gaap la etiqueta por anio: bajo IFRS el analisis va dentro de un
+    -- text block. Para esas emisoras se usa la proporcion que vence a 12 meses,
+    -- que sale del split corriente / no corriente y si esta en ambas taxonomias.
+    -- Se reescala por 2.5 porque un acantilado a un anio pesa mas que el mismo
+    -- porcentaje repartido en tres. Sin ninguna de las dos, el peso se reparte
+    -- entre la composicion de la flota en vez de asumir cero.
     ROUND(
       CASE
         WHEN lease_conc_3y IS NOT NULL THEN
           100 * (0.50 * LEAST(pct_operating_lease, 1.0)
                + 0.20 * LEAST(pct_finance_lease, 1.0)
                + 0.30 * LEAST(lease_conc_3y, 1.0))
+        WHEN lease_conc_1y IS NOT NULL THEN
+          100 * (0.50 * LEAST(pct_operating_lease, 1.0)
+               + 0.20 * LEAST(pct_finance_lease, 1.0)
+               + 0.30 * LEAST(lease_conc_1y * 2.5, 1.0))
         ELSE
           100 * (0.71 * LEAST(pct_operating_lease, 1.0)
                + 0.29 * LEAST(pct_finance_lease, 1.0))
@@ -220,6 +231,7 @@ SELECT
   pedidos_proximos_2a,
   ROUND(100 * ratio_pedidos_flota, 0)   AS pct_renovacion,
   ROUND(100 * lease_conc_3y, 0)         AS pct_venc_leasing_3a,
+  ROUND(100 * lease_conc_1y, 0)         AS pct_venc_leasing_1a,
   ROUND(lease_venc_total, 0)            AS leasing_venc_total_usdm,
   ROUND(net_debt_ebitda, 2)             AS net_debt_ebitda,
   ROUND(revenue, 0)                     AS revenue_usdm,
@@ -227,7 +239,7 @@ SELECT
   -- Banderas de calidad: sin esto un score bajo por falta de dato se confunde
   -- con un score bajo por ausencia real de oportunidad.
   (vida_remanente_ponderada IS NULL) AS sin_dato_edad,
-  (lease_conc_3y IS NULL)            AS sin_dato_vencimientos,
+  (lease_conc_3y IS NULL AND lease_conc_1y IS NULL) AS sin_dato_vencimientos,
   (financial_company IS NULL)        AS sin_datos_financieros,
   aeronaves_en_filas_agregadas
 

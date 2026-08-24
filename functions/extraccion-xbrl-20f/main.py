@@ -130,6 +130,75 @@ def buscar_tag_en_statements(st, tag, anio):
     return None, None, None
 
 
+def construir_indice_facts(xbrl):
+    """DataFrame con todos los hechos XBRL sin dimensiones.
+
+    Los tres statements consolidados solo exponen lo que aparece en la cara de
+    los estados financieros. Todo lo declarado en las notas -entre otras cosas el
+    calendario de vencimientos de arrendamientos- queda fuera, aunque si esta
+    etiquetado en XBRL. Este indice da acceso a ese universo completo.
+    """
+    try:
+        df = xbrl.facts.to_dataframe()
+    except Exception as e:
+        print(f"    ↳ facts no disponible: {e}")
+        return None
+    if df is None or len(df) == 0:
+        return None
+    # Las filas con dimensiones son desgloses (por tipo de aeronave, por moneda,
+    # etc.); para la metrica consolidada hay que quedarse con las que no las tienen.
+    if "is_dimensioned" in df.columns:
+        df = df[df["is_dimensioned"] == False]  # noqa: E712
+    return df
+
+
+def _anio_del_hecho(fila):
+    """Anio de cierre del hecho, ya sea de periodo o de instante."""
+    for c in ("period_end", "period_instant"):
+        v = fila.get(c) if hasattr(fila, "get") else None
+        if v is not None and not pd.isna(v):
+            try:
+                return int(str(v)[:4])
+            except (ValueError, TypeError):
+                pass
+    try:
+        return int(fila.get("fiscal_year"))
+    except (ValueError, TypeError):
+        return None
+
+
+def buscar_tag_en_facts(df, tag, anio):
+    """Busca el tag entre todos los hechos. Devuelve (valor, fecha) o (None, None)."""
+    if df is None or len(df) == 0:
+        return None, None
+
+    objetivo = f"{TAXONOMY}:{tag}"
+    sub = df[df["concept"].astype(str) == objetivo]
+    if len(sub) == 0:
+        sub = df[df["concept"].astype(str).str.endswith(":" + tag, na=False)]
+    if len(sub) == 0:
+        return None, None
+
+    candidatos = []
+    for _, fila in sub.iterrows():
+        if _anio_del_hecho(fila) != anio:
+            continue
+        v = fila.get("numeric_value")
+        if v is None or pd.isna(v):
+            continue
+        fecha = fila.get("period_end")
+        if fecha is None or pd.isna(fecha):
+            fecha = fila.get("period_instant")
+        candidatos.append((float(v), str(fecha)[:10]))
+
+    if not candidatos:
+        return None, None
+    # Con varios contextos para el mismo tag, el consolidado es el de mayor
+    # magnitud; los menores suelen ser segmentos o entidades legales.
+    candidatos.sort(key=lambda x: abs(x[0]), reverse=True)
+    return candidatos[0]
+
+
 def procesar_empresa(empresa, crosswalk):
     ticker = empresa["ticker"]
     cik = empresa["cik"]
@@ -152,6 +221,7 @@ def procesar_empresa(empresa, crosswalk):
             return None
 
         st = obtener_statements_consolidados(xbrl)
+        facts_df = construir_indice_facts(xbrl)
         anios = anios_disponibles(st)
         if not anios:
             print(f"  ✗ Sin columnas de anio en los statements")
@@ -170,6 +240,10 @@ def procesar_empresa(empresa, crosswalk):
                 continue
             for tag, item in crosswalk.items():
                 valor, col_fecha, st_name = buscar_tag_en_statements(st, tag, anio)
+                if valor is None:
+                    # No esta en la cara de los estados: buscarlo en las notas
+                    valor, col_fecha = buscar_tag_en_facts(facts_df, tag, anio)
+                    st_name = "notes"
                 if valor is None:
                     continue
                 period = "instant" if st_name == "balance" else "FY"
