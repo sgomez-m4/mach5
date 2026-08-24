@@ -96,33 +96,52 @@ def extraer_anio_desde_nombre(nombre_blob):
 
 
 
-def advertir_si_truncado(response):
-    """Avisa si la respuesta se corto por agotar max_output_tokens.
+def reintentar_con_menos_razonamiento(response, client, contents, config):
+    """Repite la llamada con menos razonamiento si la respuesta salio truncada.
+
+    Devuelve la nueva respuesta, o None si no hacia falta reintentar o si el
+    reintento no fue posible; el llamador se queda entonces con la original.
 
     El presupuesto de max_output_tokens lo comparten el razonamiento y la salida.
     Con thinking_level alto el modelo puede gastar casi todo pensando y devolver
     un JSON cortado a medias, que aguas abajo aparece como un generico "no es
-    JSON valido" sin pista de la causa. Paso en extraccion-json-china: 62,911
-    tokens de razonamiento contra 2,610 de salida.
+    JSON valido" sin pista de la causa. Le paso a extraccion-json-china, que
+    gasto 62,911 tokens de razonamiento contra 2,610 de salida y perdio la flota
+    entera de China Eastern.
 
-    Si esto se dispara, la correccion es bajar thinking_level; extraccion-json-china
-    tiene el reintento automatico como referencia.
+    Se baja el nivel solo cuando hace falta, no de entrada: en 90 dias ninguna
+    extraccion de este servicio se trunco, asi que bajarlo siempre seria perder
+    calidad sin ganar nada.
     """
     try:
         candidato = response.candidates[0] if response.candidates else None
         finish = getattr(candidato, "finish_reason", None)
         if finish is None or "MAX_TOKENS" not in str(finish):
-            return
+            return None
+
         uso = response.usage_metadata
         print(
             "      ⚠️  Respuesta truncada por limite de tokens: "
             f"razonamiento={getattr(uso, 'thoughts_token_count', '?')}, "
-            f"salida={getattr(uso, 'candidates_token_count', '?')}. "
-            "Bajar thinking_level en este servicio."
+            f"salida={getattr(uso, 'candidates_token_count', '?')}."
         )
-    except Exception:
-        # La advertencia nunca debe romper la extraccion
-        pass
+
+        nivel = getattr(getattr(config, "thinking_config", None), "thinking_level", "")
+        if str(nivel).upper().endswith("LOW"):
+            print("      (ya estaba en el nivel minimo; no hay reintento posible)")
+            return None
+
+        print("      ↻ Reintentando con thinking_level=LOW")
+        config_low = config.model_copy(deep=True)
+        config_low.thinking_config = types.ThinkingConfig(thinking_level="LOW")
+        return client.models.generate_content(
+            model=MODEL_NAME, contents=contents, config=config_low
+        )
+    except Exception as e:
+        # Ni la deteccion ni el reintento deben romper la extraccion: si algo
+        # falla aqui, el llamador se queda con la respuesta original.
+        print(f"      (no se pudo reintentar con menos razonamiento: {e})")
+        return None
 
 
 def extraer_con_gemini(texto, reintentos=3):
@@ -148,7 +167,8 @@ def extraer_con_gemini(texto, reintentos=3):
     for intento in range(reintentos):
         try:
             response = client.models.generate_content(model=MODEL_NAME, contents=contents, config=config)
-            advertir_si_truncado(response)
+            response = reintentar_con_menos_razonamiento(
+                response, client, contents, config) or response
             return response.text
         except Exception as e:
             if intento < reintentos - 1:

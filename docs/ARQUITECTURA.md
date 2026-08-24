@@ -99,6 +99,16 @@ las anteriores.
 | `extraccion-json-china` | `flota-aerolineas-md/` | `flota-aerolineas-json/` |
 | `ejecutar-pipeline-anuales` | los tres `*-json/` | `current_fleet_fact`, `order_book_fact` |
 
+**Deduplicación.** `ejecutar-pipeline-anuales` recorre los tres prefijos de GCS y antes
+concatenaba todo lo que encontrara. Un mismo filing puede quedar extraído dos veces bajo
+prefijos distintos —el 20-F de Aeroméxico existe como `_Item2_filtrado` en `10k-item2-json/`
+y como `_Flota_filtrado` en `20f-flota-json/`— y sus dos lecturas se sumaban. Ahora se
+agrupa por documento fuente, quitando prefijo, extensión y sufijos del extractor, y se
+conserva una sola lectura: primero la que traiga filas de flota, luego la de mayor cobertura
+de `average_age_years`, luego la más desagregada. Las descartadas se reportan en la
+respuesta. De 25 documentos, 6 estaban extraídos dos veces; cinco de esas segundas lecturas
+venían vacías y solo Aeroméxico inflaba el conteo.
+
 ### Cadena financiera
 
 | Servicio | Taxonomía | Escribe |
@@ -253,6 +263,11 @@ compartido no sirve: GitHub cancela el run pendiente anterior cuando llega otro 
 grupo, así que de cinco encolados sobrevivirían el primero y el último y tres quedarían
 sin desplegar en silencio. De ahí el encadenado explícito con `needs`.
 
+Esa misma cancelación afecta al propio orquestador, que también sostiene un solo run en
+cola. Por eso la base de comparación es el `head_sha` del último run exitoso y no el push
+anterior: si un run queda cancelado en cola, sus cambios entran en la siguiente corrida en
+vez de perderse.
+
 El orquestador acepta un input manual: vacío despliega lo que cambió, un nombre despliega
 solo ese servicio, `todos` fuerza el despliegue completo.
 
@@ -290,23 +305,36 @@ Nada de esto está roto; son fronteras del sistema tal como está hoy.
 transición se *infiere* de una foto estática —presión de transición— en vez de medirse
 como cambio observado. Es la señal más fuerte disponible y queda pendiente.
 
-**Aeroméxico.** Su reporte declara la flota tres veces: una fila `Total Fleet` de 164 que
-ya incluye a las otras dos. La marca `es_fila_agregada` permite excluirla, pero reconstruir
-el número real exige re-extraer el filing.
-
-**Vencimientos solo us-gaap.** La escalera se captura para las 11 emisoras 10-K. Las 20-F
-bajo IFRS usan tags menos estandarizados y quedan sin esa señal.
-
-**Thinking alto.** Cinco servicios siguen en `thinking_level="HIGH"` y comparten el modo de
-falla que truncaba el JSON. Ninguno ha registrado un truncamiento en 90 días; llevan una
-advertencia que lo hace visible si ocurre.
+**Aeroméxico pierde detalle de modelo.** Su 20-F quedó extraído dos veces bajo prefijos
+distintos, y el pipeline sumaba ambas lecturas: 355 aeronaves donde hay 165. Se resolvió
+agrupando por documento fuente (ver *Deduplicación* abajo), pero la lectura que se conserva
+—la única con edades— agrupa como `Boeing Fleet (B787/B737)` en vez de separar MAX de NG y
+787-8 de 787-9. Se privilegió la edad porque presión de reemplazo y exposición a leasing
+pesan 65% del score contra 15% de complejidad de portafolio, y la lectura descartada solo
+detallaba 26 de 164 aeronaves. Recuperar ambas cosas exige re-extraer el filing.
 
 **Páginas de Power BI.** La capa de reporte vive dentro del `.pbix` y no es accesible desde
 herramientas de modelo. Las tablas y medidas están listas; construir las páginas es
 trabajo manual.
 
-**Merges muy seguidos.** Si dos caen en la misma ventana, el segundo run del orquestador
-queda pendiente y un tercero lo cancelaría. Se recupera con un dispatch manual.
+### Resueltas
+
+**Vencimientos de leasing bajo IFRS.** La escalera por año solo la etiqueta us-gaap. Se
+agregó `lease_maturity_concentracion_1y`, derivada del split corriente / no corriente que
+sí existe en ambas taxonomías: la señal pasó de 11 a 15 aerolíneas.
+
+**Truncamiento por thinking alto.** Los cinco servicios en `thinking_level="HIGH"` detectaban
+`MAX_TOKENS` pero devolvían igual el JSON cortado, que aguas abajo aparecía como un genérico
+"no es JSON válido". Ahora repiten la llamada con `LOW` —el mismo reintento que ya tenía
+`extraccion-json-china`—. No se bajó el nivel de entrada porque en 90 días ninguno de los
+cinco se truncó: sería perder calidad sin ganar nada.
+
+**Merges muy seguidos.** GitHub sostiene un solo run en cola por grupo de concurrency, así
+que con tres merges seguidos el de en medio se cancelaba. Como la base de comparación era
+`github.event.before` —el push anterior—, los servicios de ese merge no se desplegaban nunca:
+quedaban en `main` con Cloud Run sirviendo la revisión vieja y sin ninguna señal. Ahora la
+base es el `head_sha` del último run exitoso del propio orquestador, así que un run cancelado
+deja sus cambios pendientes para la siguiente corrida.
 
 ---
 

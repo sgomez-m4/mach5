@@ -54,6 +54,38 @@ def clave_aerolinea(nombre):
     return "".join(c for c in txt.lower() if c.isalnum())
 
 
+# Sufijos que los extractores anexan al nombre del documento fuente. Un mismo
+# filing puede terminar extraido dos veces bajo prefijos distintos -el 20-F de
+# Aeromexico existe como "aeromex-2026-20f_Item2_filtrado" en 10k-item2-json/ y
+# como "aeromex-2026-20f_Flota_filtrado" en 20f-flota-json/- y al recorrer los
+# tres prefijos ambas lecturas se sumaban.
+SUFIJOS_EXTRACCION = re.compile(r"(_item2|_item4|_flota|_filtrado|_filtered)+$", re.I)
+
+
+def id_documento(nombre_blob):
+    """Filing del que proviene una extraccion, sin prefijo, extension ni sufijos."""
+    base = nombre_blob.rsplit("/", 1)[-1]
+    base = re.sub(r"\.json$", "", base, flags=re.I)
+    anterior = None
+    while anterior != base:
+        anterior = base
+        base = SUFIJOS_EXTRACCION.sub("", base)
+    return base.lower()
+
+
+def riqueza_extraccion(data):
+    """Criterio de desempate entre dos lecturas del mismo filing, de mayor a menor
+    prioridad: que traiga filas de flota, que reporte edad, y que este mas
+    desagregada. La edad pesa antes que el numero de filas porque es lo que
+    habilita el analisis de reemplazo; de las dos lecturas del 20-F de Aeromexico
+    solo una trae average_age_years."""
+    flota = [r for r in (data.get("current_fleet") or []) if isinstance(r, dict)]
+    pedidos = data.get("future_commitments") or []
+    con_edad = sum(1 for r in flota if r.get("average_age_years") is not None)
+    cobertura = (con_edad / float(len(flota))) if flota else 0.0
+    return (1 if flota else 0, cobertura, len(flota), len(pedidos))
+
+
 def cargar_indice_aerolineas(bucket):
     """Construye el indice clave_normalizada -> entidad desde config/dim_airline.json.
 
@@ -151,74 +183,104 @@ def ejecutar_pipeline_flota(request):
     current_rows = []
     commitment_rows = []
     aerolineas_no_resueltas = set()
+    extracciones_descartadas = []
     
     # Estadísticas por fuente
     stats = {
         "archivos_leidos": 0,
+        "extracciones_descartadas": 0,
         "archivos_con_error": 0,
         "filas_current_fleet": 0,
         "filas_order_book": 0,
         "aerolineas_detectadas": set()
     }
     
-    # Iterar por cada carpeta de origen
+    # --- Fase 1: leer y parsear, agrupando por documento fuente ---------------
+    extracciones = {}
     for prefix in prefixes_a_procesar:
         print(f"[PROCESANDO CARPETA] Listando archivos en: {prefix}")
         blobs = bucket.list_blobs(prefix=prefix)
-        
+
         archivos_en_prefijo = 0
-        
+
         for blob in blobs:
             if not blob.name.endswith('.json'):
                 continue
-            
+
             archivos_en_prefijo += 1
-                
+
             try:
                 raw = blob.download_as_text(encoding="utf-8").strip().lstrip('\ufeff')
                 data = json.loads(raw)
-                
-                # Extracción y limpieza de Flota Actual (current_fleet)
-                if "current_fleet" in data and isinstance(data["current_fleet"], list):
-                    for r in data["current_fleet"]:
-                        cleaned = limpiar_fila(r)
-                        if cleaned:
-                            cleaned = resolver_identidad(
-                                cleaned, indice_aerolineas, aerolineas_no_resueltas
-                            )
-                            current_rows.append(cleaned)
-                            # Trackear aerolínea ya canonizada
-                            airline = cleaned.get("airline_canonical") or ""
-                            if airline:
-                                stats["aerolineas_detectadas"].add(airline)
-                        
-                # Extracción y limpieza de Compromisos Futuros (future_commitments)
-                if "future_commitments" in data and isinstance(data["future_commitments"], list):
-                    for r in data["future_commitments"]:
-                        cleaned = limpiar_fila(r)
-                        if cleaned:
-                            cleaned = resolver_identidad(
-                                cleaned, indice_aerolineas, aerolineas_no_resueltas
-                            )
-                            commitment_rows.append(cleaned)
-                
-                stats["archivos_leidos"] += 1
-                print(f"  ✓ Procesado: {blob.name}")
-                
             except json.JSONDecodeError as e:
                 stats["archivos_con_error"] += 1
                 print(f"  ✗ JSON inválido en {blob.name}: {e}")
+                continue
             except Exception as e:
                 stats["archivos_con_error"] += 1
-                print(f"  ✗ Error procesando {blob.name}: {type(e).__name__}: {e}")
-        
+                print(f"  ✗ Error leyendo {blob.name}: {type(e).__name__}: {e}")
+                continue
+
+            extracciones.setdefault(id_documento(blob.name), []).append((blob.name, data))
+
         print(f"  → {archivos_en_prefijo} archivos JSON encontrados en '{prefix}'")
+
+    # --- Fase 2: un documento fuente, una sola extraccion ---------------------
+    seleccionadas = []
+    for doc, candidatas in sorted(extracciones.items()):
+        if len(candidatas) > 1:
+            candidatas = sorted(candidatas, key=lambda c: riqueza_extraccion(c[1]),
+                                reverse=True)
+            for descartada, _ in candidatas[1:]:
+                extracciones_descartadas.append(descartada)
+                print(f"  ⊘ {doc}: se descarta la extracción duplicada "
+                      f"{descartada}; se conserva {candidatas[0][0]}")
+        seleccionadas.append(candidatas[0])
+
+    # --- Fase 3: normalizar las filas de las extracciones elegidas ------------
+    for nombre_blob, data in seleccionadas:
+        try:
+            # Extraccion y limpieza de Flota Actual (current_fleet)
+            if "current_fleet" in data and isinstance(data["current_fleet"], list):
+                for r in data["current_fleet"]:
+                    cleaned = limpiar_fila(r)
+                    if cleaned:
+                        cleaned = resolver_identidad(
+                            cleaned, indice_aerolineas, aerolineas_no_resueltas
+                        )
+                        current_rows.append(cleaned)
+                        # Trackear aerolinea ya canonizada
+                        airline = cleaned.get("airline_canonical") or ""
+                        if airline:
+                            stats["aerolineas_detectadas"].add(airline)
+
+            # Extraccion y limpieza de Compromisos Futuros (future_commitments)
+            if "future_commitments" in data and isinstance(data["future_commitments"], list):
+                for r in data["future_commitments"]:
+                    cleaned = limpiar_fila(r)
+                    if cleaned:
+                        cleaned = resolver_identidad(
+                            cleaned, indice_aerolineas, aerolineas_no_resueltas
+                        )
+                        commitment_rows.append(cleaned)
+
+            stats["archivos_leidos"] += 1
+            print(f"  ✓ Procesado: {nombre_blob}")
+
+        except Exception as e:
+            stats["archivos_con_error"] += 1
+            print(f"  ✗ Error procesando {nombre_blob}: {type(e).__name__}: {e}")
 
     stats["filas_current_fleet"] = len(current_rows)
     stats["filas_order_book"] = len(commitment_rows)
+    stats["extracciones_descartadas"] = len(extracciones_descartadas)
     
     print(f"\n[RESUMEN EXTRACCIÓN]")
     print(f"  Archivos leídos: {stats['archivos_leidos']}")
+    print(f"  Documentos fuente: {len(extracciones)}")
+    if extracciones_descartadas:
+        print(f"  ⚠ {len(extracciones_descartadas)} extracciones duplicadas "
+              f"descartadas: {sorted(extracciones_descartadas)}")
     print(f"  Archivos con error: {stats['archivos_con_error']}")
     print(f"  Filas current_fleet: {len(current_rows)}")
     print(f"  Filas order_book: {len(commitment_rows)}")
@@ -243,7 +305,8 @@ def ejecutar_pipeline_flota(request):
             "archivos_leidos": stats["archivos_leidos"],
             "archivos_con_error": stats["archivos_con_error"],
             "aerolineas_sin_resolver": sorted(aerolineas_no_resueltas),
-            "filas_sin_airline_id": sin_id
+            "filas_sin_airline_id": sin_id,
+            "extracciones_duplicadas_descartadas": sorted(extracciones_descartadas)
         }, 200
 
     # Cargar a BigQuery
@@ -271,7 +334,8 @@ def ejecutar_pipeline_flota(request):
             "archivos_con_error": stats["archivos_con_error"],
             "aerolineas_detectadas": sorted(stats["aerolineas_detectadas"]),
             "aerolineas_sin_resolver": sorted(aerolineas_no_resueltas),
-            "filas_sin_airline_id": sin_id
+            "filas_sin_airline_id": sin_id,
+            "extracciones_duplicadas_descartadas": sorted(extracciones_descartadas)
         },
         "detalles_carga": resultados
     }, 200
