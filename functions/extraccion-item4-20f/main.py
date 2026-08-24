@@ -45,6 +45,27 @@ SENALES_FLOTA = [
 ]
 
 
+# Designaciones de variante. Son lo unico que distingue de verdad una tabla de
+# flota de un tramo de estados financieros: las notas contables mencionan
+# "Airbus" y "operating lease" de pasada, pero no enumeran A320neo ni 737 MAX.
+# Se exige el sufijo de variante a proposito: "A330" suelto aparece en cualquier
+# nota de arrendamiento, y contarlo hacia pasar por buena la seccion de Azul.
+PATRON_MODELOS = re.compile(
+    r"\b(?:A3\d0(?:neo|ceo)|A2\d0-\d|7[0-9]7-\d|737\s*MAX|E1\d\d-E2|E\d{3}"
+    r"|ATR\s*\d{2}|CRJ\s*\d{3})",
+    re.IGNORECASE,
+)
+
+# Firma de una tabla de flota. Un bloque puede nombrar modelos porque discute
+# pedidos o litigios; la edad promedio solo se declara donde se describe la flota.
+PATRON_FIRMA_FLOTA = re.compile(r"average\s+(?:fleet\s+)?age|age\s+of\s+our\s+fleet",
+                                re.IGNORECASE)
+
+
+def cuenta_modelos(texto):
+    return len(PATRON_MODELOS.findall(texto or ""))
+
+
 def cuenta_senales_flota(texto):
     bajo = texto.lower()
     return sum(1 for s in SENALES_FLOTA if s in bajo)
@@ -66,16 +87,23 @@ def extraer_por_posicion(content, regex_start, regex_end_text):
         return None
 
     mejor = None
-    for ini in reversed(inicios):
+    for ini in inicios:
         fin_match = pf.search(content, ini + 1)
         fin = fin_match.start() if fin_match else len(content)
         bloque = content[ini:fin].strip()
         if len(bloque) < 2000:
             continue
-        senales = cuenta_senales_flota(bloque)
-        if senales >= 4:
-            if mejor is None or senales > mejor[0]:
-                mejor = (senales, bloque)
+
+        modelos = cuenta_modelos(bloque)
+        if modelos < 5 or not PATRON_FIRMA_FLOTA.search(bloque):
+            continue
+
+        # Se ordena por densidad, no por tamaño ni por total de modelos: el
+        # bloque bueno es el mas ajustado que sigue conteniendo la tabla. En
+        # Azul son 248 KB con 37 modelos, no los 448 KB con 40 que lo engloban.
+        densidad = modelos / (len(bloque) / 100000.0)
+        if mejor is None or densidad > mejor[0]:
+            mejor = (densidad, bloque)
 
     return mejor[1] if mejor else None
 
@@ -136,7 +164,7 @@ def extraer_seccion_20f(content, regex_start, regex_end_text):
     # {N}------: el documento entero cae en una o dos paginas y tanto ITEM 4 como
     # ITEM 5 casan dentro del indice, dejando la portada como "seccion de flota".
     # Le paso al 20-F de Volaris. En ese caso se busca por posicion de texto.
-    if len(texto_final) < 50 or cuenta_senales_flota(texto_final) < 4:
+    if len(texto_final) < 50 or cuenta_modelos(texto_final) == 0:
         alternativa = extraer_por_posicion(content, regex_start, regex_end_text)
         if alternativa:
             print(f"    ↻ Seccion por paginas sin contenido de flota "
@@ -147,7 +175,7 @@ def extraer_seccion_20f(content, regex_start, regex_end_text):
         # Sin seccion respaldada por el documento no se emite nada: el modelo
         # rellenaria el vacio inventando la flota.
         print(f"    ⚠ Sin seccion de flota identificable ({len(texto_final)} chars, "
-              f"{cuenta_senales_flota(texto_final)} señales); se omite")
+              f"{cuenta_modelos(texto_final)} modelos nombrados); se omite")
         return None
 
     return texto_final

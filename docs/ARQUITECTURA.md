@@ -335,6 +335,13 @@ año, porque su fuente es un reporte anual por ejercicio.
 ejercicios con la tasa de 2025 y un movimiento cambiario podría leerse como movimiento del
 negocio. La normalización ahora reporta qué conversiones usaron una tasa sustituta.
 
+**Azul declara la flota en una cubeta.** Su 20-F sí trae el desglose, pero la sección
+aislada iba desde una mención tardía de `ITEM 4` hasta el final del documento —822 KB de
+MD&A y estados financieros sin nombrar un solo modelo— y el modelo llenó el vacío con 227
+aeronaves bajo `Commercial Aircraft`, cifra que el filing no declara: dice 155 en flota
+operativa con edad media de 7.2 años. Corregido: la sección pasa a los 248 KB que arrancan
+en el Item 4 real, con 37 designaciones de modelo.
+
 **Aeroméxico pierde detalle de modelo.** Su 20-F quedó extraído dos veces bajo prefijos
 distintos, y el pipeline sumaba ambas lecturas: 355 aeronaves donde hay 165. Se resolvió
 agrupando por documento fuente (ver *Deduplicación* abajo), pero la lectura que se conserva
