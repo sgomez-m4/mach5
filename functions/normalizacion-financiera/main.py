@@ -297,6 +297,25 @@ def aplicar_fallback_total_debt(acumulado, data_source_por_metrica, source_tags_
                                      "motivo": motivo})
                 print(f"    ↳ total_liabilities derivado para {company} {anio}: {motivo}")
 
+        # Algunas emisoras declaran el total del pasivo por arrendamiento y su
+        # porcion no corriente, pero no la corriente (Aeromexico es asi). La resta
+        # la determina de forma exacta y es lo que permite calcular que proporcion
+        # vence dentro de doce meses.
+        if ("lease_liability_current" not in valores
+                and "lease_liability_total" in valores
+                and "lease_liability_noncurrent" in valores):
+            derivado = valores["lease_liability_total"] - valores["lease_liability_noncurrent"]
+            if derivado >= 0:
+                clave = (company, anio, "lease_liability_current")
+                acumulado[clave] = derivado
+                data_source_por_metrica[clave] = "calculated_fallback"
+                source_tags_por_metrica[clave] = ["lease_liability_total",
+                                                  "lease_liability_noncurrent"]
+                sintetizados.append({"company": company, "fiscal_year": anio,
+                                     "metric": "lease_liability_current",
+                                     "desde": ["lease_liability_total",
+                                               "lease_liability_noncurrent"]})
+
         if "operating_lease_liability" not in valores and "lease_liabilities" in valores:
             clave = (company, anio, "operating_lease_liability")
             acumulado[clave] = valores["lease_liabilities"]

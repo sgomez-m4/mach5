@@ -159,5 +159,12 @@
   {"taxonomy": "us-gaap", "source_tag": "RevenueFromContractWithCustomerIncludingAssessedTax", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false},
   {"taxonomy": "ifrs-full", "source_tag": "RevenueFromRenderingOfTransportServices", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false, "rol": "total"},
   {"taxonomy": "ifrs-full", "source_tag": "RevenueFromRenderingOfPassengerTransportServices", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false, "rol": "componente"},
-  {"taxonomy": "ifrs-full", "source_tag": "RevenueFromRenderingOfOtherNonPassengerServices", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false, "rol": "componente"}
+  {"taxonomy": "ifrs-full", "source_tag": "RevenueFromRenderingOfOtherNonPassengerServices", "canonical_metric": "revenue", "unit_hint": "millions", "is_derived": false, "rol": "componente"},
+  {"taxonomy": "us-gaap", "source_tag": "OperatingLeaseLiabilityCurrent", "canonical_metric": "lease_liability_current", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "OperatingLeaseLiabilityNoncurrent", "canonical_metric": "lease_liability_noncurrent", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "us-gaap", "source_tag": "OperatingLeaseLiability", "canonical_metric": "lease_liability_total", "unit_hint": "millions", "is_derived": false, "rol": "total"},
+  {"taxonomy": "ifrs-full", "source_tag": "CurrentLeaseLiabilities", "canonical_metric": "lease_liability_current", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "ifrs-full", "source_tag": "NoncurrentLeaseLiabilities", "canonical_metric": "lease_liability_noncurrent", "unit_hint": "millions", "is_derived": false},
+  {"taxonomy": "ifrs-full", "source_tag": "LeaseLiabilities", "canonical_metric": "lease_liability_total", "unit_hint": "millions", "is_derived": false, "rol": "total"},
+  {"taxonomy": "cas-china", "source_tag": "lease_liabilities", "canonical_metric": "lease_liability_total", "unit_hint": "millions", "is_derived": false, "rol": "total"}
 ]
