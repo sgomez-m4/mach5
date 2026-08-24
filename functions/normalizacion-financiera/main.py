@@ -134,7 +134,7 @@ def leer_todos_raw():
 # =========================================================
 # NORMALIZACION
 # =========================================================
-def convertir_a_usd_millions(registro, fx_rates):
+def convertir_a_usd_millions(registro, fx_rates, fx_sustituidas=None):
     """
     Convierte raw_value a USD millions.
     - Para XBRL US (unit USD, taxonomies us-gaap): el valor suele estar en USD reales.
@@ -179,11 +179,16 @@ def convertir_a_usd_millions(registro, fx_rates):
         anio = registro.get("fiscal_year")
         rate = fx_rates.get((currency, anio))
         if rate is None:
-            # Fallback: la tasa mas cercana disponible para esa moneda
+            # Fallback: la tasa mas cercana disponible para esa moneda. Con un
+            # solo ejercicio esto era inocuo; sobre una serie temporal no lo es,
+            # porque convierte todos los anios con la misma tasa y un movimiento
+            # cambiario se lee como movimiento del negocio. Se deja registro.
             candidatos = {k[1]: v for k, v in fx_rates.items() if k[0] == currency}
             if candidatos:
                 anio_cercano = min(candidatos, key=lambda a: abs(a - anio))
                 rate = candidatos[anio_cercano]
+                if fx_sustituidas is not None:
+                    fx_sustituidas.add((currency, anio, anio_cercano))
             else:
                 print(f"    ⚠ Sin fx_rate para {currency} {anio}")
                 return None
@@ -199,41 +204,62 @@ def convertir_a_usd_millions(registro, fx_rates):
     return round(valor_usd_m, 4)
 
 
-def filtrar_ultimo_anio_por_empresa(registros):
+def detectar_ultimo_anio_por_empresa(registros):
+    """Normaliza fiscal_year a entero y devuelve el ultimo ejercicio de cada empresa.
+
+    Antes esta funcion ademas descartaba los ejercicios anteriores, y lo hacia
+    antes de acumular. Como extraccion-xbrl-10k lee tres ejercicios de cada
+    filing, eso significaba tirar dos anios de historia que ya estaban
+    extraidos: ninguna tabla los veia. Ahora la serie completa sigue adelante y
+    el recorte se aplica al final, solo sobre financial_fact.
     """
-    Conserva unicamente los registros del ejercicio fiscal mas reciente de cada empresa.
-    Se aplica ANTES de la acumulacion para evitar mezclar anios en financial_fact.
-    """
+    anios_por_empresa = {}
+    validos = []
+
+    for r in registros:
+        company = r.get("company")
+        anio = r.get("fiscal_year")
+        if company is None or anio is None:
+            continue
+        try:
+            anio = int(anio)
+        except (ValueError, TypeError):
+            continue
+        r["fiscal_year"] = anio
+        validos.append(r)
+        anios_por_empresa.setdefault(company, set()).add(anio)
+
     ultimo_anio = {}
-    for r in registros:
-        company = r.get("company")
-        anio = r.get("fiscal_year")
-        if company is None or anio is None:
-            continue
-        try:
-            anio = int(anio)
-        except (ValueError, TypeError):
-            continue
-        if anio > ultimo_anio.get(company, 0):
-            ultimo_anio[company] = anio
+    for company in sorted(anios_por_empresa):
+        anios = sorted(anios_por_empresa[company])
+        ultimo_anio[company] = anios[-1]
+        print(f"  → {company}: ejercicios {anios} | ultimo = {anios[-1]}")
 
-    filtrados = []
-    for r in registros:
-        company = r.get("company")
-        anio = r.get("fiscal_year")
-        if company is None or anio is None:
-            continue
-        try:
-            anio = int(anio)
-        except (ValueError, TypeError):
-            continue
-        if anio == ultimo_anio.get(company):
-            r["fiscal_year"] = anio
-            filtrados.append(r)
+    return validos, ultimo_anio
 
-    for company, anio in sorted(ultimo_anio.items()):
-        print(f"  → {company}: ultimo ejercicio fiscal = {anio}")
-    return filtrados, ultimo_anio
+
+def normalizar_signo_capex(acumulado):
+    """Deja capex siempre en negativo, la convencion que documenta el config.
+
+    El signo depende del tag de origen: las lineas de pago se etiquetan en
+    positivo (es un importe desembolsado) mientras que otras vienen ya firmadas
+    como salida. Sin unificarlo, capex_depreciation_ratio no se puede comparar
+    entre aerolineas: Delta daba 1.84 y United -2.00 midiendo lo mismo.
+    """
+    ajustadas = []
+    for clave, valor in list(acumulado.items()):
+        company, anio, metric = clave
+        if metric != "capex" or valor is None or valor <= 0:
+            continue
+        acumulado[clave] = -valor
+        ajustadas.append({"company": company, "fiscal_year": anio,
+                          "de": round(valor, 4), "a": round(-valor, 4)})
+
+    if ajustadas:
+        empresas = sorted({a["company"] for a in ajustadas})
+        print(f"  ↳ signo de capex unificado en {len(ajustadas)} registros "
+              f"({', '.join(empresas)})")
+    return ajustadas
 
 
 def aplicar_fallback_total_debt(acumulado, data_source_por_metrica, source_tags_por_metrica):
@@ -403,13 +429,15 @@ def normalizar_financiera(request):
     raw_registros = leer_todos_raw()
     print(f"[RAW] {len(raw_registros)} registros crudos leidos")
 
-    # 1b. Conservar solo el ultimo ejercicio fiscal de cada empresa (antes de acumular)
-    raw_registros, ultimo_anio_por_empresa = filtrar_ultimo_anio_por_empresa(raw_registros)
-    print(f"[FILTRO ANIO] {len(raw_registros)} registros del ultimo ejercicio "
+    # 1b. Normalizar fiscal_year y ubicar el ultimo ejercicio de cada empresa.
+    # La serie completa sigue adelante; el recorte se aplica al final.
+    raw_registros, ultimo_anio_por_empresa = detectar_ultimo_anio_por_empresa(raw_registros)
+    print(f"[ANIOS] {len(raw_registros)} registros validos "
           f"| {len(ultimo_anio_por_empresa)} empresas")
 
     # 2. Normalizar cada registro -> fila financial_fact_raw
     filas_raw = []
+    fx_sustituidas = set()
     # Acumulador para financial_fact: (company, fiscal_year, canonical_metric) -> valor_usd_m
     acumulado = {}
     source_tags_por_metrica = {}
@@ -423,7 +451,7 @@ def normalizar_financiera(request):
             unmapped.append(f"{r.get('taxonomy')}:{r.get('source_tag')}")
             continue
 
-        valor_usd_m = convertir_a_usd_millions(r, fx_rates)
+        valor_usd_m = convertir_a_usd_millions(r, fx_rates, fx_sustituidas)
         if valor_usd_m is None:
             continue
 
@@ -487,6 +515,7 @@ def normalizar_financiera(request):
     print(f"[MAPEO] {len(filas_raw)} filas raw mapeadas | {len(unmapped)} tags sin mapping")
 
     # 2b. Fallbacks de deuda antes de derivar (habilita net_debt en aerolineas chinas)
+    capex_ajustado = normalizar_signo_capex(acumulado)
     sintetizados = aplicar_fallback_total_debt(
         acumulado, data_source_por_metrica, source_tags_por_metrica
     )
@@ -558,7 +587,24 @@ def normalizar_financiera(request):
         if no_resueltas:
             print(f"    ⚠ {company} {anio}: sin dependencias para {', '.join(sorted(no_resueltas))}")
 
-    print(f"[RESULTADO] {len(filas_fact)} filas canonicales | {len(filas_raw)} filas raw")
+    # financial_fact conserva su contrato -un solo ejercicio, el ultimo vigente de
+    # cada empresa- porque es lo que consumen las vistas y el modelo de Power BI.
+    # La serie completa va aparte, a financial_fact_history.
+    filas_historia = filas_fact
+    filas_fact = [f for f in filas_historia
+                  if f.get("fiscal_year") == ultimo_anio_por_empresa.get(f.get("company"))]
+    anios_historia = sorted({f.get("fiscal_year") for f in filas_historia
+                             if f.get("fiscal_year") is not None})
+
+    print(f"[RESULTADO] {len(filas_fact)} filas del ultimo ejercicio "
+          f"| {len(filas_historia)} filas de historia {anios_historia} "
+          f"| {len(filas_raw)} filas raw")
+
+    if fx_sustituidas:
+        detalle = sorted(f"{m} {a}→tasa de {u}" for m, a, u in fx_sustituidas)
+        print(f"  ⚠ {len(fx_sustituidas)} conversiones usaron la tasa de otro "
+              f"ejercicio: {', '.join(detalle)}")
+        print("    → agregar esas tasas a dataset_integrado.fx_rates")
 
     # 3b. Validacion QA sobre financial_fact
     print("[QA] Validando cobertura y consistencia por empresa")
@@ -594,10 +640,12 @@ def normalizar_financiera(request):
 
         r1 = cargar(f"{DATASET_ID}.financial_fact_raw", filas_raw)
         r2 = cargar(f"{DATASET_ID}.financial_fact", filas_fact)
-        print(f"[BQ] raw: {r1} | fact: {r2}")
+        r3 = cargar(f"{DATASET_ID}.financial_fact_history", filas_historia)
+        print(f"[BQ] raw: {r1} | fact: {r2} | history: {r3}")
     else:
         r1 = "dry_run"
         r2 = "dry_run"
+        r3 = "dry_run"
 
     t_total = round(time.time() - t0, 2)
     print(f"[END] Finalizado en {t_total}s")
@@ -607,12 +655,19 @@ def normalizar_financiera(request):
         "dry_run": dry_run,
         "total_registros_raw": len(filas_raw),
         "total_filas_fact": len(filas_fact),
+        "total_filas_historia": len(filas_historia),
+        "anios_historia": anios_historia,
         "tags_sin_mapping": len(unmapped),
         "unmapped_sample": sorted(set(unmapped))[:20],
         "ultimo_anio_por_empresa": ultimo_anio_por_empresa,
         "metricas_sintetizadas": sintetizados,
+        "capex_signo_ajustado": len(capex_ajustado),
+        "fx_tasas_sustituidas": [
+            {"moneda": m, "fiscal_year": a, "tasa_usada_de": u}
+            for m, a, u in sorted(fx_sustituidas)],
         "qa_warnings": qa_warnings,
         "carga_raw": r1,
+        "carga_history": r3,
         "carga_fact": r2,
         "tiempo_segundos": t_total,
     }, 200

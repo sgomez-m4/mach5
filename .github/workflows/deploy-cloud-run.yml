@@ -11,6 +11,12 @@ name: deploy-cloud-run
 # GitHub cancela el run pendiente anterior cuando llega otro al mismo grupo, asi
 # que de cinco encolados solo sobrevivirian el primero y el ultimo. De ahi el
 # encadenado explicito con needs, que respeta el orden y no descarta ninguno.
+#
+# Esa misma cancelacion afecta al propio orquestador: solo se sostiene un run en
+# cola, asi que con tres merges seguidos el de en medio se cancela. Por eso la
+# base de comparacion es el ultimo commit efectivamente desplegado y no el push
+# anterior; de lo contrario los servicios del merge cancelado se quedarian en
+# main sin llegar nunca a Cloud Run.
 
 on:
   push:
@@ -30,6 +36,9 @@ on:
 permissions:
   contents: read
   id-token: write
+  # Para consultar cual fue el ultimo run que si desplego, y diffear contra ese
+  # commit en vez de contra el push anterior.
+  actions: read
 
 concurrency:
   group: deploy-cloud-run
@@ -69,6 +78,7 @@ jobs:
       - id: detectar
         env:
           FORZAR: ${{ github.event.inputs.servicio }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
 
@@ -78,11 +88,24 @@ jobs:
             echo "Despliegue manual: $FORZAR"
             CAMBIADOS=""
           else
-            BASE="${{ github.event.before }}"
+            # Ultimo commit que llego a desplegarse. Si un run quedo cancelado
+            # en cola, sus cambios siguen entrando aqui en la siguiente corrida.
+            RUNS="repos/${{ github.repository }}/actions/workflows/deploy-cloud-run.yml/runs"
+            BASE=$(gh api "$RUNS?branch=main&status=success&per_page=30" \
+                     --jq "[.workflow_runs[] | select(.id != ${{ github.run_id }}) | .head_sha] | first" \
+                     2>/dev/null || echo "")
+
+            if [ -n "$BASE" ] && [ "$BASE" != "null" ] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+              echo "Base: ultimo despliegue exitoso ($BASE)"
+            else
+              echo "Sin despliegue exitoso previo localizable; se usa el push anterior"
+              BASE="${{ github.event.before }}"
+            fi
+
             if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
               BASE=$(git rev-parse "${{ github.sha }}^" 2>/dev/null || echo "")
             fi
-            if [ -n "$BASE" ] && git cat-file -e "$BASE" 2>/dev/null; then
+            if [ -n "$BASE" ] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
               CAMBIADOS=$(git diff --name-only "$BASE" "${{ github.sha }}")
             else
               # Sin base comparable no se puede saber que cambio; se despliega
