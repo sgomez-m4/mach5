@@ -36,6 +36,50 @@ CONFIG_AEROLINEAS = {
 # =====================================================================
 # NÚCLEO DE EXTRACCIÓN DINÁMICA
 # =====================================================================
+# Terminos que debe contener una seccion de flota real. Sirven para distinguir
+# la seccion de verdad del indice, que menciona "ITEM 4" pero no habla de aviones.
+SENALES_FLOTA = [
+    "a320", "a321", "a319", "a350", "a330", "737", "787", "777", "767",
+    "e190", "e195", "e175", "boeing", "airbus", "embraer", "atr",
+    "average age", "operating lease", "finance lease", "owned",
+]
+
+
+def cuenta_senales_flota(texto):
+    bajo = texto.lower()
+    return sum(1 for s in SENALES_FLOTA if s in bajo)
+
+
+def extraer_por_posicion(content, regex_start, regex_end_text):
+    """Aisla la seccion buscando offsets en el texto crudo, sin depender de paginas.
+
+    Se usa cuando la segmentacion por marcadores {N}------ no sirve, sea porque el
+    markdown no los trae o porque inicio y fin caen dentro del indice. Se recorren
+    las apariciones de ITEM 4 de la ultima a la primera -el indice siempre es la
+    primera- y se conserva el primer bloque que hable de aeronaves.
+    """
+    pi = re.compile(regex_start, re.IGNORECASE)
+    pf = re.compile(regex_end_text, re.IGNORECASE | re.MULTILINE)
+
+    inicios = [m.start() for m in pi.finditer(content)]
+    if not inicios:
+        return None
+
+    mejor = None
+    for ini in reversed(inicios):
+        fin_match = pf.search(content, ini + 1)
+        fin = fin_match.start() if fin_match else len(content)
+        bloque = content[ini:fin].strip()
+        if len(bloque) < 2000:
+            continue
+        senales = cuenta_senales_flota(bloque)
+        if senales >= 4:
+            if mejor is None or senales > mejor[0]:
+                mejor = (senales, bloque)
+
+    return mejor[1] if mejor else None
+
+
 def extraer_seccion_20f(content, regex_start, regex_end_text):
     """Segmenta por páginas y aísla la sección de flota según los límites provistos."""
     partes = re.split(r'(\{\d+\}\s*-+)', content)
@@ -88,7 +132,22 @@ def extraer_seccion_20f(content, regex_start, regex_end_text):
 
     texto_final = bloque_aislado.strip()
 
-    if len(texto_final) < 50:
+    # La segmentacion por paginas falla cuando el markdown no trae marcadores
+    # {N}------: el documento entero cae en una o dos paginas y tanto ITEM 4 como
+    # ITEM 5 casan dentro del indice, dejando la portada como "seccion de flota".
+    # Le paso al 20-F de Volaris. En ese caso se busca por posicion de texto.
+    if len(texto_final) < 50 or cuenta_senales_flota(texto_final) < 4:
+        alternativa = extraer_por_posicion(content, regex_start, regex_end_text)
+        if alternativa:
+            print(f"    ↻ Seccion por paginas sin contenido de flota "
+                  f"({len(texto_final)} chars); se usa la busqueda por posicion "
+                  f"({len(alternativa)} chars)")
+            return alternativa
+
+        # Sin seccion respaldada por el documento no se emite nada: el modelo
+        # rellenaria el vacio inventando la flota.
+        print(f"    ⚠ Sin seccion de flota identificable ({len(texto_final)} chars, "
+              f"{cuenta_senales_flota(texto_final)} señales); se omite")
         return None
 
     return texto_final

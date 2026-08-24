@@ -343,6 +343,15 @@ agrupando por documento fuente (ver *Deduplicación* abajo), pero la lectura que
 pesan 65% del score contra 15% de complejidad de portafolio, y la lectura descartada solo
 detallaba 26 de 164 aeronaves. Recuperar ambas cosas exige re-extraer el filing.
 
+**Volaris quedó sin flota respaldada.** Su 20-F no trae los marcadores de página que usa
+el extractor de sección, así que el documento entero cayó en dos páginas, `ITEM 4` e
+`ITEM 5` casaron ambos dentro del índice y la sección aislada fue la portada: 9 KB sin una
+sola mención de aeronaves. Aguas abajo el modelo llenó ese vacío inventando siete filas
+fechadas en 2023 que no están en el filing, y como el score filtra por `report_year = 2025`,
+Volaris desaparecía de la lista sin ninguna señal. El extractor ahora cae a una búsqueda por
+posición de texto cuando la segmentación por páginas no da contenido de flota, y omite la
+sección antes que emitir uno vacío que el modelo rellenaría.
+
 **Páginas de Power BI.** La capa de reporte vive dentro del `.pbix` y no es accesible desde
 herramientas de modelo. Las tablas y medidas están listas; construir las páginas es
 trabajo manual.
