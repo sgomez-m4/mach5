@@ -1,31 +1,55 @@
-# mach5 — Cloud Run functions (CI/CD via GitHub Actions)
+# mach5
 
-Repo monorepo con el código fuente de 7 Cloud Run services de GCP. Cada `push` a `main`
-despliega automáticamente la función cuyo código cambió.
+Pipeline que convierte los reportes regulatorios de 24 aerolíneas en una lista priorizada
+de prospectos para una consultora de asset management aeronáutico.
+
+**[docs/ARQUITECTURA.md](docs/ARQUITECTURA.md)** documenta el sistema completo: de dónde
+sale cada dato, cómo se normaliza, cómo se convierte en señal comercial y dónde se consume.
+Empieza por ahí.
 
 ## Estructura
 
 ```
-functions/
-  rss-8k/                    # us-east1  | 1CPU/1Gi | Cloud Scheduler revision-8k (diario 08:00)
-  rss-6k/                    # europe-west1 | 1CPU/1Gi | Cloud Scheduler revision-6k (diario 08:00)
-  revision-diaria-china/     # us-east1  | 1CPU/1Gi
-  extraccion-json-item2/     # us-east1  | 2CPU/2Gi
-  extraccion-10k-md/         # us-east1  | 1CPU/1Gi
-  extraccion-20f-md/         # europe-west1 | 2CPU/1Gi
-  extraccion-tablas-item2/   # us-east1  | 2CPU/2Gi
-.github/workflows/           # un workflow de deploy por función (filtro paths)
+functions/    22 servicios de Cloud Run (Python + functions-framework)
+config/       catalogos e identidad canonica; se leen desde GCS en ejecucion
+sql/          UDF y vistas de dataset_integrado
+powerbi/      artefactos de migracion del modelo (M y DAX)
+workflows/    definicion del Cloud Workflow de orquestacion trimestral
+docs/         documentacion
 ```
 
-Cada función usa **Python + functions-framework** (entrypoint HTTP en `main.py`).
+## Despliegue
 
-## Despliegue automático
+Cuatro workflows escuchan `push` a `main`. Los 22 workflows de servicio son reutilizables
+(`workflow_call`) y los invoca el orquestador.
 
-- Cada workflow se dispara al modificar la carpeta de su función (`paths:`) o el propio workflow.
-- Autenticación: **Workload Identity Federation** (sin claves JSON de larga duración).
-- Secretos inyectados desde **GitHub Secrets** (no hay credenciales en el código).
+| Workflow | Se dispara con | Qué hace |
+|---|---|---|
+| `deploy-cloud-run` | `functions/**` | Detecta qué servicios cambiaron y los despliega **de uno en uno** |
+| `sync-config-gcs` | `config/**` | Respalda lo que hay en GCS y sube la versión del repo |
+| `aplicar-sql-bigquery` | `sql/**` | Aplica UDF y vistas en orden de dependencia, y verifica que devuelvan filas |
+| `deploy-pipeline-anual-workflow` | `workflows/**` | Despliega la definición del Cloud Workflow |
 
-## GitHub Secrets requeridos
+El despliegue es secuencial a propósito: cinco builds en paralelo agotan la cuota de
+`Build and Operation Get requests per minute` de Cloud Build. El razonamiento completo está
+en la documentación.
+
+Para desplegar a mano, `deploy-cloud-run` acepta un input: vacío despliega lo que cambió,
+un nombre de servicio despliega solo ese, `todos` fuerza el despliegue completo.
+
+Autenticación por **Workload Identity Federation**; no hay claves JSON de larga duración
+ni credenciales en el código.
+
+## Dos cosas que sorprenden
+
+**`config/` no se lee del repo.** Los servicios lo leen de `gs://bucket-edgar/config/` en
+tiempo de ejecución. El workflow `sync-config-gcs` los mantiene sincronizados; sin él, un
+cambio en el repo no surte ningún efecto.
+
+**Las cargas a BigQuery usan `WRITE_TRUNCATE`.** Reemplazan la tabla completa. Conviene
+correr con `?dry_run=true` y crear un snapshot antes de una carga real.
+
+## GitHub Secrets
 
 | Secret | Descripción |
 |---|---|
@@ -38,9 +62,5 @@ Cada función usa **Python + functions-framework** (entrypoint HTTP en `main.py`
 | `GEMINI_API_KEY` | API key de Gemini |
 | `SEC_API_IDENTITY_10K` / `_20F` / `_TABLAS` | Identidad SEC-API por función |
 
-## Flujo de trabajo
-
-1. Editar el código en `functions/<funcion>/`.
-2. `git commit` + `git push` a `main`.
-3. El workflow correspondiente construye con buildpacks y despliega a Cloud Run
-   manteniendo el mismo nombre de servicio (la URL y el Cloud Scheduler no cambian).
+La SA desplegadora necesita además `bigquery.jobUser` y `bigquery.dataEditor` para que
+`aplicar-sql-bigquery` pueda crear las vistas.
