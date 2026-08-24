@@ -181,7 +181,9 @@ las fórmulas derivadas de forma iterativa.
 **Convenciones alineadas con us-gaap.** Tres criterios de CAS no eran comparables:
 `net_income` pasa al atribuible a la matriz —China Southern reportaba 2,685M cuando el
 comparable son 857M—; `capex` se emite negativo como salida de caja, invirtiendo la
-convención positiva de CAS; e `interest_expense` se separa del resultado financiero neto.
+convención positiva de CAS —y se unifica en la normalización, porque el tag de origen
+decide si viene firmado o como importe de pago: sin unificarlo quedaban 17 empresas
+negativas y 3 positivas, y `capex_depreciation_ratio` no era comparable—; e `interest_expense` se separa del resultado financiero neto.
 
 **Fallbacks.** Cuando una métrica no viene etiquetada pero es derivable de otras, se
 sintetiza marcándola como `calculated_fallback`: `total_debt` de sus componentes,
@@ -202,6 +204,23 @@ de `total_assets - equity` cuando el emisor no la etiqueta o solo trae la porci�
 | Complejidad de portafolio | 15% | nº de modelos y fabricantes, convivencia de generaciones |
 | Actividad de transición | 12% | order book sobre flota, ponderado por proximidad |
 | Apalancamiento | 8% | deuda neta sobre EBITDA, como modificador |
+
+`v_financial_trend` es la lectura complementaria: en vez de inferir la transición de una
+foto, la **mide**. `extraccion-xbrl-10k` lee tres ejercicios de cada filing —los
+comparativos vienen dentro del propio XBRL— y esa serie vive en `financial_fact_history`.
+La vista compara los extremos y clasifica el movimiento:
+
+| Señal | Cuándo | Qué significa comercialmente |
+|---|---|---|
+| Entrada de flota arrendada | pasivo por arrendamiento +15% anual y creciendo más rápido que los ingresos | Rotación hacia leasing en curso |
+| Devolución de flota arrendada | pasivo por arrendamiento −10% anual | Condiciones de devolución y transiciones entre operadores |
+| Renovación con capital propio | capex sobre depreciación ≥ 1.2 con arrendamiento estable | Gestión técnica de activos nuevos |
+| Sin renovación | capex sobre depreciación ≤ 0.7 | Flota envejeciendo sin plan visible |
+
+No es un componente del score, y a propósito: solo las emisoras SEC tienen más de un
+ejercicio, porque las aerolíneas chinas se extraen de un reporte por año y hoy solo existe
+2025. Meterla dentro penalizaría a once aerolíneas por falta de datos, no por falta de
+señal. El consultor lee las dos.
 
 **Anclas absolutas, no percentiles.** Con percentiles el score de una aerolínea cambiaría
 al agregar o quitar otras del universo, lo que impide comparar entre corridas. Con anclas,
@@ -301,9 +320,20 @@ respuesta HTTP, no solo en el log.
 
 Nada de esto está roto; son fronteras del sistema tal como está hoy.
 
-**Sin serie temporal.** Ninguna aerolínea tiene flota en más de un ejercicio, así que la
-transición se *infiere* de una foto estática —presión de transición— en vez de medirse
-como cambio observado. Es la señal más fuerte disponible y queda pendiente.
+**Sin serie temporal de flota.** La composición de flota se declara en una sección
+narrativa del reporte, no en XBRL, así que recuperar ejercicios anteriores exige descargar
+los filings viejos y volver a pasarlos por la cadena de extracción completa. Hoy toda la
+flota es del ejercicio 2025 y la transición se *infiere* de esa foto.
+
+Lo que sí quedó medido es el lado financiero: los comparativos vienen dentro del propio
+XBRL, y `v_financial_trend` mide el movimiento del arrendamiento, la deuda y el capex sobre
+tres ejercicios para las 16 emisoras SEC. Las ocho aerolíneas asiáticas siguen con un solo
+año, porque su fuente es un reporte anual por ejercicio.
+
+**Tipos de cambio faltantes.** `fx_rates` se mantiene a mano y no tiene BRL para 2023 ni
+2024. La conversión cae a la tasa más cercana, así que la serie de Azul convierte los tres
+ejercicios con la tasa de 2025 y un movimiento cambiario podría leerse como movimiento del
+negocio. La normalización ahora reporta qué conversiones usaron una tasa sustituta.
 
 **Aeroméxico pierde detalle de modelo.** Su 20-F quedó extraído dos veces bajo prefijos
 distintos, y el pipeline sumaba ambas lecturas: 355 aeronaves donde hay 165. Se resolvió
