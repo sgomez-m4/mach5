@@ -23,7 +23,9 @@ Tu tarea es extraer datos de tablas de flota de reportes SEC y devolver estricta
 Campos obligatorios:
 - fleet_id: concatenación única (airline_year_model_ownership)
 - airline: nombre de la aerolínea
-- report_year: año del reporte financiero (entero)
+- report_year: ejercicio al que corresponde ESA cifra (entero). No es el año
+  del documento: si la tabla presenta varias columnas de años, cada columna
+  produce sus propias filas con su propio report_year.
 - aircraft_type: modelo exacto del avión (ej. A321neo)
 - ownership_type: "Owned", "Operating Lease", o "Finance Lease"
 - quantity: cantidad de aeronaves (entero)
@@ -43,6 +45,16 @@ Campos obligatorios:
 Reglas Críticas:
 1. Desnormaliza las columnas dinámicas de propiedad y años en filas.
 2. Devuelve ÚNICAMENTE un objeto JSON con dos claves raíz: "current_fleet" y "future_commitments". No uses bloques de código markdown en la salida.
+
+REGLA DE EJERCICIOS MÚLTIPLES (importante):
+Las tablas de flota suelen mostrar varios cierres anuales en columnas contiguas, por
+ejemplo "As of December 31: 2025 | 2024 | 2023". Emite una fila por cada combinación
+de aeronave, tipo de propiedad Y AÑO. Una tabla con cuatro tipos de aeronave y tres
+columnas de años produce doce filas, no cuatro. No descartes las columnas anteriores,
+no las promedies y no las sumes: cada una es un ejercicio distinto.
+
+Esto aplica solo a la flota (current_fleet). En order_book_fact, report_year sigue
+siendo el ejercicio del reporte y delivery_period el año de entrega comprometido.
 """
 
 
