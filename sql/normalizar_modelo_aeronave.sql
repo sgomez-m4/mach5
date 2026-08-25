@@ -90,10 +90,18 @@ CREATE OR REPLACE FUNCTION `mach5-gemini-project.dataset_integrado.normalizar_mo
         WHEN STRPOS(t, 'C929') > 0 OR STRPOS(t, 'CR929') > 0 THEN 'C929'
 
         -- ---------- EMBRAER ----------
+        -- La generacion E2 va primero: 'E-195-E2' contiene 'E-195' y caeria en
+        -- la rama de la generacion anterior.
+        WHEN STRPOS(t, 'E195-E2') > 0 OR STRPOS(t, 'E-195-E2') > 0
+          OR STRPOS(t, 'E195E2') > 0 THEN 'E195-E2'
+        WHEN STRPOS(t, 'E190-E2') > 0 OR STRPOS(t, 'E-190-E2') > 0
+          OR STRPOS(t, 'E190E2') > 0 THEN 'E190-E2'
         WHEN STRPOS(t, 'E170/175') > 0 OR STRPOS(t, 'E175') > 0 THEN 'E175'
         WHEN STRPOS(t, 'E170') > 0 THEN 'E170'
-        WHEN STRPOS(t, 'E190') > 0 THEN 'E190'
-        WHEN STRPOS(t, 'E195') > 0 THEN 'E195'
+        -- Cubeta mixta: se toma el mayor del par, igual que E170/175 -> E175.
+        WHEN STRPOS(t, 'E-190/195') > 0 OR STRPOS(t, 'E190/195') > 0 THEN 'E195'
+        WHEN STRPOS(t, 'E190') > 0 OR STRPOS(t, 'E-190') > 0 THEN 'E190'
+        WHEN STRPOS(t, 'E195') > 0 OR STRPOS(t, 'E-195') > 0 THEN 'E195'
         WHEN STRPOS(t, 'ERJ145') > 0 OR STRPOS(t, 'ERJ-145') > 0 THEN 'ERJ145'
 
         -- ---------- BOMBARDIER ----------
@@ -103,14 +111,27 @@ CREATE OR REPLACE FUNCTION `mach5-gemini-project.dataset_integrado.normalizar_mo
         WHEN STRPOS(t, 'CRJ200') > 0 THEN 'CRJ200'
 
         -- ---------- ATR ----------
-        WHEN STRPOS(t, 'ATR-72') > 0 OR STRPOS(t, 'ATR72') > 0 THEN
+        WHEN STRPOS(t, 'ATR-72') > 0 OR STRPOS(t, 'ATR72') > 0
+          OR STRPOS(t, 'ATR 72') > 0 THEN
           IF(is_freighter, 'ATR-72F', 'ATR-72')
-        WHEN STRPOS(t, 'ATR-42') > 0 OR STRPOS(t, 'ATR42') > 0 THEN
+        WHEN STRPOS(t, 'ATR-42') > 0 OR STRPOS(t, 'ATR42') > 0
+          OR STRPOS(t, 'ATR 42') > 0 THEN
           IF(is_freighter, 'ATR-42F', 'ATR-42')
 
         -- ---------- CESSNA ----------
         WHEN STRPOS(t, 'CESSNA') > 0 OR STRPOS(t, '208') > 0 OR STRPOS(t, '408') > 0
           THEN 'Cessna'
+
+        -- ---------- CUBETAS DE FAMILIA ----------
+        -- Algunos reportes no desglosan por modelo: Azul declara "Airbus
+        -- narrowbody" y "Airbus widebody". No hay modelo que asignar, pero si
+        -- fabricante y categoria, que es lo que alimenta la complejidad de
+        -- portafolio. Van al final para no ensombrecer ninguna rama especifica.
+        WHEN STRPOS(t, 'AIRBUS NARROWBODY') > 0 OR STRPOS(t, 'AIRBUS NARROW-BODY') > 0
+          THEN 'Airbus Narrowbody'
+        WHEN STRPOS(t, 'AIRBUS WIDEBODY') > 0 OR STRPOS(t, 'AIRBUS WIDE-BODY') > 0
+          THEN 'Airbus Widebody'
+        WHEN STRPOS(t, 'BUSINESS JET') > 0 THEN 'Business Jet'
 
         ELSE 'Other'
       END

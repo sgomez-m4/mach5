@@ -62,7 +62,40 @@ jobs:
             gcloud storage cp "$f" "gs://${{ secrets.BUCKET_NAME }}/config/$(basename "$f")"
           done
 
+      - name: Cargar las dimensiones en BigQuery
+        run: |
+          set -euo pipefail
+          # dim_airline y dim_aircraft_type no son solo config que leen los
+          # servicios: son tablas del almacen que consultan las vistas. Hasta
+          # ahora se poblaban a mano, asi que editar el catalogo en el repo no
+          # cambiaba nada aguas abajo.
+          cargar() {
+            ARCHIVO="$1"; CLAVE="$2"; TABLA="$3"
+            if [ ! -e "$ARCHIVO" ]; then
+              echo "::warning::$ARCHIVO no existe, se omite"
+              return 0
+            fi
+            python3 -c "import json,sys;d=json.load(open(sys.argv[1],encoding='utf-8'));r=d[sys.argv[2]] if isinstance(d,dict) else d;open('/tmp/dim.ndjson','w',encoding='utf-8').write(''.join(json.dumps(x,ensure_ascii=False)+chr(10) for x in r));print(len(r),'filas preparadas')" "$ARCHIVO" "$CLAVE"
+            bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+              --project_id="${{ secrets.GCP_PROJECT_ID }}" \
+              "dataset_integrado.$TABLA" /tmp/dim.ndjson
+            echo "cargada dataset_integrado.$TABLA"
+          }
+
+          cargar config/dim_airline.json       airlines dim_airline
+          cargar config/dim_aircraft_type.json models   dim_aircraft_type
+
       - name: Verificar
         run: |
           echo "Contenido de gs://${{ secrets.BUCKET_NAME }}/config/"
           gcloud storage ls -l "gs://${{ secrets.BUCKET_NAME }}/config/"
+          for t in dim_airline dim_aircraft_type; do
+            n=$(bq query --use_legacy_sql=false --format=csv \
+                  --project_id="${{ secrets.GCP_PROJECT_ID }}" \
+                  "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.dataset_integrado.$t\`" | tail -1)
+            echo "$t: $n filas"
+            if [ "$n" = "0" ]; then
+              echo "::error::$t quedo vacia"
+              exit 1
+            fi
+          done

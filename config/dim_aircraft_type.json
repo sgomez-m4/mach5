@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "updated": "2026-08-23",
-  "description": "Taxonomia canonica de modelos de aeronave. Portada desde las columnas calculadas DAX del modelo de Power BI (Aircraft_Model, Aircraft_Category, Manufacturer) y la tabla calculada Aircraft_Design_Life, para que la logica viva en el almacen y no solo en el BI. La normalizacion del texto libre a estos modelos vive en la UDF dataset_integrado.normalizar_modelo_aeronave. design_life_years es la vida util tipica del activo; replacement_target es la edad a la que conviene planear el reemplazo, que es la que alimenta remaining_replacement_life y fleet_replacement_status. origen indica si el registro venia de Aircraft_Design_Life ('dax') o si se agrego aqui para cerrar un hueco ('nuevo'): los modelos marcados 'nuevo' caian antes al fallback generico Other (25/20), lo que subestimaba la vida de los widebody y de los cargueros.",
+  "updated": "2026-08-24",
+  "description": "Taxonomia canonica de modelos de aeronave. Portada desde las columnas calculadas DAX del modelo de Power BI (Aircraft_Model, Aircraft_Category, Manufacturer) y la tabla calculada Aircraft_Design_Life, para que la logica viva en el almacen y no solo en el BI. La normalizacion del texto libre a estos modelos vive en la UDF dataset_integrado.normalizar_modelo_aeronave. design_life_years es la vida util tipica del activo; replacement_target es la edad a la que conviene planear el reemplazo, que es la que alimenta remaining_replacement_life y fleet_replacement_status. origen indica si el registro venia de Aircraft_Design_Life ('dax') o si se agrego aqui para cerrar un hueco ('nuevo'): los modelos marcados 'nuevo' caian antes al fallback generico Other (25/20), lo que subestimaba la vida de los widebody y de los cargueros. Los modelos E195-E2 y E190-E2 separan la generacion E2 de la E1, que pasa a 'previous': Azul opera ambas y sin la distincion la convivencia de generaciones -que es señal de complejidad de portafolio- quedaba invisible. Airbus Narrowbody, Airbus Widebody y Business Jet son cubetas sin modelo: el reporte no desglosa la variante, asi que se les asigna fabricante y categoria pero la vida util es la tipica de la categoria, no una medida del activo concreto.",
   "convenciones": {
     "narrowbody_generacion_actual": "25 / 20",
     "narrowbody_generacion_previa": "25 / 22",
@@ -10,60 +10,482 @@
     "regional": "25 / 20"
   },
   "models": [
-    {"model": "A220",       "manufacturer": "Airbus",     "category": "Narrowbody", "generation": "current",  "design_life_years": 30, "replacement_target": 20, "origen": "dax"},
-    {"model": "A319",       "manufacturer": "Airbus",     "category": "Narrowbody", "generation": "previous", "design_life_years": 25, "replacement_target": 22, "origen": "dax"},
-    {"model": "A320ceo",    "manufacturer": "Airbus",     "category": "Narrowbody", "generation": "previous", "design_life_years": 25, "replacement_target": 22, "origen": "dax"},
-    {"model": "A320neo",    "manufacturer": "Airbus",     "category": "Narrowbody", "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "A321ceo",    "manufacturer": "Airbus",     "category": "Narrowbody", "generation": "previous", "design_life_years": 25, "replacement_target": 22, "origen": "dax"},
-    {"model": "A321neo",    "manufacturer": "Airbus",     "category": "Narrowbody", "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "A321F",      "manufacturer": "Airbus",     "category": "Freighter",  "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-    {"model": "A300",       "manufacturer": "Airbus",     "category": "Widebody",   "generation": "legacy",   "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "A300F",      "manufacturer": "Airbus",     "category": "Freighter",  "generation": "legacy",   "design_life_years": 35, "replacement_target": 30, "origen": "nuevo"},
-    {"model": "A330ceo",    "manufacturer": "Airbus",     "category": "Widebody",   "generation": "previous", "design_life_years": 25, "replacement_target": 22, "origen": "dax"},
-    {"model": "A330neo",    "manufacturer": "Airbus",     "category": "Widebody",   "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "A330F",      "manufacturer": "Airbus",     "category": "Freighter",  "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "A340",       "manufacturer": "Airbus",     "category": "Widebody",   "generation": "legacy",   "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-    {"model": "A350",       "manufacturer": "Airbus",     "category": "Widebody",   "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-
-    {"model": "717",        "manufacturer": "Boeing",     "category": "Narrowbody", "generation": "legacy",   "design_life_years": 25, "replacement_target": 22, "origen": "dax"},
-    {"model": "737NG",      "manufacturer": "Boeing",     "category": "Narrowbody", "generation": "previous", "design_life_years": 25, "replacement_target": 22, "origen": "dax"},
-    {"model": "737NGF",     "manufacturer": "Boeing",     "category": "Freighter",  "generation": "previous", "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "737MAX",     "manufacturer": "Boeing",     "category": "Narrowbody", "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "737MAXF",    "manufacturer": "Boeing",     "category": "Freighter",  "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-    {"model": "747",        "manufacturer": "Boeing",     "category": "Widebody",   "generation": "legacy",   "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-    {"model": "747F",       "manufacturer": "Boeing",     "category": "Freighter",  "generation": "legacy",   "design_life_years": 35, "replacement_target": 30, "origen": "nuevo"},
-    {"model": "757",        "manufacturer": "Boeing",     "category": "Narrowbody", "generation": "legacy",   "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "757F",       "manufacturer": "Boeing",     "category": "Freighter",  "generation": "legacy",   "design_life_years": 35, "replacement_target": 30, "origen": "nuevo"},
-    {"model": "767",        "manufacturer": "Boeing",     "category": "Widebody",   "generation": "legacy",   "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "767F",       "manufacturer": "Boeing",     "category": "Freighter",  "generation": "legacy",   "design_life_years": 35, "replacement_target": 30, "origen": "dax"},
-    {"model": "777",        "manufacturer": "Boeing",     "category": "Widebody",   "generation": "previous", "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "777F",       "manufacturer": "Boeing",     "category": "Freighter",  "generation": "previous", "design_life_years": 35, "replacement_target": 30, "origen": "dax"},
-    {"model": "787",        "manufacturer": "Boeing",     "category": "Widebody",   "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "dax"},
-    {"model": "MD-11",      "manufacturer": "Boeing",     "category": "Widebody",   "generation": "legacy",   "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-    {"model": "MD-11F",     "manufacturer": "Boeing",     "category": "Freighter",  "generation": "legacy",   "design_life_years": 35, "replacement_target": 30, "origen": "nuevo"},
-
-    {"model": "C919",       "manufacturer": "COMAC",      "category": "Narrowbody", "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "nuevo"},
-    {"model": "C909/ARJ21", "manufacturer": "COMAC",      "category": "Regional",   "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "nuevo"},
-    {"model": "C929",       "manufacturer": "COMAC",      "category": "Widebody",   "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-
-    {"model": "E170",       "manufacturer": "Embraer",    "category": "Regional",   "generation": "previous", "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "E175",       "manufacturer": "Embraer",    "category": "Regional",   "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "E190",       "manufacturer": "Embraer",    "category": "Regional",   "generation": "previous", "design_life_years": 25, "replacement_target": 20, "origen": "nuevo"},
-    {"model": "E195",       "manufacturer": "Embraer",    "category": "Regional",   "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "nuevo"},
-    {"model": "ERJ145",     "manufacturer": "Embraer",    "category": "Regional",   "generation": "legacy",   "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-
-    {"model": "CRJ200",     "manufacturer": "Bombardier", "category": "Regional",   "generation": "legacy",   "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "CRJ700",     "manufacturer": "Bombardier", "category": "Regional",   "generation": "previous", "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "CRJ900",     "manufacturer": "Bombardier", "category": "Regional",   "generation": "previous", "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "CRJ1000",    "manufacturer": "Bombardier", "category": "Regional",   "generation": "previous", "design_life_years": 25, "replacement_target": 20, "origen": "nuevo"},
-
-    {"model": "ATR-42",     "manufacturer": "ATR",        "category": "Regional",   "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "ATR-42F",    "manufacturer": "ATR",        "category": "Freighter",  "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-    {"model": "ATR-72",     "manufacturer": "ATR",        "category": "Regional",   "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-    {"model": "ATR-72F",    "manufacturer": "ATR",        "category": "Freighter",  "generation": "current",  "design_life_years": 30, "replacement_target": 25, "origen": "nuevo"},
-
-    {"model": "Cessna",     "manufacturer": "Cessna",     "category": "Regional",   "generation": "current",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"},
-
-    {"model": "Other",      "manufacturer": "Other",      "category": "Other",      "generation": "unknown",  "design_life_years": 25, "replacement_target": 20, "origen": "dax"}
+    {
+      "model": "A220",
+      "manufacturer": "Airbus",
+      "category": "Narrowbody",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "A319",
+      "manufacturer": "Airbus",
+      "category": "Narrowbody",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 22,
+      "origen": "dax"
+    },
+    {
+      "model": "A320ceo",
+      "manufacturer": "Airbus",
+      "category": "Narrowbody",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 22,
+      "origen": "dax"
+    },
+    {
+      "model": "A320neo",
+      "manufacturer": "Airbus",
+      "category": "Narrowbody",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "A321ceo",
+      "manufacturer": "Airbus",
+      "category": "Narrowbody",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 22,
+      "origen": "dax"
+    },
+    {
+      "model": "A321neo",
+      "manufacturer": "Airbus",
+      "category": "Narrowbody",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "A321F",
+      "manufacturer": "Airbus",
+      "category": "Freighter",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "A300",
+      "manufacturer": "Airbus",
+      "category": "Widebody",
+      "generation": "legacy",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "A300F",
+      "manufacturer": "Airbus",
+      "category": "Freighter",
+      "generation": "legacy",
+      "design_life_years": 35,
+      "replacement_target": 30,
+      "origen": "nuevo"
+    },
+    {
+      "model": "A330ceo",
+      "manufacturer": "Airbus",
+      "category": "Widebody",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 22,
+      "origen": "dax"
+    },
+    {
+      "model": "A330neo",
+      "manufacturer": "Airbus",
+      "category": "Widebody",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "A330F",
+      "manufacturer": "Airbus",
+      "category": "Freighter",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "A340",
+      "manufacturer": "Airbus",
+      "category": "Widebody",
+      "generation": "legacy",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "A350",
+      "manufacturer": "Airbus",
+      "category": "Widebody",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "717",
+      "manufacturer": "Boeing",
+      "category": "Narrowbody",
+      "generation": "legacy",
+      "design_life_years": 25,
+      "replacement_target": 22,
+      "origen": "dax"
+    },
+    {
+      "model": "737NG",
+      "manufacturer": "Boeing",
+      "category": "Narrowbody",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 22,
+      "origen": "dax"
+    },
+    {
+      "model": "737NGF",
+      "manufacturer": "Boeing",
+      "category": "Freighter",
+      "generation": "previous",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "737MAX",
+      "manufacturer": "Boeing",
+      "category": "Narrowbody",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "737MAXF",
+      "manufacturer": "Boeing",
+      "category": "Freighter",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "747",
+      "manufacturer": "Boeing",
+      "category": "Widebody",
+      "generation": "legacy",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "747F",
+      "manufacturer": "Boeing",
+      "category": "Freighter",
+      "generation": "legacy",
+      "design_life_years": 35,
+      "replacement_target": 30,
+      "origen": "nuevo"
+    },
+    {
+      "model": "757",
+      "manufacturer": "Boeing",
+      "category": "Narrowbody",
+      "generation": "legacy",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "757F",
+      "manufacturer": "Boeing",
+      "category": "Freighter",
+      "generation": "legacy",
+      "design_life_years": 35,
+      "replacement_target": 30,
+      "origen": "nuevo"
+    },
+    {
+      "model": "767",
+      "manufacturer": "Boeing",
+      "category": "Widebody",
+      "generation": "legacy",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "767F",
+      "manufacturer": "Boeing",
+      "category": "Freighter",
+      "generation": "legacy",
+      "design_life_years": 35,
+      "replacement_target": 30,
+      "origen": "dax"
+    },
+    {
+      "model": "777",
+      "manufacturer": "Boeing",
+      "category": "Widebody",
+      "generation": "previous",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "777F",
+      "manufacturer": "Boeing",
+      "category": "Freighter",
+      "generation": "previous",
+      "design_life_years": 35,
+      "replacement_target": 30,
+      "origen": "dax"
+    },
+    {
+      "model": "787",
+      "manufacturer": "Boeing",
+      "category": "Widebody",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "dax"
+    },
+    {
+      "model": "MD-11",
+      "manufacturer": "Boeing",
+      "category": "Widebody",
+      "generation": "legacy",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "MD-11F",
+      "manufacturer": "Boeing",
+      "category": "Freighter",
+      "generation": "legacy",
+      "design_life_years": 35,
+      "replacement_target": 30,
+      "origen": "nuevo"
+    },
+    {
+      "model": "C919",
+      "manufacturer": "COMAC",
+      "category": "Narrowbody",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "C909/ARJ21",
+      "manufacturer": "COMAC",
+      "category": "Regional",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "C929",
+      "manufacturer": "COMAC",
+      "category": "Widebody",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "E170",
+      "manufacturer": "Embraer",
+      "category": "Regional",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "E175",
+      "manufacturer": "Embraer",
+      "category": "Regional",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "E190",
+      "manufacturer": "Embraer",
+      "category": "Regional",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "E195",
+      "manufacturer": "Embraer",
+      "category": "Regional",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "ERJ145",
+      "manufacturer": "Embraer",
+      "category": "Regional",
+      "generation": "legacy",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "CRJ200",
+      "manufacturer": "Bombardier",
+      "category": "Regional",
+      "generation": "legacy",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "CRJ700",
+      "manufacturer": "Bombardier",
+      "category": "Regional",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "CRJ900",
+      "manufacturer": "Bombardier",
+      "category": "Regional",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "CRJ1000",
+      "manufacturer": "Bombardier",
+      "category": "Regional",
+      "generation": "previous",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "ATR-42",
+      "manufacturer": "ATR",
+      "category": "Regional",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "ATR-42F",
+      "manufacturer": "ATR",
+      "category": "Freighter",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "ATR-72",
+      "manufacturer": "ATR",
+      "category": "Regional",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "ATR-72F",
+      "manufacturer": "ATR",
+      "category": "Freighter",
+      "generation": "current",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "Cessna",
+      "manufacturer": "Cessna",
+      "category": "Regional",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "Other",
+      "manufacturer": "Other",
+      "category": "Other",
+      "generation": "unknown",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "dax"
+    },
+    {
+      "model": "E195-E2",
+      "manufacturer": "Embraer",
+      "category": "Regional",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "E190-E2",
+      "manufacturer": "Embraer",
+      "category": "Regional",
+      "generation": "current",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "Airbus Narrowbody",
+      "manufacturer": "Airbus",
+      "category": "Narrowbody",
+      "generation": "unknown",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    },
+    {
+      "model": "Airbus Widebody",
+      "manufacturer": "Airbus",
+      "category": "Widebody",
+      "generation": "unknown",
+      "design_life_years": 30,
+      "replacement_target": 25,
+      "origen": "nuevo"
+    },
+    {
+      "model": "Business Jet",
+      "manufacturer": "Other",
+      "category": "Business Jet",
+      "generation": "unknown",
+      "design_life_years": 25,
+      "replacement_target": 20,
+      "origen": "nuevo"
+    }
   ]
 }
