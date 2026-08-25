@@ -173,6 +173,9 @@ componentes AS (
 )
 
 SELECT
+  -- La llave del grupo, para que los consumidores unan por identificador y no
+  -- por nombre: un cambio de display_name no debe romper una relacion.
+  group_id,
   grupo,
   region,
   country,
