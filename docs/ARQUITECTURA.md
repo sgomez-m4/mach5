@@ -320,10 +320,15 @@ respuesta HTTP, no solo en el log.
 
 Nada de esto está roto; son fronteras del sistema tal como está hoy.
 
-**Serie de flota solo donde el filing publica la comparativa.** No todas las aerolíneas
-muestran varios cierres anuales en su tabla de flota; las que reportan un solo ejercicio no
-tienen serie y su transición se sigue *infiriendo* de la foto. Recuperar más años para esas
-sí exigiría descargar filings anteriores.
+**Serie de flota solo en 3 de 25 grupos.** Aeroméxico y Volaris con tres ejercicios,
+SkyWest con dos. El resto publica la flota como una foto del cierre —LATAM, por ejemplo, da
+total, propiedad, edad media y plazo de arrendamiento remanente, pero de un solo año— así
+que su transición se sigue *infiriendo*. Recuperar más años para esas sí exigiría descargar
+filings anteriores.
+
+Cuidado al buscar candidatos por si un documento trae varios años: los reportes están llenos
+de tablas multi-ejercicio que no son de flota. En LATAM, las estadísticas de carga y las de
+utilización traen 2023, 2024 y 2025, y hacen parecer que hay serie donde no la hay.
 
 Lo que sí quedó medido es el lado financiero: los comparativos vienen dentro del propio
 XBRL, y `v_financial_trend` mide el movimiento del arrendamiento, la deuda y el capex sobre
@@ -362,9 +367,10 @@ trabajo manual.
 
 **Serie temporal de flota.** La composición de flota no está en XBRL, así que no salió del
 universo de hechos como la serie financiera. Pero tampoco hacía falta descargar filings
-viejos: varias tablas publican dos, tres o cuatro cierres anuales en columnas contiguas, y
-el prompt las colapsaba porque describía `report_year` como *el año del reporte*. Ahora pide
-una fila por ejercicio.
+viejos: algunas tablas publican dos o tres cierres anuales en columnas contiguas, y el
+prompt las colapsaba porque describía `report_year` como *el año del reporte*. Ahora pide una
+fila por ejercicio, y con eso Aeroméxico rinde 2023-2025, Volaris 2023-2025 y SkyWest
+2024-2025.
 
 `fleet_history_fact` guarda la serie completa y `current_fleet_fact` conserva su contrato
 —el último ejercicio de cada aerolínea— porque mezclarlos haría que cualquier consumidor
