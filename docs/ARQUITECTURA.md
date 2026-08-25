@@ -320,16 +320,10 @@ respuesta HTTP, no solo en el log.
 
 Nada de esto está roto; son fronteras del sistema tal como está hoy.
 
-**Sin serie temporal de flota.** Hoy toda la flota es del ejercicio 2025 y la transición se
-*infiere* de esa foto. La composición se declara en una sección narrativa, no en XBRL, así
-que no sale del universo de hechos como sí salió la serie financiera.
-
-Pero **no hace falta descargar filings viejos**: ocho secciones del corpus ya contienen la
-tabla con varios ejercicios en el mismo documento. Aeroméxico publica 2025, 2024 y 2023 en
-una sola tabla; SkyWest y LATAM igual, y Volaris llega a cuatro años. Lo que falta es que la
-extracción emita una fila por ejercicio en vez de quedarse con la columna más reciente. Es
-trabajo de esquema y prompt sobre documentos que ya están descargados, no una recolección
-nueva.
+**Serie de flota solo donde el filing publica la comparativa.** No todas las aerolíneas
+muestran varios cierres anuales en su tabla de flota; las que reportan un solo ejercicio no
+tienen serie y su transición se sigue *infiriendo* de la foto. Recuperar más años para esas
+sí exigiría descargar filings anteriores.
 
 Lo que sí quedó medido es el lado financiero: los comparativos vienen dentro del propio
 XBRL, y `v_financial_trend` mide el movimiento del arrendamiento, la deuda y el capex sobre
@@ -365,6 +359,18 @@ herramientas de modelo. Las tablas y medidas están listas; construir las págin
 trabajo manual.
 
 ### Resueltas
+
+**Serie temporal de flota.** La composición de flota no está en XBRL, así que no salió del
+universo de hechos como la serie financiera. Pero tampoco hacía falta descargar filings
+viejos: varias tablas publican dos, tres o cuatro cierres anuales en columnas contiguas, y
+el prompt las colapsaba porque describía `report_year` como *el año del reporte*. Ahora pide
+una fila por ejercicio.
+
+`fleet_history_fact` guarda la serie completa y `current_fleet_fact` conserva su contrato
+—el último ejercicio de cada aerolínea— porque mezclarlos haría que cualquier consumidor
+sin filtro por año contara la misma aeronave dos o tres veces. `v_fleet_transition` mide el
+movimiento modelo por modelo, y es el complemento por el lado del activo de lo que
+`v_financial_trend` mide por el lado del balance.
 
 **Flota inventada en Volaris.** Su 20-F no trae los marcadores de página que usa el
 extractor de sección: el documento entero cayó en dos páginas, `ITEM 4` e `ITEM 5` casaron

@@ -86,6 +86,40 @@ def riqueza_extraccion(data):
     return (1 if flota else 0, cobertura, len(flota), len(pedidos))
 
 
+def separar_ultimo_ejercicio(filas):
+    """Devuelve (filas del ultimo ejercicio de cada aerolinea, ultimo anio por aerolinea).
+
+    Varias tablas de flota publican dos o tres cierres anuales en columnas
+    contiguas y la extraccion ahora emite una fila por ejercicio. Mezclarlos en
+    current_fleet_fact contaria la misma aeronave varias veces en cualquier
+    consumidor que no filtre por anio, asi que la tabla conserva solo el ultimo
+    y la serie completa va a fleet_history_fact.
+
+    La clave es la aerolinea y no el corpus entero: no todas reportan el mismo
+    cierre, y tomar un maximo global dejaria fuera a las que van un anio atras.
+    """
+    ultimo = {}
+    for fila in filas:
+        clave = fila.get("airline_id") or fila.get("airline_canonical")
+        anio = fila.get("report_year")
+        if clave is None or anio is None:
+            continue
+        try:
+            anio = int(anio)
+        except (ValueError, TypeError):
+            continue
+        fila["report_year"] = anio
+        if anio > ultimo.get(clave, 0):
+            ultimo[clave] = anio
+
+    vigentes = [
+        f for f in filas
+        if (f.get("airline_id") or f.get("airline_canonical")) is not None
+        and f.get("report_year") == ultimo.get(f.get("airline_id") or f.get("airline_canonical"))
+    ]
+    return vigentes, ultimo
+
+
 def cargar_indice_aerolineas(bucket):
     """Construye el indice clave_normalizada -> entidad desde config/dim_airline.json.
 
@@ -271,7 +305,18 @@ def ejecutar_pipeline_flota(request):
             stats["archivos_con_error"] += 1
             print(f"  ✗ Error procesando {nombre_blob}: {type(e).__name__}: {e}")
 
+    # La serie completa se conserva aparte; las tablas de siempre se quedan con el
+    # ultimo ejercicio de cada aerolinea, que es el contrato que consumen las
+    # vistas y el modelo de Power BI.
+    historia_rows = list(current_rows)
+    current_rows, ultimo_ejercicio = separar_ultimo_ejercicio(current_rows)
+    commitment_rows, _ = separar_ultimo_ejercicio(commitment_rows)
+    anios_flota = sorted({f.get("report_year") for f in historia_rows
+                          if f.get("report_year") is not None})
+
     stats["filas_current_fleet"] = len(current_rows)
+    stats["filas_flota_historica"] = len(historia_rows)
+    stats["anios_flota"] = anios_flota
     stats["filas_order_book"] = len(commitment_rows)
     stats["extracciones_descartadas"] = len(extracciones_descartadas)
     
@@ -283,6 +328,7 @@ def ejecutar_pipeline_flota(request):
               f"descartadas: {sorted(extracciones_descartadas)}")
     print(f"  Archivos con error: {stats['archivos_con_error']}")
     print(f"  Filas current_fleet: {len(current_rows)}")
+    print(f"  Filas flota historica: {len(historia_rows)} (ejercicios {anios_flota})")
     print(f"  Filas order_book: {len(commitment_rows)}")
     print(f"  Aerolíneas detectadas: {sorted(stats['aerolineas_detectadas'])}")
 
@@ -300,13 +346,17 @@ def ejecutar_pipeline_flota(request):
             "status": "dry_run",
             "mensaje": "Ejecución de prueba. No se cargó a BigQuery.",
             "filas_current_fleet": len(current_rows),
+            "filas_flota_historica": len(historia_rows),
+            "anios_flota": anios_flota,
             "filas_order_book": len(commitment_rows),
             "aerolineas_detectadas": sorted(stats["aerolineas_detectadas"]),
             "archivos_leidos": stats["archivos_leidos"],
             "archivos_con_error": stats["archivos_con_error"],
             "aerolineas_sin_resolver": sorted(aerolineas_no_resueltas),
             "filas_sin_airline_id": sin_id,
-            "extracciones_duplicadas_descartadas": sorted(extracciones_descartadas)
+            "extracciones_duplicadas_descartadas": sorted(extracciones_descartadas),
+            "anios_flota": anios_flota,
+            "ultimo_ejercicio_por_aerolinea": {k: v for k, v in sorted(ultimo_ejercicio.items())}
         }, 200
 
     # Cargar a BigQuery
@@ -326,6 +376,13 @@ def ejecutar_pipeline_flota(request):
     else:
         resultados["order_book_fact"] = "Sin filas para cargar."
 
+    if historia_rows:
+        resultados["fleet_history_fact"] = cargar_a_bigquery(
+            bq_client, historia_rows, f"{DATASET_ID}.fleet_history_fact"
+        )
+    else:
+        resultados["fleet_history_fact"] = "Sin filas para cargar."
+
     return {
         "status": "Proceso completado (Fuentes: 10K + 20F + Aerolíneas Chinas)",
         "dry_run": False,
@@ -335,7 +392,9 @@ def ejecutar_pipeline_flota(request):
             "aerolineas_detectadas": sorted(stats["aerolineas_detectadas"]),
             "aerolineas_sin_resolver": sorted(aerolineas_no_resueltas),
             "filas_sin_airline_id": sin_id,
-            "extracciones_duplicadas_descartadas": sorted(extracciones_descartadas)
+            "extracciones_duplicadas_descartadas": sorted(extracciones_descartadas),
+            "anios_flota": anios_flota,
+            "ultimo_ejercicio_por_aerolinea": {k: v for k, v in sorted(ultimo_ejercicio.items())}
         },
         "detalles_carga": resultados
     }, 200

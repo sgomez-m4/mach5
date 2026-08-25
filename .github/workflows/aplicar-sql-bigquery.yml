@@ -50,6 +50,7 @@ jobs:
             sql/v_fleet_normalized.sql
             sql/v_prospect_score.sql
             sql/v_financial_trend.sql
+            sql/v_fleet_transition.sql
           "
           for f in $ORDEN; do
             if [ ! -f "$f" ]; then
@@ -73,12 +74,18 @@ jobs:
       - name: Verificar que las vistas responden
         run: |
           set -euo pipefail
-          # v_financial_trend no entra aqui: depende de financial_fact_history,
-          # que normalizacion-financiera puebla en su corrida, asi que puede
-          # estar legitimamente vacia justo despues de aplicar el SQL.
+
+          contar() {
+            bq query --use_legacy_sql=false --format=csv \
+              --project_id="${{ secrets.GCP_PROJECT_ID }}" \
+              "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.dataset_integrado.$1\`" \
+              | tail -1
+          }
+
+          # Estas dependen solo de tablas que ya estan pobladas: si quedan vacias,
+          # algo se rompio en el SQL.
           for v in v_fleet_normalized v_prospect_score; do
-            n=$(bq query --use_legacy_sql=false --format=csv --project_id="${{ secrets.GCP_PROJECT_ID }}" \
-                  "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.dataset_integrado.$v\`" | tail -1)
+            n=$(contar "$v")
             echo "$v: $n filas"
             if [ "$n" = "0" ]; then
               echo "::error::$v quedo vacia"
@@ -86,9 +93,16 @@ jobs:
             fi
           done
 
-          n=$(bq query --use_legacy_sql=false --format=csv --project_id="${{ secrets.GCP_PROJECT_ID }}" \
-                "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.dataset_integrado.v_financial_trend\`" | tail -1)
-          echo "v_financial_trend: $n filas"
-          if [ "$n" = "0" ]; then
-            echo "::warning::v_financial_trend vacia; corre normalizacion-financiera para poblar financial_fact_history"
-          fi
+          # Estas se apoyan en tablas de serie temporal que pueblan los servicios en
+          # su corrida, asi que pueden estar legitimamente vacias justo despues de
+          # aplicar el SQL. Se avisa, no se falla.
+          for v in v_financial_trend:normalizacion-financiera \
+                   v_fleet_transition:ejecutar-pipeline-anuales; do
+            nombre="${v%%:*}"
+            servicio="${v##*:}"
+            n=$(contar "$nombre")
+            echo "$nombre: $n filas"
+            if [ "$n" = "0" ]; then
+              echo "::warning::$nombre vacia; corre $servicio para poblar su tabla de historia"
+            fi
+          done
