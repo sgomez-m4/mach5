@@ -69,13 +69,18 @@ jobs:
           # servicios: son tablas del almacen que consultan las vistas. Hasta
           # ahora se poblaban a mano, asi que editar el catalogo en el repo no
           # cambiaba nada aguas abajo.
+          #
+          # La conversion vive en scripts/ y no aqui porque dim_airline lleva dos
+          # columnas derivadas -group_id y match_keys- que no estan en el JSON.
+          # Cargar el config crudo deja la tabla sin ellas y v_prospect_score
+          # deja de compilar.
           cargar() {
             ARCHIVO="$1"; CLAVE="$2"; TABLA="$3"
             if [ ! -e "$ARCHIVO" ]; then
               echo "::warning::$ARCHIVO no existe, se omite"
               return 0
             fi
-            python3 -c "import json,sys;d=json.load(open(sys.argv[1],encoding='utf-8'));r=d[sys.argv[2]] if isinstance(d,dict) else d;open('/tmp/dim.ndjson','w',encoding='utf-8').write(''.join(json.dumps(x,ensure_ascii=False)+chr(10) for x in r));print(len(r),'filas preparadas')" "$ARCHIVO" "$CLAVE"
+            python3 scripts/generar_dim_ndjson.py "$ARCHIVO" "$CLAVE" /tmp/dim.ndjson
             bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
               --project_id="${{ secrets.GCP_PROJECT_ID }}" \
               "dataset_integrado.$TABLA" /tmp/dim.ndjson
@@ -96,6 +101,19 @@ jobs:
             echo "$t: $n filas"
             if [ "$n" = "0" ]; then
               echo "::error::$t quedo vacia"
+              exit 1
+            fi
+          done
+
+          # Las vistas se compilan contra las dimensiones: si una carga dejo
+          # fuera una columna, esto lo dice aqui y no cuando alguien consulte.
+          for v in v_fleet_normalized v_prospect_score; do
+            n=$(bq query --use_legacy_sql=false --format=csv \
+                  --project_id="${{ secrets.GCP_PROJECT_ID }}" \
+                  "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.dataset_integrado.$v\`" | tail -1)
+            echo "$v: $n filas"
+            if [ "$n" = "0" ]; then
+              echo "::error::$v quedo vacia tras cargar las dimensiones"
               exit 1
             fi
           done
