@@ -320,10 +320,16 @@ respuesta HTTP, no solo en el log.
 
 Nada de esto está roto; son fronteras del sistema tal como está hoy.
 
-**Sin serie temporal de flota.** La composición de flota se declara en una sección
-narrativa del reporte, no en XBRL, así que recuperar ejercicios anteriores exige descargar
-los filings viejos y volver a pasarlos por la cadena de extracción completa. Hoy toda la
-flota es del ejercicio 2025 y la transición se *infiere* de esa foto.
+**Sin serie temporal de flota.** Hoy toda la flota es del ejercicio 2025 y la transición se
+*infiere* de esa foto. La composición se declara en una sección narrativa, no en XBRL, así
+que no sale del universo de hechos como sí salió la serie financiera.
+
+Pero **no hace falta descargar filings viejos**: ocho secciones del corpus ya contienen la
+tabla con varios ejercicios en el mismo documento. Aeroméxico publica 2025, 2024 y 2023 en
+una sola tabla; SkyWest y LATAM igual, y Volaris llega a cuatro años. Lo que falta es que la
+extracción emita una fila por ejercicio en vez de quedarse con la columna más reciente. Es
+trabajo de esquema y prompt sobre documentos que ya están descargados, no una recolección
+nueva.
 
 Lo que sí quedó medido es el lado financiero: los comparativos vienen dentro del propio
 XBRL, y `v_financial_trend` mide el movimiento del arrendamiento, la deuda y el capex sobre
@@ -342,13 +348,17 @@ aeronaves bajo `Commercial Aircraft`, cifra que el filing no declara: dice 155 e
 operativa con edad media de 7.2 años. Corregido: la sección pasa a los 248 KB que arrancan
 en el Item 4 real, con 37 designaciones de modelo.
 
-**Aeroméxico pierde detalle de modelo.** Su 20-F quedó extraído dos veces bajo prefijos
-distintos, y el pipeline sumaba ambas lecturas: 355 aeronaves donde hay 165. Se resolvió
-agrupando por documento fuente (ver *Deduplicación* abajo), pero la lectura que se conserva
-—la única con edades— agrupa como `Boeing Fleet (B787/B737)` en vez de separar MAX de NG y
-787-8 de 787-9. Se privilegió la edad porque presión de reemplazo y exposición a leasing
-pesan 65% del score contra 15% de complejidad de portafolio, y la lectura descartada solo
-detallaba 26 de 164 aeronaves. Recuperar ambas cosas exige re-extraer el filing.
+**Aeroméxico no admite tipo × propiedad.** Su flota aparece como `Boeing Fleet (B787/B737)`
+en vez de separar MAX de NG y 787-8 de 787-9, y **no es un fallo de extracción**: el filing
+publica dos tablas con dimensiones distintas. Una da tipo × cantidad (B787 22, B737-800-NG 34,
+B737-8 MAX 45, B737-9 MAX 30, E190 34); la otra da familia × propiedad × edad. El cruce que
+haría falta no existe en el documento, y repartir los 131 Boeing entre cuatro tipos exigiría
+inventar la asignación.
+
+La extracción conserva propiedad y edad a costa del tipo, que es el intercambio correcto
+—pesan 65% del score contra 15% de complejidad— y cuadra exacto contra ambas tablas:
+120 + 9 + 2 = 131 Boeing, 17 + 17 = 34 E190, total 165, el mismo que declara el filing.
+Se paga en `n_modelos = 2`.
 
 **Páginas de Power BI.** La capa de reporte vive dentro del `.pbix` y no es accesible desde
 herramientas de modelo. Las tablas y medidas están listas; construir las páginas es
