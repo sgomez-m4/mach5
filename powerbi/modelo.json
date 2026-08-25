@@ -1,0 +1,1049 @@
+{
+  "generado_por": "scripts/generar_modelo_pbi.py",
+  "advertencia": "Archivo generado. Editar powerbi/medidas.json o el generador, no este archivo.",
+  "proyecto": "mach5-gemini-project",
+  "dataset": "dataset_integrado",
+  "tabla_medidas": "_Medidas",
+  "tablas": [
+    {
+      "nombre": "dim_airline",
+      "vista_origen": "dim_airline",
+      "clase": "dimension",
+      "descripcion": "Catalogo canonico de aerolineas. group_id pliega las subsidiarias en su matriz.",
+      "expresion_m": "let\n    Origen = GoogleBigQuery.Database([BillingProject=\"mach5-gemini-project\"]),\n    Proyecto = Origen{[Name=\"mach5-gemini-project\"]}[Data],\n    Dataset = Proyecto{[Name=\"dataset_integrado\",Kind=\"Schema\"]}[Data],\n    Tabla = Dataset{[Name=\"dim_airline\",Kind=\"View\"]}[Data]\nin\n    Tabla",
+      "columnas": [
+        {
+          "nombre": "regulator",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "country",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "region",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "financial_company",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "display_name",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "legal_name",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "parent_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "group_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "business_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "airline_id",
+          "tipo": "string",
+          "oculta": true
+        }
+      ]
+    },
+    {
+      "nombre": "dim_aircraft_type",
+      "vista_origen": "dim_aircraft_type",
+      "clase": "dimension",
+      "descripcion": "Taxonomia de modelos: fabricante, categoria, generacion y vida util de diseño.",
+      "expresion_m": "let\n    Origen = GoogleBigQuery.Database([BillingProject=\"mach5-gemini-project\"]),\n    Proyecto = Origen{[Name=\"mach5-gemini-project\"]}[Data],\n    Dataset = Proyecto{[Name=\"dataset_integrado\",Kind=\"Schema\"]}[Data],\n    Tabla = Dataset{[Name=\"dim_aircraft_type\",Kind=\"View\"]}[Data]\nin\n    Tabla",
+      "columnas": [
+        {
+          "nombre": "origen",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "replacement_target",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "design_life_years",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "generation",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "category",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "manufacturer",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "model",
+          "tipo": "string",
+          "oculta": true
+        }
+      ]
+    },
+    {
+      "nombre": "v_fleet_normalized",
+      "vista_origen": "v_fleet_normalized",
+      "clase": "hecho",
+      "descripcion": "Flota vigente resuelta contra ambas dimensiones, con vida remanente y estado de reemplazo.",
+      "expresion_m": "let\n    Origen = GoogleBigQuery.Database([BillingProject=\"mach5-gemini-project\"]),\n    Proyecto = Origen{[Name=\"mach5-gemini-project\"]}[Data],\n    Dataset = Proyecto{[Name=\"dataset_integrado\",Kind=\"Schema\"]}[Data],\n    Tabla = Dataset{[Name=\"v_fleet_normalized\",Kind=\"View\"]}[Data]\nin\n    Tabla",
+      "columnas": [
+        {
+          "nombre": "report_year",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "fleet_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "airline_reportada",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "airline_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "group_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "airline",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "grupo",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "region",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "country",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "business_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "financial_company",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "aircraft_type_reportado",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "aircraft_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "manufacturer",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "category",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "generation",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "design_life_years",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "replacement_target",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "quantity",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "ownership_type",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "average_age_years",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "remaining_lease_years",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "seating_capacity_avg",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "es_fila_agregada",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "tipo_propiedad",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "es_arrendada",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "remaining_replacement_life",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "fleet_replacement_status",
+          "tipo": "string",
+          "oculta": false
+        }
+      ]
+    },
+    {
+      "nombre": "v_order_book_normalized",
+      "vista_origen": "v_order_book_normalized",
+      "clase": "hecho",
+      "descripcion": "Pedidos con el modelo normalizado y la fecha de entrega parseada.",
+      "expresion_m": "let\n    Origen = GoogleBigQuery.Database([BillingProject=\"mach5-gemini-project\"]),\n    Proyecto = Origen{[Name=\"mach5-gemini-project\"]}[Data],\n    Dataset = Proyecto{[Name=\"dataset_integrado\",Kind=\"Schema\"]}[Data],\n    Tabla = Dataset{[Name=\"v_order_book_normalized\",Kind=\"View\"]}[Data]\nin\n    Tabla",
+      "columnas": [
+        {
+          "nombre": "order_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "airline_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "group_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "grupo",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "region",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "country",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "business_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "report_year",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "aircraft_type_reportado",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "aircraft_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "manufacturer",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "category",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "generation",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "quantity_committed",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "delivery_period",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "anio_primera_entrega",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "anios_hasta_entrega",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "fecha_aproximada",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "ventana_entrega",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "es_fila_agregada",
+          "tipo": "boolean",
+          "oculta": false
+        }
+      ]
+    },
+    {
+      "nombre": "v_prospect_score",
+      "vista_origen": "v_prospect_score",
+      "clase": "hecho",
+      "descripcion": "Ranking de prospectos por grupo, con los componentes del score expuestos.",
+      "expresion_m": "let\n    Origen = GoogleBigQuery.Database([BillingProject=\"mach5-gemini-project\"]),\n    Proyecto = Origen{[Name=\"mach5-gemini-project\"]}[Data],\n    Dataset = Proyecto{[Name=\"dataset_integrado\",Kind=\"Schema\"]}[Data],\n    Tabla = Dataset{[Name=\"v_prospect_score\",Kind=\"View\"]}[Data]\nin\n    Tabla",
+      "columnas": [
+        {
+          "nombre": "group_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "grupo",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "region",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "country",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "business_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "flota_total",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "tier_tamano",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "segmento_prospecto",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "prospect_score",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "score_leasing",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "score_reemplazo",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "score_complejidad",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "score_transicion",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "score_apalancamiento",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "pct_operating_lease",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "pct_finance_lease",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "pct_ventana_reemplazo",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "edad_ponderada",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "vida_remanente",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "n_modelos",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "n_fabricantes",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "mezcla_generaciones",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "pedidos_total",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "pedidos_proximos_2a",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "pct_renovacion",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "pct_venc_leasing_3a",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "pct_venc_leasing_1a",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "leasing_venc_total_usdm",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "net_debt_ebitda",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "revenue_usdm",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "sin_dato_edad",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "sin_dato_vencimientos",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "sin_datos_financieros",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "aeronaves_en_filas_agregadas",
+          "tipo": "int64",
+          "oculta": false
+        }
+      ]
+    },
+    {
+      "nombre": "v_fleet_transition",
+      "vista_origen": "v_fleet_transition",
+      "clase": "hecho",
+      "descripcion": "Movimiento de flota observado, modelo por modelo. Solo cubre a quien publica la comparativa.",
+      "expresion_m": "let\n    Origen = GoogleBigQuery.Database([BillingProject=\"mach5-gemini-project\"]),\n    Proyecto = Origen{[Name=\"mach5-gemini-project\"]}[Data],\n    Dataset = Proyecto{[Name=\"dataset_integrado\",Kind=\"Schema\"]}[Data],\n    Tabla = Dataset{[Name=\"v_fleet_transition\",Kind=\"View\"]}[Data]\nin\n    Tabla",
+      "columnas": [
+        {
+          "nombre": "airline_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "group_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "aerolinea",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "region",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "business_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "ejercicios",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "anio_inicial",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "anio_final",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "aircraft_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "manufacturer",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "category",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "generation",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "aeronaves_inicial",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "aeronaves_final",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "variacion",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "variacion_pct",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "movimiento",
+          "tipo": "string",
+          "oculta": false
+        }
+      ]
+    },
+    {
+      "nombre": "v_financial_trend",
+      "vista_origen": "v_financial_trend",
+      "clase": "hecho",
+      "descripcion": "Tendencia de arrendamiento, deuda y capex sobre la serie financiera.",
+      "expresion_m": "let\n    Origen = GoogleBigQuery.Database([BillingProject=\"mach5-gemini-project\"]),\n    Proyecto = Origen{[Name=\"mach5-gemini-project\"]}[Data],\n    Dataset = Proyecto{[Name=\"dataset_integrado\",Kind=\"Schema\"]}[Data],\n    Tabla = Dataset{[Name=\"v_financial_trend\",Kind=\"View\"]}[Data]\nin\n    Tabla",
+      "columnas": [
+        {
+          "nombre": "airline_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "group_id",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "aerolinea",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "region",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "country",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "business_model",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "financial_company",
+          "tipo": "string",
+          "oculta": true
+        },
+        {
+          "nombre": "es_medida",
+          "tipo": "boolean",
+          "oculta": false
+        },
+        {
+          "nombre": "anios_con_datos",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "anio_inicial",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "anio_final",
+          "tipo": "int64",
+          "oculta": false
+        },
+        {
+          "nombre": "lease_inicial_usd_m",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "lease_final_usd_m",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "lease_var_anual",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "lease_sobre_ingresos",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "deuda_final_usd_m",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "deuda_var_anual",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "capex_final_usd_m",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "capex_var_anual",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "capex_dep_inicial",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "capex_dep_final",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "ingresos_var_anual",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "net_debt_ebitda",
+          "tipo": "double",
+          "oculta": false
+        },
+        {
+          "nombre": "senal_transicion",
+          "tipo": "string",
+          "oculta": false
+        },
+        {
+          "nombre": "prioridad_transicion",
+          "tipo": "int64",
+          "oculta": false
+        }
+      ]
+    }
+  ],
+  "relaciones": [
+    {
+      "desde_tabla": "v_fleet_normalized",
+      "desde_columna": "group_id",
+      "hacia_tabla": "dim_airline",
+      "hacia_columna": "airline_id"
+    },
+    {
+      "desde_tabla": "v_fleet_normalized",
+      "desde_columna": "aircraft_model",
+      "hacia_tabla": "dim_aircraft_type",
+      "hacia_columna": "model"
+    },
+    {
+      "desde_tabla": "v_order_book_normalized",
+      "desde_columna": "group_id",
+      "hacia_tabla": "dim_airline",
+      "hacia_columna": "airline_id"
+    },
+    {
+      "desde_tabla": "v_order_book_normalized",
+      "desde_columna": "aircraft_model",
+      "hacia_tabla": "dim_aircraft_type",
+      "hacia_columna": "model"
+    },
+    {
+      "desde_tabla": "v_prospect_score",
+      "desde_columna": "group_id",
+      "hacia_tabla": "dim_airline",
+      "hacia_columna": "airline_id"
+    },
+    {
+      "desde_tabla": "v_fleet_transition",
+      "desde_columna": "group_id",
+      "hacia_tabla": "dim_airline",
+      "hacia_columna": "airline_id"
+    },
+    {
+      "desde_tabla": "v_fleet_transition",
+      "desde_columna": "aircraft_model",
+      "hacia_tabla": "dim_aircraft_type",
+      "hacia_columna": "model"
+    },
+    {
+      "desde_tabla": "v_financial_trend",
+      "desde_columna": "group_id",
+      "hacia_tabla": "dim_airline",
+      "hacia_columna": "airline_id"
+    }
+  ],
+  "medidas": [
+    {
+      "nombre": "Flota Total",
+      "expresion": "CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[es_fila_agregada] = FALSE )",
+      "formato": "#,##0",
+      "carpeta": "Flota",
+      "descripcion": "Aeronaves en servicio, excluyendo las filas que el propio reporte declara como agregado."
+    },
+    {
+      "nombre": "Aerolíneas en Flota",
+      "expresion": "DISTINCTCOUNT ( v_fleet_normalized[group_id] )",
+      "formato": "#,##0",
+      "carpeta": "Flota",
+      "descripcion": "Cuenta grupos operadores, no entidades legales: American Eagle no suma aparte de American."
+    },
+    {
+      "nombre": "Modelos Distintos",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_fleet_normalized[aircraft_model] ), v_fleet_normalized[es_fila_agregada] = FALSE )",
+      "formato": "0",
+      "carpeta": "Flota"
+    },
+    {
+      "nombre": "Fabricantes Distintos",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_fleet_normalized[manufacturer] ), v_fleet_normalized[es_fila_agregada] = FALSE )",
+      "formato": "0",
+      "carpeta": "Flota"
+    },
+    {
+      "nombre": "Edad Promedio Ponderada",
+      "expresion": "DIVIDE (\n    SUMX ( v_fleet_normalized, v_fleet_normalized[quantity] * v_fleet_normalized[average_age_years] ),\n    SUMX ( v_fleet_normalized, IF ( ISBLANK ( v_fleet_normalized[average_age_years] ), 0, v_fleet_normalized[quantity] ) )\n)",
+      "formato": "0.0",
+      "carpeta": "Flota",
+      "descripcion": "Ponderada por cantidad. El denominador excluye las filas sin edad para no diluir el promedio con ceros."
+    },
+    {
+      "nombre": "Flota Sin Dato de Edad",
+      "expresion": "CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[fleet_replacement_status] = \"Sin dato\" )",
+      "formato": "#,##0",
+      "carpeta": "Flota",
+      "descripcion": "Cuanta flota queda fuera del analisis de reemplazo. Se expone a proposito: un promedio sobre cobertura parcial hay que leerlo sabiendo cuanta falta."
+    },
+    {
+      "nombre": "% Arrendamiento Operativo",
+      "expresion": "DIVIDE (\n    CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[tipo_propiedad] = \"Operating Lease\" ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Leasing"
+    },
+    {
+      "nombre": "% Arrendamiento Financiero",
+      "expresion": "DIVIDE (\n    CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[tipo_propiedad] = \"Finance Lease\" ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Leasing"
+    },
+    {
+      "nombre": "% Flota Arrendada",
+      "expresion": "DIVIDE (\n    CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[es_arrendada] = TRUE ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Leasing",
+      "descripcion": "Operativo mas financiero. Antes se calculaba buscando la palabra Lease dentro del texto de propiedad; ahora usa la bandera ya resuelta en la vista."
+    },
+    {
+      "nombre": "Score Leasing",
+      "expresion": "AVERAGE ( v_prospect_score[score_leasing] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Prospectos de Leasing",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_prospect_score[group_id] ), v_prospect_score[segmento_prospecto] = \"Leasing\" )",
+      "formato": "0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "% en Ventana de Reemplazo",
+      "expresion": "DIVIDE (\n    CALCULATE (\n        SUM ( v_fleet_normalized[quantity] ),\n        v_fleet_normalized[fleet_replacement_status] IN { \"Replace Now\", \"Critical\" }\n    ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Reemplazo"
+    },
+    {
+      "nombre": "Vida Remanente Ponderada",
+      "expresion": "DIVIDE (\n    SUMX ( v_fleet_normalized, v_fleet_normalized[quantity] * v_fleet_normalized[remaining_replacement_life] ),\n    SUMX ( v_fleet_normalized, IF ( ISBLANK ( v_fleet_normalized[remaining_replacement_life] ), 0, v_fleet_normalized[quantity] ) )\n)",
+      "formato": "0.0",
+      "carpeta": "Reemplazo",
+      "descripcion": "Anios hasta la edad objetivo de reemplazo, ponderados por cantidad."
+    },
+    {
+      "nombre": "Score Reemplazo",
+      "expresion": "AVERAGE ( v_prospect_score[score_reemplazo] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Prospectos Técnicos",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_prospect_score[group_id] ), v_prospect_score[segmento_prospecto] = \"Tecnico / Reemplazo\" )",
+      "formato": "0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Pedidos Totales",
+      "expresion": "SUM ( v_order_book_normalized[quantity_committed] )",
+      "formato": "#,##0",
+      "carpeta": "Pedidos"
+    },
+    {
+      "nombre": "Pedidos Próximos 2 Años",
+      "expresion": "CALCULATE (\n    SUM ( v_order_book_normalized[quantity_committed] ),\n    v_order_book_normalized[anios_hasta_entrega] <= 2\n)",
+      "formato": "#,##0",
+      "carpeta": "Pedidos",
+      "descripcion": "Requiere el parseo de delivery_period que hace v_order_book_normalized: el texto original llega en diecinueve formas distintas."
+    },
+    {
+      "nombre": "Aerolíneas con Pedidos",
+      "expresion": "DISTINCTCOUNT ( v_order_book_normalized[group_id] )",
+      "formato": "#,##0",
+      "carpeta": "Pedidos"
+    },
+    {
+      "nombre": "Ratio Pedidos sobre Flota",
+      "expresion": "DIVIDE ( [Pedidos Totales], [Flota Total] )",
+      "formato": "0.0%",
+      "carpeta": "Pedidos",
+      "descripcion": "Renovacion comprometida como fraccion de la flota actual. Antes existia dos veces: una como ratio y otra multiplicada por cien pero con formato de porcentaje, que mostraba cien veces el valor real."
+    },
+    {
+      "nombre": "Pedidos Sin Fecha",
+      "expresion": "CALCULATE (\n    SUM ( v_order_book_normalized[quantity_committed] ),\n    ISBLANK ( v_order_book_normalized[anio_primera_entrega] )\n)",
+      "formato": "#,##0",
+      "carpeta": "Pedidos",
+      "descripcion": "Pedidos cuyo texto de entrega no ancla ningun anio, como Thereafter a secas."
+    },
+    {
+      "nombre": "Prospect Score",
+      "expresion": "AVERAGE ( v_prospect_score[prospect_score] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Score Complejidad",
+      "expresion": "AVERAGE ( v_prospect_score[score_complejidad] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Score Transición",
+      "expresion": "AVERAGE ( v_prospect_score[score_transicion] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Score Apalancamiento",
+      "expresion": "AVERAGE ( v_prospect_score[score_apalancamiento] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Grupos Evaluados",
+      "expresion": "DISTINCTCOUNT ( v_prospect_score[group_id] )",
+      "formato": "0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Aeronaves Entrando",
+      "expresion": "CALCULATE (\n    SUM ( v_fleet_transition[variacion] ),\n    v_fleet_transition[movimiento] IN { \"Entra a la flota\", \"Crece\" }\n)",
+      "formato": "#,##0",
+      "carpeta": "Transición medida",
+      "descripcion": "Alta neta observada entre el primer y el ultimo ejercicio con datos. Solo cubre a las aerolineas cuyo filing publica la comparativa."
+    },
+    {
+      "nombre": "Aeronaves Saliendo",
+      "expresion": "ABS (\n    CALCULATE (\n        SUM ( v_fleet_transition[variacion] ),\n        v_fleet_transition[movimiento] IN { \"Sale de la flota\", \"Se reduce\" }\n    )\n)",
+      "formato": "#,##0",
+      "carpeta": "Transición medida"
+    },
+    {
+      "nombre": "Modelos Entrando",
+      "expresion": "CALCULATE (\n    DISTINCTCOUNT ( v_fleet_transition[aircraft_model] ),\n    v_fleet_transition[movimiento] = \"Entra a la flota\"\n)",
+      "formato": "0",
+      "carpeta": "Transición medida",
+      "descripcion": "Tipos que aparecen desde cero. Es la señal mas fuerte de introduccion de flota: implica transicion de records y entrenamiento, no una ampliacion del mismo contrato."
+    },
+    {
+      "nombre": "Modelos Saliendo",
+      "expresion": "CALCULATE (\n    DISTINCTCOUNT ( v_fleet_transition[aircraft_model] ),\n    v_fleet_transition[movimiento] = \"Sale de la flota\"\n)",
+      "formato": "0",
+      "carpeta": "Transición medida"
+    },
+    {
+      "nombre": "Grupos con Serie de Flota",
+      "expresion": "DISTINCTCOUNT ( v_fleet_transition[group_id] )",
+      "formato": "0",
+      "carpeta": "Transición medida",
+      "descripcion": "Cobertura de la medicion. Sin esto un cero en las medidas de transicion se lee como ausencia de movimiento cuando en realidad es ausencia de datos."
+    },
+    {
+      "nombre": "Var Anual Arrendamiento",
+      "expresion": "AVERAGE ( v_financial_trend[lease_var_anual] )",
+      "formato": "0.0%",
+      "carpeta": "Transición financiera",
+      "descripcion": "Tasa anualizada del pasivo por arrendamiento entre los extremos de la serie."
+    },
+    {
+      "nombre": "Arrendamiento sobre Ingresos",
+      "expresion": "AVERAGE ( v_financial_trend[lease_sobre_ingresos] )",
+      "formato": "0.0%",
+      "carpeta": "Transición financiera",
+      "descripcion": "Cuanto mas rapido crece el arrendamiento que el negocio. Positivo alto es rotacion de flota hacia leasing, no crecimiento."
+    },
+    {
+      "nombre": "Capex sobre Depreciación",
+      "expresion": "AVERAGE ( v_financial_trend[capex_dep_final] )",
+      "formato": "0.00",
+      "carpeta": "Transición financiera",
+      "descripcion": "Intensidad de renovacion con capital propio. Por encima de uno se invierte mas de lo que se deprecia."
+    },
+    {
+      "nombre": "Grupos con Serie Financiera",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_financial_trend[group_id] ), v_financial_trend[es_medida] = TRUE )",
+      "formato": "0",
+      "carpeta": "Transición financiera",
+      "descripcion": "Cobertura de la medicion financiera, por el mismo motivo que en la de flota."
+    }
+  ]
+}

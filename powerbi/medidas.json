@@ -1,0 +1,228 @@
+{
+  "version": "1.0",
+  "updated": "2026-08-25",
+  "descripcion": "Definicion versionada de las medidas del modelo de prospeccion. Vivian solo dentro del .pbix, asi que no eran revisables ni reproducibles: la unica copia era el archivo binario de una maquina. Se consolidan aqui las 15 que ya apuntaban al almacen y se reescriben contra las vistas las 16 que dependian de las tablas legacy. Convenciones: todo lo que agrega flota pondera por quantity -promediar edades fila a fila da el mismo peso a una fila de 3 aeronaves que a una de 300-; los ratios se emiten como fraccion y el formato les pone el signo de porcentaje, nunca se multiplica por 100 en la formula.",
+  "tabla_medidas": "_Medidas",
+  "medidas": [
+    {
+      "nombre": "Flota Total",
+      "expresion": "CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[es_fila_agregada] = FALSE )",
+      "formato": "#,##0",
+      "carpeta": "Flota",
+      "descripcion": "Aeronaves en servicio, excluyendo las filas que el propio reporte declara como agregado."
+    },
+    {
+      "nombre": "Aerolíneas en Flota",
+      "expresion": "DISTINCTCOUNT ( v_fleet_normalized[group_id] )",
+      "formato": "#,##0",
+      "carpeta": "Flota",
+      "descripcion": "Cuenta grupos operadores, no entidades legales: American Eagle no suma aparte de American."
+    },
+    {
+      "nombre": "Modelos Distintos",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_fleet_normalized[aircraft_model] ), v_fleet_normalized[es_fila_agregada] = FALSE )",
+      "formato": "0",
+      "carpeta": "Flota"
+    },
+    {
+      "nombre": "Fabricantes Distintos",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_fleet_normalized[manufacturer] ), v_fleet_normalized[es_fila_agregada] = FALSE )",
+      "formato": "0",
+      "carpeta": "Flota"
+    },
+    {
+      "nombre": "Edad Promedio Ponderada",
+      "expresion": "DIVIDE (\n    SUMX ( v_fleet_normalized, v_fleet_normalized[quantity] * v_fleet_normalized[average_age_years] ),\n    SUMX ( v_fleet_normalized, IF ( ISBLANK ( v_fleet_normalized[average_age_years] ), 0, v_fleet_normalized[quantity] ) )\n)",
+      "formato": "0.0",
+      "carpeta": "Flota",
+      "descripcion": "Ponderada por cantidad. El denominador excluye las filas sin edad para no diluir el promedio con ceros."
+    },
+    {
+      "nombre": "Flota Sin Dato de Edad",
+      "expresion": "CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[fleet_replacement_status] = \"Sin dato\" )",
+      "formato": "#,##0",
+      "carpeta": "Flota",
+      "descripcion": "Cuanta flota queda fuera del analisis de reemplazo. Se expone a proposito: un promedio sobre cobertura parcial hay que leerlo sabiendo cuanta falta."
+    },
+    {
+      "nombre": "% Arrendamiento Operativo",
+      "expresion": "DIVIDE (\n    CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[tipo_propiedad] = \"Operating Lease\" ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Leasing"
+    },
+    {
+      "nombre": "% Arrendamiento Financiero",
+      "expresion": "DIVIDE (\n    CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[tipo_propiedad] = \"Finance Lease\" ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Leasing"
+    },
+    {
+      "nombre": "% Flota Arrendada",
+      "expresion": "DIVIDE (\n    CALCULATE ( SUM ( v_fleet_normalized[quantity] ), v_fleet_normalized[es_arrendada] = TRUE ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Leasing",
+      "descripcion": "Operativo mas financiero. Antes se calculaba buscando la palabra Lease dentro del texto de propiedad; ahora usa la bandera ya resuelta en la vista."
+    },
+    {
+      "nombre": "Score Leasing",
+      "expresion": "AVERAGE ( v_prospect_score[score_leasing] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Prospectos de Leasing",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_prospect_score[group_id] ), v_prospect_score[segmento_prospecto] = \"Leasing\" )",
+      "formato": "0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "% en Ventana de Reemplazo",
+      "expresion": "DIVIDE (\n    CALCULATE (\n        SUM ( v_fleet_normalized[quantity] ),\n        v_fleet_normalized[fleet_replacement_status] IN { \"Replace Now\", \"Critical\" }\n    ),\n    [Flota Total]\n)",
+      "formato": "0.0%",
+      "carpeta": "Reemplazo"
+    },
+    {
+      "nombre": "Vida Remanente Ponderada",
+      "expresion": "DIVIDE (\n    SUMX ( v_fleet_normalized, v_fleet_normalized[quantity] * v_fleet_normalized[remaining_replacement_life] ),\n    SUMX ( v_fleet_normalized, IF ( ISBLANK ( v_fleet_normalized[remaining_replacement_life] ), 0, v_fleet_normalized[quantity] ) )\n)",
+      "formato": "0.0",
+      "carpeta": "Reemplazo",
+      "descripcion": "Anios hasta la edad objetivo de reemplazo, ponderados por cantidad."
+    },
+    {
+      "nombre": "Score Reemplazo",
+      "expresion": "AVERAGE ( v_prospect_score[score_reemplazo] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Prospectos Técnicos",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_prospect_score[group_id] ), v_prospect_score[segmento_prospecto] = \"Tecnico / Reemplazo\" )",
+      "formato": "0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Pedidos Totales",
+      "expresion": "SUM ( v_order_book_normalized[quantity_committed] )",
+      "formato": "#,##0",
+      "carpeta": "Pedidos"
+    },
+    {
+      "nombre": "Pedidos Próximos 2 Años",
+      "expresion": "CALCULATE (\n    SUM ( v_order_book_normalized[quantity_committed] ),\n    v_order_book_normalized[anios_hasta_entrega] <= 2\n)",
+      "formato": "#,##0",
+      "carpeta": "Pedidos",
+      "descripcion": "Requiere el parseo de delivery_period que hace v_order_book_normalized: el texto original llega en diecinueve formas distintas."
+    },
+    {
+      "nombre": "Aerolíneas con Pedidos",
+      "expresion": "DISTINCTCOUNT ( v_order_book_normalized[group_id] )",
+      "formato": "#,##0",
+      "carpeta": "Pedidos"
+    },
+    {
+      "nombre": "Ratio Pedidos sobre Flota",
+      "expresion": "DIVIDE ( [Pedidos Totales], [Flota Total] )",
+      "formato": "0.0%",
+      "carpeta": "Pedidos",
+      "descripcion": "Renovacion comprometida como fraccion de la flota actual. Antes existia dos veces: una como ratio y otra multiplicada por cien pero con formato de porcentaje, que mostraba cien veces el valor real."
+    },
+    {
+      "nombre": "Pedidos Sin Fecha",
+      "expresion": "CALCULATE (\n    SUM ( v_order_book_normalized[quantity_committed] ),\n    ISBLANK ( v_order_book_normalized[anio_primera_entrega] )\n)",
+      "formato": "#,##0",
+      "carpeta": "Pedidos",
+      "descripcion": "Pedidos cuyo texto de entrega no ancla ningun anio, como Thereafter a secas."
+    },
+    {
+      "nombre": "Prospect Score",
+      "expresion": "AVERAGE ( v_prospect_score[prospect_score] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Score Complejidad",
+      "expresion": "AVERAGE ( v_prospect_score[score_complejidad] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Score Transición",
+      "expresion": "AVERAGE ( v_prospect_score[score_transicion] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Score Apalancamiento",
+      "expresion": "AVERAGE ( v_prospect_score[score_apalancamiento] )",
+      "formato": "0.0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Grupos Evaluados",
+      "expresion": "DISTINCTCOUNT ( v_prospect_score[group_id] )",
+      "formato": "0",
+      "carpeta": "Prospección"
+    },
+    {
+      "nombre": "Aeronaves Entrando",
+      "expresion": "CALCULATE (\n    SUM ( v_fleet_transition[variacion] ),\n    v_fleet_transition[movimiento] IN { \"Entra a la flota\", \"Crece\" }\n)",
+      "formato": "#,##0",
+      "carpeta": "Transición medida",
+      "descripcion": "Alta neta observada entre el primer y el ultimo ejercicio con datos. Solo cubre a las aerolineas cuyo filing publica la comparativa."
+    },
+    {
+      "nombre": "Aeronaves Saliendo",
+      "expresion": "ABS (\n    CALCULATE (\n        SUM ( v_fleet_transition[variacion] ),\n        v_fleet_transition[movimiento] IN { \"Sale de la flota\", \"Se reduce\" }\n    )\n)",
+      "formato": "#,##0",
+      "carpeta": "Transición medida"
+    },
+    {
+      "nombre": "Modelos Entrando",
+      "expresion": "CALCULATE (\n    DISTINCTCOUNT ( v_fleet_transition[aircraft_model] ),\n    v_fleet_transition[movimiento] = \"Entra a la flota\"\n)",
+      "formato": "0",
+      "carpeta": "Transición medida",
+      "descripcion": "Tipos que aparecen desde cero. Es la señal mas fuerte de introduccion de flota: implica transicion de records y entrenamiento, no una ampliacion del mismo contrato."
+    },
+    {
+      "nombre": "Modelos Saliendo",
+      "expresion": "CALCULATE (\n    DISTINCTCOUNT ( v_fleet_transition[aircraft_model] ),\n    v_fleet_transition[movimiento] = \"Sale de la flota\"\n)",
+      "formato": "0",
+      "carpeta": "Transición medida"
+    },
+    {
+      "nombre": "Grupos con Serie de Flota",
+      "expresion": "DISTINCTCOUNT ( v_fleet_transition[group_id] )",
+      "formato": "0",
+      "carpeta": "Transición medida",
+      "descripcion": "Cobertura de la medicion. Sin esto un cero en las medidas de transicion se lee como ausencia de movimiento cuando en realidad es ausencia de datos."
+    },
+    {
+      "nombre": "Var Anual Arrendamiento",
+      "expresion": "AVERAGE ( v_financial_trend[lease_var_anual] )",
+      "formato": "0.0%",
+      "carpeta": "Transición financiera",
+      "descripcion": "Tasa anualizada del pasivo por arrendamiento entre los extremos de la serie."
+    },
+    {
+      "nombre": "Arrendamiento sobre Ingresos",
+      "expresion": "AVERAGE ( v_financial_trend[lease_sobre_ingresos] )",
+      "formato": "0.0%",
+      "carpeta": "Transición financiera",
+      "descripcion": "Cuanto mas rapido crece el arrendamiento que el negocio. Positivo alto es rotacion de flota hacia leasing, no crecimiento."
+    },
+    {
+      "nombre": "Capex sobre Depreciación",
+      "expresion": "AVERAGE ( v_financial_trend[capex_dep_final] )",
+      "formato": "0.00",
+      "carpeta": "Transición financiera",
+      "descripcion": "Intensidad de renovacion con capital propio. Por encima de uno se invierte mas de lo que se deprecia."
+    },
+    {
+      "nombre": "Grupos con Serie Financiera",
+      "expresion": "CALCULATE ( DISTINCTCOUNT ( v_financial_trend[group_id] ), v_financial_trend[es_medida] = TRUE )",
+      "formato": "0",
+      "carpeta": "Transición financiera",
+      "descripcion": "Cobertura de la medicion financiera, por el mismo motivo que en la de flota."
+    }
+  ]
+}

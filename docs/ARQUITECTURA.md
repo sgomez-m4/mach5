@@ -235,6 +235,27 @@ vale* a la vez, así que se separan en `segmento_prospecto` y `tier_tamano`.
 
 ## 6. Visualización
 
+**El modelo vive en el repo, no dentro del `.pbix`.** Antes la única copia de las tablas,
+relaciones y medidas era el archivo binario de una máquina: no era revisable, no era
+reproducible y nadie podía ver qué cambió entre dos versiones.
+
+| Archivo | Qué es |
+|---|---|
+| `powerbi/medidas.json` | Las 34 medidas: expresión DAX, formato y carpeta. Se edita a mano |
+| `powerbi/modelo.json` | Definición completa. **Generado**, no se edita |
+| `scripts/generar_modelo_pbi.py` | Lee los esquemas de BigQuery y produce `modelo.json` |
+| `scripts/aplicar_modelo_pbi.ps1` | Aplica la definición al modelo abierto en Power BI Desktop |
+
+Las columnas se declaran explícitamente porque el motor tabular **no infiere el esquema**
+de una tabla agregada por script: queda con cero columnas y sin error. Por eso se leen de
+BigQuery en vez de escribirlas a mano, que se desincroniza en cuanto una vista cambia.
+
+El generador valida que ninguna relación apunte a una columna inexistente —se aplicaría sin
+error y dejaría el modelo mudo— y el aplicador **no escribe nada sin `-Aplicar`**: por
+defecto informa qué cambiaría. Es idempotente y nunca borra columnas, porque desde fuera del
+`.pbix` no hay forma de saber qué visual las usa.
+
+
 El modelo `SEC China Dashboard_v3` consume las vistas por conexión directa a BigQuery.
 Tiene 9 tablas, 33 medidas y 6 relaciones.
 

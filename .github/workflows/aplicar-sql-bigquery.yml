@@ -48,6 +48,7 @@ jobs:
           ORDEN="
             sql/normalizar_modelo_aeronave.sql
             sql/v_fleet_normalized.sql
+            sql/v_order_book_normalized.sql
             sql/v_prospect_score.sql
             sql/v_financial_trend.sql
             sql/v_fleet_transition.sql
