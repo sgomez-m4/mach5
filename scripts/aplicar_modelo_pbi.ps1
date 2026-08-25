@@ -23,24 +23,27 @@ $ErrorActionPreference = "Stop"
 
 # ---------------------------------------------------------------- ensamblados
 # AMO viene con DAX Studio y apunta a .NET Framework 4.7.2, que PowerShell 5.1
-# puede cargar. Hay que cargar Tabular.dll directamente y dejar que sus
-# dependencias se resuelvan desde la misma carpeta: cargar Core.dll primero
-# falla con ReflectionTypeLoadException.
-$script:binAmo = "C:\Program Files\DAX Studio\bin"
-$principal = Join-Path $script:binAmo "Microsoft.AnalysisServices.Tabular.dll"
-if (-not (Test-Path $principal)) {
-  throw "no se encontro AMO en $script:binAmo. Lo instala DAX Studio (daxstudio.org)."
+# carga sin problema.
+#
+# Se usa Assembly::LoadFrom y no Add-Type por dos razones. Add-Type fuerza la
+# carga de todos los tipos del ensamblado y falla con ReflectionTypeLoadException
+# si alguna dependencia no esta resuelta todavia. Y LoadFrom establece el
+# contexto que sondea la misma carpeta para las dependencias, asi que no hace
+# falta un handler de AssemblyResolve: cualquier operacion de PowerShell dentro
+# de ese handler puede disparar otra resolucion y desbordar la pila.
+$binAmo = "C:\Program Files\DAX Studio\bin"
+$ensamblados = @(
+  "Microsoft.AnalysisServices.Core.dll",
+  "Microsoft.AnalysisServices.Tabular.Json.dll",
+  "Microsoft.AnalysisServices.Tabular.dll"
+)
+foreach ($nombre in $ensamblados) {
+  $ruta = Join-Path $binAmo $nombre
+  if (-not (Test-Path $ruta)) {
+    throw "no se encontro $nombre en $binAmo. AMO lo instala DAX Studio (daxstudio.org)."
+  }
+  [void][System.Reflection.Assembly]::LoadFrom($ruta)
 }
-
-$resolver = [System.ResolveEventHandler] {
-  param($remitente, $evento)
-  $corto = ($evento.Name -split ',')[0]
-  $candidata = Join-Path $script:binAmo "$corto.dll"
-  if (Test-Path $candidata) { return [System.Reflection.Assembly]::LoadFrom($candidata) }
-  return $null
-}
-[System.AppDomain]::CurrentDomain.add_AssemblyResolve($resolver)
-Add-Type -Path $principal
 
 # ------------------------------------------------------------------- el puerto
 if ($Puerto -eq 0) {
@@ -197,40 +200,61 @@ foreach ($r in $def.relaciones) {
 # ------------------------------------------------------------------ medidas
 Write-Host ""
 Write-Host "== medidas =="
-if ($null -ne $tablaMedidas) {
-  foreach ($m in $def.medidas) {
-    # Puede existir en otra tabla de una version anterior del modelo
-    $previa = $null
-    foreach ($tb in $modelo.Tables) {
-      $cand = $tb.Measures.Find($m.nombre)
-      if ($null -ne $cand) { $previa = $cand; break }
-    }
+$nuevas = 0
+$actualizadas = 0
 
-    if ($null -eq $previa) {
-      Anotar "crear medida [$($m.nombre)]"
-      if ($Aplicar) {
-        $med = New-Object Microsoft.AnalysisServices.Tabular.Measure
-        $med.Name = $m.nombre
-        $med.Expression = $m.expresion
-        $med.FormatString = $m.formato
-        if ($m.carpeta) { $med.DisplayFolder = $m.carpeta }
-        if ($m.descripcion) { $med.Description = $m.descripcion }
-        $tablaMedidas.Measures.Add($med)
-      }
-    }
-    elseif ($previa.Expression.Trim() -ne $m.expresion.Trim() -or
-            $previa.FormatString -ne $m.formato) {
-      Anotar "actualizar medida [$($m.nombre)] en [$($previa.Table.Name)]"
-      if ($Aplicar) {
-        $previa.Expression = $m.expresion
-        $previa.FormatString = $m.formato
-        if ($m.carpeta) { $previa.DisplayFolder = $m.carpeta }
-        if ($m.descripcion) { $previa.Description = $m.descripcion }
-      }
+foreach ($m in $def.medidas) {
+  # Puede existir en otra tabla de una version anterior del modelo
+  $previa = $null
+  foreach ($tb in $modelo.Tables) {
+    $cand = $tb.Measures.Find($m.nombre)
+    if ($null -ne $cand) { $previa = $cand; break }
+  }
+
+  if ($null -eq $previa) {
+    Anotar "crear medida [$($m.nombre)]"
+    $nuevas++
+    if ($Aplicar -and $null -ne $tablaMedidas) {
+      $med = New-Object Microsoft.AnalysisServices.Tabular.Measure
+      $med.Name = $m.nombre
+      $med.Expression = $m.expresion
+      $med.FormatString = $m.formato
+      if ($m.carpeta) { $med.DisplayFolder = $m.carpeta }
+      if ($m.descripcion) { $med.Description = $m.descripcion }
+      $tablaMedidas.Measures.Add($med)
     }
   }
-} else {
-  Write-Host "  (la tabla de medidas se crea en esta misma corrida; vuelve a ejecutar para las medidas)"
+  elseif ($previa.Expression.Trim() -ne $m.expresion.Trim() -or
+          $previa.FormatString -ne $m.formato) {
+    Anotar "actualizar medida [$($m.nombre)] en [$($previa.Table.Name)]"
+    $actualizadas++
+    if ($Aplicar) {
+      $previa.Expression = $m.expresion
+      $previa.FormatString = $m.formato
+      if ($m.carpeta) { $previa.DisplayFolder = $m.carpeta }
+      if ($m.descripcion) { $previa.Description = $m.descripcion }
+    }
+  }
+}
+
+Write-Host "  ($nuevas nuevas, $actualizadas actualizadas, $($def.medidas.Count - $nuevas - $actualizadas) sin cambio)"
+
+# Medidas del modelo que la definicion no contempla. No se borran -pueden estar
+# en uso en un visual- pero se avisan: si vienen de la generacion anterior,
+# conviene retirarlas a mano para no tener dos respuestas a la misma pregunta.
+$definidas = @{}
+foreach ($m in $def.medidas) { $definidas[$m.nombre] = $true }
+$huerfanas = @()
+foreach ($tb in $modelo.Tables) {
+  foreach ($med in $tb.Measures) {
+    if (-not $definidas.ContainsKey($med.Name)) { $huerfanas += "$($med.Name) [$($tb.Name)]" }
+  }
+}
+if ($huerfanas.Count -gt 0) {
+  Write-Host ""
+  Write-Host "  $($huerfanas.Count) medidas en el modelo que no estan en la definicion:"
+  foreach ($h in $huerfanas) { Write-Host "     $h" }
+  Write-Host "  No se tocan. Si son de la generacion anterior, retiralas a mano."
 }
 
 # ------------------------------------------------------------------- guardar
