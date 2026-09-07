@@ -1,0 +1,177 @@
+{
+  "name": "mas4 Aviation - Prospeccion de flota",
+  "dataColors": [
+    "#1D70B5",
+    "#E2761B",
+    "#00897B",
+    "#7CB342",
+    "#C2185B",
+    "#7B5FC4",
+    "#00A3C4",
+    "#A1662F"
+  ],
+  "background": "#FFFFFF",
+  "backgroundLight": "#F4F6F8",
+  "backgroundNeutral": "#DCE1E6",
+  "foreground": "#333333",
+  "foregroundNeutralSecondary": "#6F6F6E",
+  "foregroundNeutralTertiary": "#9AA5B1",
+  "tableAccent": "#1D70B5",
+  "hyperlink": "#1D70B5",
+  "visitedHyperlink": "#0E4C7A",
+  "disabledText": "#A9B2BB",
+  "shape": "#6F6F6E",
+  "good": "#2E7D52",
+  "neutral": "#C99700",
+  "bad": "#B3261E",
+  "minimum": "#C05621",
+  "center": "#B9C2CC",
+  "maximum": "#1D70B5",
+  "null": "#9AA5B1",
+  "textClasses": {
+    "title": {
+      "fontFace": "Nunito",
+      "color": "#333333",
+      "fontSize": 16
+    },
+    "header": {
+      "fontFace": "Nunito",
+      "color": "#333333",
+      "fontSize": 13
+    },
+    "label": {
+      "fontFace": "Nunito",
+      "color": "#333333",
+      "fontSize": 10
+    },
+    "callout": {
+      "fontFace": "Nunito",
+      "fontSize": 32,
+      "color": "#0E4C7A"
+    },
+    "largeTitle": {
+      "fontFace": "Nunito",
+      "color": "#333333",
+      "fontSize": 20
+    },
+    "lightLabel": {
+      "fontFace": "Nunito",
+      "fontSize": 10,
+      "color": "#6F6F6E"
+    },
+    "boldLabel": {
+      "fontFace": "Nunito",
+      "color": "#333333",
+      "fontSize": 10
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#DCE1E6"
+              }
+            }
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": {
+              "solid": {
+                "color": "#333333"
+              }
+            },
+            "background": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "alignment": "left",
+            "fontSize": 12
+          }
+        ],
+        "legend": [
+          {
+            "show": true,
+            "position": "TopCenter",
+            "showTitle": false,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#6F6F6E"
+              }
+            }
+          }
+        ],
+        "categoryAxis": [
+          {
+            "show": true,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#6F6F6E"
+              }
+            },
+            "showAxisTitle": false
+          }
+        ],
+        "valueAxis": [
+          {
+            "show": true,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#6F6F6E"
+              }
+            },
+            "gridlineColor": {
+              "solid": {
+                "color": "#DCE1E6"
+              }
+            },
+            "showAxisTitle": false
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F4F6F8"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F4F6F8"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
