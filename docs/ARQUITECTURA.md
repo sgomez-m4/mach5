@@ -245,10 +245,31 @@ reproducible y nadie podía ver qué cambió entre dos versiones.
 | `powerbi/modelo.json` | Definición completa. **Generado**, no se edita |
 | `scripts/generar_modelo_pbi.py` | Lee los esquemas de BigQuery y produce `modelo.json` |
 | `scripts/aplicar_modelo_pbi.ps1` | Aplica la definición al modelo abierto en Power BI Desktop |
+| `powerbi/tema.json` | Tema de Power BI: paleta, tipografía y estilos. **Generado** |
+| `scripts/generar_tema_pbi.py` | Produce el tema desde la paleta de marca validada |
 
 Las columnas se declaran explícitamente porque el motor tabular **no infiere el esquema**
 de una tabla agregada por script: queda con cero columnas y sin error. Por eso se leen de
 BigQuery en vez de escribirlas a mano, que se desincroniza en cuanto una vista cambia.
+
+**El tema tampoco se elige a ojo.** Los tonos de marca salen de muestrear los píxeles del
+logotipo y el CSS de `mas4aviation.com`; los colores de serie pasan las seis comprobaciones
+—banda de luminosidad, piso de croma, separación bajo las tres deficiencias de visión
+cromática, piso de visión normal y contraste contra la superficie—.
+
+Dos límites que la validación reveló y que conviene no volver a descubrir:
+
+- **Una paleta solo de tonos fríos es imposible bajo CVD.** Azul y violeta se separan por su
+  contenido de rojo, que es justo lo que la deuteranopía elimina: quedan en ΔE 3.8,
+  indistinguibles. La identidad necesita el eje cálido-frío, no basta con declinar el azul
+  corporativo.
+- **Ocho colores es el techo.** Se probaron 5.040 permutaciones de un conjunto elegido a
+  mano sin que ninguna pasara; el que sí pasa se encontró iterando contra el validador. La
+  novena serie no se inventa: se pliega en «Otros».
+
+Rojo, ámbar y verde de estado no reaparecen como color de serie, y siempre van con icono y
+etiqueta. Si el mismo color pudiera significar identidad o alarma según el visual, deja de
+significar nada.
 
 El generador valida que ninguna relación apunte a una columna inexistente —se aplicaría sin
 error y dejaría el modelo mudo— y el aplicador **no escribe nada sin `-Aplicar`**: por
