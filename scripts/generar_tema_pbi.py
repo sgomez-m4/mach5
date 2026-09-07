@@ -76,6 +76,49 @@ COBERTURA = {
     "sin_dato": ESTADO["sin_dato"],
 }
 
+# ------------------------------------------- lo que admite el esquema
+# Tomadas de reportThemeSchema-2.114.json. El esquema declara
+# additionalProperties: false, asi que una sola clave de mas hace que Power BI
+# rechace el archivo entero con un dialogo que enumera las cuatro causas posibles
+# sin decir cual es. Van embebidas para poder comprobar sin red.
+PROPIEDADES_VALIDAS = {
+    "$schema", "accent", "background", "backgroundDark", "backgroundLight",
+    "backgroundNeutral", "bad", "center", "dataColors", "disabledText",
+    "firstLevelElements", "foreground", "foregroundButton", "foregroundDark",
+    "foregroundLight", "foregroundNeutralDark", "foregroundNeutralLight",
+    "foregroundNeutralSecondary", "foregroundNeutralSecondaryAlt",
+    "foregroundNeutralSecondaryAlt2", "foregroundNeutralTertiary",
+    "foregroundNeutralTertiaryAlt", "foregroundSelected", "fourthLevelElements",
+    "good", "hyperlink", "icons", "mapPushpin", "maximum", "minimum", "name",
+    "neutral", "null", "secondLevelElements", "secondaryBackground",
+    "shapeStroke", "tableAccent", "textClasses", "thirdLevelElements",
+    "visitedHyperlink", "visualStyles",
+}
+
+CLASES_TEXTO_VALIDAS = {
+    "boldLabel", "callout", "dataTitle", "header", "label", "largeLabel",
+    "largeLightLabel", "largeTitle", "lightLabel", "semiboldLabel",
+    "smallDataLabel", "smallLabel", "smallLightLabel", "title",
+}
+
+
+def comprobar(tema):
+    """Aborta si el tema lleva algo que Power BI no admite."""
+    malas = sorted(k for k in tema if k not in PROPIEDADES_VALIDAS)
+    if malas:
+        raise SystemExit(
+            "propiedades de nivel superior no admitidas: {}\n"
+            "Power BI rechazaria el archivo entero sin decir cual es.".format(", ".join(malas)))
+
+    clases = sorted(k for k in tema.get("textClasses", {}) if k not in CLASES_TEXTO_VALIDAS)
+    if clases:
+        raise SystemExit("clases de texto no admitidas: {}".format(", ".join(clases)))
+
+    for nombre, valor in tema.items():
+        if isinstance(valor, str) and valor.startswith("#") and len(valor) not in (4, 7):
+            raise SystemExit("color mal formado en '{}': {}".format(nombre, valor))
+
+
 # ------------------------------------------------------ superficies
 FONDO = "#FFFFFF"
 FONDO_SUAVE = "#F4F6F8"
@@ -87,6 +130,7 @@ def construir(fuente):
 
     return {
         "name": "mas4 Aviation - Prospeccion de flota",
+        "$schema": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.114.json",
 
         # Identidad. Orden fijo y validado; no reordenar sin volver a comprobar.
         "dataColors": SERIES,
@@ -104,7 +148,7 @@ def construir(fuente):
         "hyperlink": AZUL_MARCA,
         "visitedHyperlink": AZUL_PROFUNDO,
         "disabledText": "#A9B2BB",
-        "shape": GRIS_MARCA,
+        "shapeStroke": GRIS_MARCA,
 
         # Sentimiento de los KPI
         "good": ESTADO["healthy"],
@@ -172,6 +216,7 @@ def main():
     args = ap.parse_args()
 
     tema = construir(args.fuente)
+    comprobar(tema)
 
     raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     destino = os.path.join(raiz, "powerbi", "tema.json")
