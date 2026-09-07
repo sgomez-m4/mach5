@@ -1,5 +1,6 @@
 {
   "name": "mas4 Aviation - Prospeccion de flota",
+  "$schema": "https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.114.json",
   "dataColors": [
     "#1D70B5",
     "#E2761B",
@@ -20,7 +21,7 @@
   "hyperlink": "#1D70B5",
   "visitedHyperlink": "#0E4C7A",
   "disabledText": "#A9B2BB",
-  "shape": "#6F6F6E",
+  "shapeStroke": "#6F6F6E",
   "good": "#2E7D52",
   "neutral": "#C99700",
   "bad": "#B3261E",
