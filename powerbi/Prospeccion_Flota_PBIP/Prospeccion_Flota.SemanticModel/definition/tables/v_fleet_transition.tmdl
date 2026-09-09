@@ -1,0 +1,102 @@
+/// Movimiento de flota observado, modelo por modelo. Solo cubre a quien publica la comparativa.
+table v_fleet_transition
+	lineageTag: 17f0cc21-0c61-45ba-b5d3-c33caec89f8d
+
+	column airline_id
+		dataType: string
+		isHidden
+		lineageTag: 536d5be7-2635-4142-9c73-693983e6234b
+		sourceColumn: airline_id
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: c9ce12a5-6878-4d7e-a055-bfaa4a8ab5e4
+		sourceColumn: group_id
+
+	column Aerolínea
+		dataType: string
+		lineageTag: 19e9573b-d4fa-44ed-9f3f-e490df3c9477
+		sourceColumn: Aerolínea
+
+	column region
+		dataType: string
+		lineageTag: a92ea1b7-f363-4db6-b2d3-fddd972c5b66
+		sourceColumn: region
+
+	column business_model
+		dataType: string
+		lineageTag: ca4e853f-5aaf-42aa-858e-5cffc806a378
+		sourceColumn: business_model
+
+	column Ejercicios
+		dataType: int64
+		lineageTag: 12ab3eec-ef64-466b-a08c-5c3dab9107dc
+		sourceColumn: Ejercicios
+
+	column 'Año inicial'
+		dataType: int64
+		lineageTag: a0b2eb67-e158-4a76-9a4b-9a12230752dc
+		sourceColumn: Año inicial
+
+	column 'Año final'
+		dataType: int64
+		lineageTag: 42945a7f-c0c1-4a2d-aa75-33991a8d6a27
+		sourceColumn: Año final
+
+	column Modelo
+		dataType: string
+		lineageTag: 1bd4999f-712b-495a-a03c-765c6501076b
+		sourceColumn: Modelo
+
+	column manufacturer
+		dataType: string
+		lineageTag: 471d342f-0e53-46e2-8450-f253ca963d16
+		sourceColumn: manufacturer
+
+	column category
+		dataType: string
+		lineageTag: 85fe410b-953a-4575-8dd2-8f76a45a1062
+		sourceColumn: category
+
+	column generation
+		dataType: string
+		lineageTag: a4dbf736-10a7-4429-b79b-03c3f6d0db57
+		sourceColumn: generation
+
+	column 'Aeronaves inicial'
+		dataType: int64
+		lineageTag: 703da017-0b5c-4dae-94c6-be76c6e64258
+		sourceColumn: Aeronaves inicial
+
+	column 'Aeronaves final'
+		dataType: int64
+		lineageTag: 21b12939-f481-4c87-8449-0a561d59552a
+		sourceColumn: Aeronaves final
+
+	column Variación
+		dataType: int64
+		lineageTag: a0c79fac-7b29-48df-870a-898f26dc072f
+		sourceColumn: Variación
+
+	column variacion_pct
+		dataType: double
+		lineageTag: 3494fbad-6ed6-46d8-8216-8393000df9be
+		sourceColumn: variacion_pct
+
+	column Movimiento
+		dataType: string
+		lineageTag: 4282c009-fafb-42d0-ab38-9e5086e11e07
+		sourceColumn: Movimiento
+
+	partition v_fleet_transition = m
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([BillingProject="mach5-gemini-project"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    Tabla = Dataset{[Name="v_fleet_transition",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(Tabla,{{"aerolinea", "Aerolínea"}, {"aeronaves_final", "Aeronaves final"}, {"aeronaves_inicial", "Aeronaves inicial"}, {"variacion", "Variación"}, {"movimiento", "Movimiento"}, {"ejercicios", "Ejercicios"}, {"anio_inicial", "Año inicial"}, {"anio_final", "Año final"}, {"aircraft_model", "Modelo"}})
+				in
+				    #"Columnas con nombre cambiado"
+

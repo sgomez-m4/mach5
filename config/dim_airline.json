@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "updated": "2026-08-22",
+  "updated": "2026-09-08",
   "description": "Catalogo canonico de aerolineas. Resuelve el nombre libre que devuelve la extraccion (campo 'airline') a un airline_id estable, y lo liga al emisor que reporta finanzas (financial_company, que casa con financial_fact.company). parent_id permite plegar subsidiarias operativas en su grupo sin perder el detalle por entidad. name_variants se compara en minusculas y sin espacios extra; agregar aqui toda variante nueva que reporte el pipeline en vez de dejarla degradar en silencio.",
   "airlines": [
     {
@@ -13,7 +13,12 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "FSC",
-      "name_variants": ["American Airlines", "American Airlines Group", "American Airlines Group Inc.", "AAL"]
+      "name_variants": [
+        "American Airlines",
+        "American Airlines Group",
+        "American Airlines Group Inc.",
+        "AAL"
+      ]
     },
     {
       "airline_id": "AAL_EAGLE",
@@ -25,7 +30,9 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "Regional",
-      "name_variants": ["American Eagle"]
+      "name_variants": [
+        "American Eagle"
+      ]
     },
     {
       "airline_id": "DAL",
@@ -37,7 +44,12 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "FSC",
-      "name_variants": ["Delta Air Lines", "Delta Air Lines, Inc.", "Delta", "DAL"]
+      "name_variants": [
+        "Delta Air Lines",
+        "Delta Air Lines, Inc.",
+        "Delta",
+        "DAL"
+      ]
     },
     {
       "airline_id": "UAL",
@@ -49,7 +61,12 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "FSC",
-      "name_variants": ["United Airlines", "United", "United Airlines Holdings", "UAL"]
+      "name_variants": [
+        "United Airlines",
+        "United",
+        "United Airlines Holdings",
+        "UAL"
+      ]
     },
     {
       "airline_id": "LUV",
@@ -61,7 +78,11 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "LCC",
-      "name_variants": ["Southwest Airlines", "Southwest", "LUV"]
+      "name_variants": [
+        "Southwest Airlines",
+        "Southwest",
+        "LUV"
+      ]
     },
     {
       "airline_id": "ALK",
@@ -73,7 +94,14 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "FSC",
-      "name_variants": ["Alaska Air Group", "Alaska Airlines", "ALK"]
+      "name_variants": [
+        "Alaska Air Group",
+        "Alaska Airlines",
+        "ALK",
+        "Hawaiian Airlines",
+        "Hawaiian Holdings",
+        "Hawaiian Airlines, Inc."
+      ]
     },
     {
       "airline_id": "JBLU",
@@ -85,7 +113,11 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "LCC",
-      "name_variants": ["JetBlue", "JetBlue Airways", "JBLU"]
+      "name_variants": [
+        "JetBlue",
+        "JetBlue Airways",
+        "JBLU"
+      ]
     },
     {
       "airline_id": "SKYW",
@@ -97,7 +129,11 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "Regional",
-      "name_variants": ["SkyWest Airlines", "SkyWest", "SKYW"]
+      "name_variants": [
+        "SkyWest Airlines",
+        "SkyWest",
+        "SKYW"
+      ]
     },
     {
       "airline_id": "RJET",
@@ -109,7 +145,15 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "Regional",
-      "name_variants": ["Republic Airways", "Republic Airways Holdings", "RJET", "RPA"]
+      "name_variants": [
+        "Republic Airways",
+        "Republic Airways Holdings",
+        "RJET",
+        "RPA",
+        "Mesa Air Group",
+        "Mesa Airlines",
+        "Mesa Air Group, Inc."
+      ]
     },
     {
       "airline_id": "ULCC",
@@ -121,7 +165,12 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "ULCC",
-      "name_variants": ["Frontier Airlines", "Frontier Group Holdings", "Frontier", "ULCC"]
+      "name_variants": [
+        "Frontier Airlines",
+        "Frontier Group Holdings",
+        "Frontier",
+        "ULCC"
+      ]
     },
     {
       "airline_id": "ALGT",
@@ -133,7 +182,12 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "ULCC",
-      "name_variants": ["Allegiant Air", "Allegiant Travel", "Allegiant", "ALGT"]
+      "name_variants": [
+        "Allegiant Air",
+        "Allegiant Travel",
+        "Allegiant",
+        "ALGT"
+      ]
     },
     {
       "airline_id": "JETMF",
@@ -145,7 +199,11 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "Charter",
-      "name_variants": ["Global Crossing Airlines", "GlobalX", "JETMF"]
+      "name_variants": [
+        "Global Crossing Airlines",
+        "GlobalX",
+        "JETMF"
+      ]
     },
     {
       "airline_id": "FDX",
@@ -157,7 +215,12 @@
       "country": "United States",
       "regulator": "SEC",
       "business_model": "Cargo",
-      "name_variants": ["FedEx", "Federal Express", "FedEx Express", "FDX"]
+      "name_variants": [
+        "FedEx",
+        "Federal Express",
+        "FedEx Express",
+        "FDX"
+      ]
     },
     {
       "airline_id": "AEROMEX",
@@ -169,7 +232,14 @@
       "country": "Mexico",
       "regulator": "CNBV",
       "business_model": "FSC",
-      "name_variants": ["Aeroméxico", "Aeromexico", "Grupo Aeroméxico", "Grupo Aeromexico", "AEROMEX", "AMX"]
+      "name_variants": [
+        "Aeroméxico",
+        "Aeromexico",
+        "Grupo Aeroméxico",
+        "Grupo Aeromexico",
+        "AEROMEX",
+        "AMX"
+      ]
     },
     {
       "airline_id": "AEROMEX_CONNECT",
@@ -181,7 +251,11 @@
       "country": "Mexico",
       "regulator": "CNBV",
       "business_model": "Regional",
-      "name_variants": ["Aeroméxico Connect", "Aeromexico Connect", "Aerolitoral"]
+      "name_variants": [
+        "Aeroméxico Connect",
+        "Aeromexico Connect",
+        "Aerolitoral"
+      ]
     },
     {
       "airline_id": "VLRS",
@@ -193,7 +267,13 @@
       "country": "Mexico",
       "regulator": "CNBV",
       "business_model": "ULCC",
-      "name_variants": ["Volaris", "Controladora Vuela Compañía de Aviación, S.A.B. de C.V.", "Controladora Vuela Compania de Aviacion, S.A.B. de C.V.", "VLRS", "VOLAR"]
+      "name_variants": [
+        "Volaris",
+        "Controladora Vuela Compañía de Aviación, S.A.B. de C.V.",
+        "Controladora Vuela Compania de Aviacion, S.A.B. de C.V.",
+        "VLRS",
+        "VOLAR"
+      ]
     },
     {
       "airline_id": "AZUL",
@@ -205,7 +285,13 @@
       "country": "Brazil",
       "regulator": "CVM",
       "business_model": "LCC",
-      "name_variants": ["Azul S.A.", "Azul", "Azul Linhas Aéreas", "AZUL", "AZUL4"]
+      "name_variants": [
+        "Azul S.A.",
+        "Azul",
+        "Azul Linhas Aéreas",
+        "AZUL",
+        "AZUL4"
+      ]
     },
     {
       "airline_id": "LTM",
@@ -217,7 +303,12 @@
       "country": "Chile",
       "regulator": "CMF",
       "business_model": "FSC",
-      "name_variants": ["LATAM Airlines Group", "LATAM", "LATAM Airlines", "LTM"]
+      "name_variants": [
+        "LATAM Airlines Group",
+        "LATAM",
+        "LATAM Airlines",
+        "LTM"
+      ]
     },
     {
       "airline_id": "CPA",
@@ -229,7 +320,12 @@
       "country": "Panama",
       "regulator": "SMV",
       "business_model": "FSC",
-      "name_variants": ["Copa Airlines", "Copa Holdings", "Copa", "CPA"]
+      "name_variants": [
+        "Copa Airlines",
+        "Copa Holdings",
+        "Copa",
+        "CPA"
+      ]
     },
     {
       "airline_id": "CAO",
@@ -241,7 +337,12 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "FSC",
-      "name_variants": ["Air China", "Air China Limited", "601111", "00753"]
+      "name_variants": [
+        "Air China",
+        "Air China Limited",
+        "601111",
+        "00753"
+      ]
     },
     {
       "airline_id": "CEA",
@@ -253,7 +354,12 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "FSC",
-      "name_variants": ["China Eastern Airlines", "China Eastern", "600115", "00670"]
+      "name_variants": [
+        "China Eastern Airlines",
+        "China Eastern",
+        "600115",
+        "00670"
+      ]
     },
     {
       "airline_id": "CSN",
@@ -265,7 +371,12 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "FSC",
-      "name_variants": ["China Southern Airlines", "China Southern", "600029", "01055"]
+      "name_variants": [
+        "China Southern Airlines",
+        "China Southern",
+        "600029",
+        "01055"
+      ]
     },
     {
       "airline_id": "HNA",
@@ -277,7 +388,11 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "FSC",
-      "name_variants": ["Hainan Airlines", "Hainan", "600221"]
+      "name_variants": [
+        "Hainan Airlines",
+        "Hainan",
+        "600221"
+      ]
     },
     {
       "airline_id": "SPRING",
@@ -289,7 +404,11 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "LCC",
-      "name_variants": ["Spring Airlines", "Spring", "601021"]
+      "name_variants": [
+        "Spring Airlines",
+        "Spring",
+        "601021"
+      ]
     },
     {
       "airline_id": "JUNEYAO",
@@ -301,7 +420,11 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "LCC",
-      "name_variants": ["Juneyao Airlines", "Juneyao", "603885"]
+      "name_variants": [
+        "Juneyao Airlines",
+        "Juneyao",
+        "603885"
+      ]
     },
     {
       "airline_id": "CHEXP",
@@ -313,7 +436,11 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "Regional",
-      "name_variants": ["China Express Airlines", "China Express", "002928"]
+      "name_variants": [
+        "China Express Airlines",
+        "China Express",
+        "002928"
+      ]
     },
     {
       "airline_id": "NINEAIR",
@@ -325,7 +452,11 @@
       "country": "China",
       "regulator": "CSRC",
       "business_model": "LCC",
-      "name_variants": ["9 Air", "Jiuyuan Airlines", "9air"]
+      "name_variants": [
+        "9 Air",
+        "Jiuyuan Airlines",
+        "9air"
+      ]
     },
     {
       "airline_id": "CPACIFIC",
@@ -337,7 +468,13 @@
       "country": "Hong Kong",
       "regulator": "HKEX",
       "business_model": "FSC",
-      "name_variants": ["Cathay Pacific Airways", "Cathay Pacific", "Cathay", "00293", "0293.HK"]
+      "name_variants": [
+        "Cathay Pacific Airways",
+        "Cathay Pacific",
+        "Cathay",
+        "00293",
+        "0293.HK"
+      ]
     },
     {
       "airline_id": "HKEXPRESS",
@@ -349,7 +486,12 @@
       "country": "Hong Kong",
       "regulator": "HKEX",
       "business_model": "LCC",
-      "name_variants": ["HK Express", "Hong Kong Express", "Hong Kong Express Airways", "HKE"]
+      "name_variants": [
+        "HK Express",
+        "Hong Kong Express",
+        "Hong Kong Express Airways",
+        "HKE"
+      ]
     },
     {
       "airline_id": "AIRHK",
@@ -361,7 +503,10 @@
       "country": "Hong Kong",
       "regulator": "HKEX",
       "business_model": "Cargo",
-      "name_variants": ["Air Hong Kong", "AHK"]
+      "name_variants": [
+        "Air Hong Kong",
+        "AHK"
+      ]
     }
   ]
 }

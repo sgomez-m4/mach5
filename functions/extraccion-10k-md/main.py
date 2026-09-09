@@ -130,7 +130,14 @@ def subir_reporte_markdown(filing, ticker):
 # =========================================================
 # PROCESAR EMPRESA
 # =========================================================
-def procesar_empresa(empresa):
+def procesar_empresa(empresa, ejercicios=1):
+    """Baja los `ejercicios` 10-K mas recientes de la empresa.
+
+    Con ejercicios=1 se comporta como antes. Con mas, baja tambien los
+    anteriores: la tabla de flota de un 10-K es una foto de un solo cierre
+    —columnas Propias / Arrendadas / Total / Edad media, sin comparativo—, asi
+    que la unica forma de medir la transicion de flota es tener varias fotos.
+    """
 
     ticker = empresa["ticker"]
     cik = empresa["cik"]
@@ -175,22 +182,32 @@ def procesar_empresa(empresa):
             return
 
         # =====================================================
-        # SOLO EL REPORTE MÁS RECIENTE
+        # LOS N MAS RECIENTES
         # =====================================================
-        ultimo_filing = filings.latest()
+        # latest(1) devuelve el objeto suelto y latest(n>1) una coleccion:
+        # se normaliza a lista para no tener dos caminos.
+        recientes = filings.latest(ejercicios)
 
-        if not ultimo_filing:
+        if recientes is None:
 
             print(f"⚠ No se pudo obtener último 10-K para {ticker}")
             return
 
-        subir_reporte_markdown(
-            filing=ultimo_filing,
-            ticker=ticker
-        )
+        if not isinstance(recientes, (list, tuple)):
 
-        # Rate limiting SEC
-        time.sleep(0.25)
+            recientes = [recientes] if ejercicios == 1 else list(recientes)
+
+        print(f"   {len(recientes)} filing(s) para {ticker}")
+
+        for filing in recientes:
+
+            subir_reporte_markdown(
+                filing=filing,
+                ticker=ticker
+            )
+
+            # Rate limiting SEC
+            time.sleep(0.25)
 
     except Exception as e:
 
@@ -204,13 +221,26 @@ def procesar_empresa(empresa):
 #@functions_framework.http
 def run_edgar_pipeline(request):
 
-    print("🚀 Iniciando pipeline SEC EDGAR")
+    # ?ejercicios=3 baja tambien los dos anteriores. Por defecto 1, que es el
+    # comportamiento de la corrida diaria: sin esto, cada ejecucion rutinaria
+    # volveria a recorrer diez anios de historia para no subir nada nuevo.
+    ejercicios = 1
+
+    try:
+        crudo = (request.args.get("ejercicios")
+                 or (request.get_json(silent=True) or {}).get("ejercicios"))
+        if crudo:
+            ejercicios = max(1, min(10, int(crudo)))
+    except Exception:
+        pass
+
+    print(f"🚀 Iniciando pipeline SEC EDGAR (ejercicios={ejercicios})")
 
     inicio = datetime.now()
 
     for empresa in LISTA_EMPRESAS:
 
-        procesar_empresa(empresa)
+        procesar_empresa(empresa, ejercicios=ejercicios)
 
     fin = datetime.now()
 
@@ -220,5 +250,6 @@ def run_edgar_pipeline(request):
         "status": "success",
         "bucket": BUCKET_NAME,
         "duration": duracion,
+        "ejercicios": ejercicios,
         "companies_processed": len(LISTA_EMPRESAS)
     }

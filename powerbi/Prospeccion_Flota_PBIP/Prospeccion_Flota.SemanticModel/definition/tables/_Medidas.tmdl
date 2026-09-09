@@ -1,0 +1,495 @@
+/// Contenedor de medidas. No tiene datos propios.
+table _Medidas
+	lineageTag: eba9cfcd-7fcb-4771-83f5-1358f076fddc
+
+	/// Aeronaves en servicio, excluyendo las filas que el propio reporte declara como agregado.
+	measure 'Flota Total' = CALCULATE ( SUM ( v_fleet_normalized[Aeronaves] ), v_fleet_normalized[es_fila_agregada] = FALSE )
+		formatString: #,##0
+		displayFolder: Flota
+		lineageTag: fa7a624b-bc66-448b-a5bf-0e468da8c071
+
+	/// Cuenta grupos operadores, no entidades legales: American Eagle no suma aparte de American.
+	measure 'Aerolíneas en Flota' = DISTINCTCOUNT ( v_fleet_normalized[group_id] )
+		formatString: #,##0
+		displayFolder: Flota
+		lineageTag: 1bf8e38a-06fe-4b48-adbe-bd1508447b37
+
+	measure 'Modelos Distintos' = CALCULATE ( DISTINCTCOUNT ( v_fleet_normalized[Modelo] ), v_fleet_normalized[es_fila_agregada] = FALSE )
+		formatString: 0
+		displayFolder: Flota
+		lineageTag: 0b2b2b37-09d3-4522-aa19-65015f5428bf
+
+	measure 'Fabricantes Distintos' = CALCULATE ( DISTINCTCOUNT ( v_fleet_normalized[Fabricante] ), v_fleet_normalized[es_fila_agregada] = FALSE )
+		formatString: 0
+		displayFolder: Flota
+		lineageTag: 813c7d17-f543-4a50-9ff9-84b8c8ba7a44
+
+	/// Ponderada por cantidad. El denominador excluye las filas sin edad para no diluir el promedio con ceros.
+	measure 'Edad Promedio Ponderada' =
+			DIVIDE (
+			    SUMX ( v_fleet_normalized, v_fleet_normalized[Aeronaves] * v_fleet_normalized[Edad media (años)] ),
+			    SUMX ( v_fleet_normalized, IF ( ISBLANK ( v_fleet_normalized[Edad media (años)] ), 0, v_fleet_normalized[Aeronaves] ) )
+			)
+		formatString: 0.0
+		displayFolder: Flota
+		lineageTag: cd05276d-680c-4d78-b482-f045fae36d9f
+
+	/// Cuanta flota queda fuera del analisis de reemplazo. Se expone a proposito: un promedio sobre cobertura parcial hay que leerlo sabiendo cuanta falta.
+	measure 'Flota Sin Dato de Edad' = CALCULATE ( SUM ( v_fleet_normalized[Aeronaves] ), v_fleet_normalized[Estado de reemplazo] = "Sin dato" )
+		formatString: #,##0
+		displayFolder: Flota
+		lineageTag: c77728d5-f29f-477f-aa0d-737c25dc2f01
+
+	measure '% Arrendamiento Operativo' =
+			DIVIDE (
+			    CALCULATE ( SUM ( v_fleet_normalized[Aeronaves] ), v_fleet_normalized[Tipo de propiedad] = "Operating Lease" ),
+			    [Flota Total]
+			)
+		formatString: 0.0%
+		displayFolder: Leasing
+		lineageTag: e620c89f-fdb5-4c4b-97af-3e5db64cb65b
+
+	measure '% Arrendamiento Financiero' =
+			DIVIDE (
+			    CALCULATE ( SUM ( v_fleet_normalized[Aeronaves] ), v_fleet_normalized[Tipo de propiedad] = "Finance Lease" ),
+			    [Flota Total]
+			)
+		formatString: 0.0%
+		displayFolder: Leasing
+		lineageTag: 7118da3e-b1f3-40f0-9d8d-8dbee13cdee3
+
+	/// Operativo mas financiero. Antes se calculaba buscando la palabra Lease dentro del texto de propiedad; ahora usa la bandera ya resuelta en la vista.
+	measure '% Flota Arrendada' =
+			DIVIDE (
+			    CALCULATE ( SUM ( v_fleet_normalized[Aeronaves] ), v_fleet_normalized[es_arrendada] = TRUE ),
+			    [Flota Total]
+			)
+		formatString: 0.0%
+		displayFolder: Leasing
+		lineageTag: 06e30bda-6ca0-41f4-8b80-697abc90d5bf
+
+	measure 'Score Leasing' = AVERAGE ( v_prospect_score[score_leasing] )
+		formatString: 0.0
+		displayFolder: Prospección
+		lineageTag: 2a715d58-3bc0-4387-b1c8-9f33cf30b61d
+
+	measure 'Prospectos de Leasing' = CALCULATE ( DISTINCTCOUNT ( v_prospect_score[group_id] ), v_prospect_score[Segmento] = "Leasing" )
+		formatString: 0
+		displayFolder: Prospección
+		lineageTag: 59aa5619-e059-473f-8b4e-c0ec378a112e
+
+	measure '% en Ventana de Reemplazo' =
+			DIVIDE (
+			    CALCULATE (
+			        SUM ( v_fleet_normalized[Aeronaves] ),
+			        v_fleet_normalized[Estado de reemplazo] IN { "Replace Now", "Critical" }
+			    ),
+			    [Flota Total]
+			)
+		formatString: 0.0%
+		displayFolder: Reemplazo
+		lineageTag: fc06135b-18b2-478b-9ce1-d75d3d78321a
+
+	/// Anios hasta la edad objetivo de reemplazo, ponderados por cantidad.
+	measure 'Vida Remanente Ponderada' =
+			DIVIDE (
+			    SUMX ( v_fleet_normalized, v_fleet_normalized[Aeronaves] * v_fleet_normalized[Vida remanente (años)] ),
+			    SUMX ( v_fleet_normalized, IF ( ISBLANK ( v_fleet_normalized[Vida remanente (años)] ), 0, v_fleet_normalized[Aeronaves] ) )
+			)
+		formatString: 0.0
+		displayFolder: Reemplazo
+		lineageTag: ad73670e-4355-430a-907e-a901bc8250a5
+
+	measure 'Score Reemplazo' = AVERAGE ( v_prospect_score[score_reemplazo] )
+		formatString: 0.0
+		displayFolder: Prospección
+		lineageTag: c9915f55-856c-478f-b72a-21224cbebcbf
+
+	measure 'Prospectos Técnicos' = CALCULATE ( DISTINCTCOUNT ( v_prospect_score[group_id] ), v_prospect_score[Segmento] = "Tecnico / Reemplazo" )
+		formatString: 0
+		displayFolder: Prospección
+		lineageTag: c7cc6360-12f0-438d-8ec3-88f259ad3b81
+
+	measure 'Pedidos Totales' = SUM ( v_order_book_normalized[Unidades comprometidas] )
+		formatString: #,##0
+		displayFolder: Pedidos
+		lineageTag: 49f6cfad-d333-488a-be66-4d3c7f044ee3
+
+	/// Requiere el parseo de delivery_period que hace v_order_book_normalized: el texto original llega en diecinueve formas distintas.
+	measure 'Pedidos Próximos 2 Años' =
+			CALCULATE (
+			    SUM ( v_order_book_normalized[Unidades comprometidas] ),
+			    v_order_book_normalized[anios_hasta_entrega] <= 2
+			)
+		formatString: #,##0
+		displayFolder: Pedidos
+		lineageTag: d008687e-f6d3-4b74-b171-c946e5570113
+
+	measure 'Aerolíneas con Pedidos' = DISTINCTCOUNT ( v_order_book_normalized[group_id] )
+		formatString: #,##0
+		displayFolder: Pedidos
+		lineageTag: a0704130-0cfa-4fc0-8c2b-4b73001c0429
+
+	/// Renovacion comprometida como fraccion de la flota actual. Antes existia dos veces: una como ratio y otra multiplicada por cien pero con formato de porcentaje, que mostraba cien veces el valor real.
+	measure 'Ratio Pedidos sobre Flota' = DIVIDE ( [Pedidos Totales], [Flota Total] )
+		formatString: 0.0%
+		displayFolder: Pedidos
+		lineageTag: a3780d32-71f4-4c72-b243-3c26ec0337f2
+
+	/// Pedidos cuyo texto de entrega no ancla ningun anio, como Thereafter a secas.
+	measure 'Pedidos Sin Fecha' =
+			CALCULATE (
+			    SUM ( v_order_book_normalized[Unidades comprometidas] ),
+			    ISBLANK ( v_order_book_normalized[Primera entrega] )
+			)
+		formatString: #,##0
+		displayFolder: Pedidos
+		lineageTag: 0e729801-3c68-4759-afe1-092c7a044e0b
+
+	measure 'Prospect Score' = AVERAGE ( v_prospect_score[prospect_score] )
+		formatString: 0.0
+		displayFolder: Prospección
+		lineageTag: 7fcfce5e-b60c-4051-b03f-20752538bbd6
+
+	measure 'Score Complejidad' = AVERAGE ( v_prospect_score[score_complejidad] )
+		formatString: 0.0
+		displayFolder: Prospección
+		lineageTag: 017710bc-91ba-4dd2-a1fb-dfce0dd006d1
+
+	measure 'Score Transición' = AVERAGE ( v_prospect_score[score_transicion] )
+		formatString: 0.0
+		displayFolder: Prospección
+		lineageTag: 6d860a90-c0c9-47aa-8ccf-eace6eafd89f
+
+	measure 'Score Apalancamiento' = AVERAGE ( v_prospect_score[score_apalancamiento] )
+		formatString: 0.0
+		displayFolder: Prospección
+		lineageTag: f88950eb-74d8-4191-8431-63d23ee79d53
+
+	measure 'Grupos Evaluados' = DISTINCTCOUNT ( v_prospect_score[group_id] )
+		formatString: 0
+		displayFolder: Prospección
+		lineageTag: 2c780914-8aaa-4a82-9995-90dbec5fe806
+
+	/// Alta neta observada entre el primer y el ultimo ejercicio con datos. Solo cubre a las aerolineas cuyo filing publica la comparativa.
+	measure 'Aeronaves Entrando' =
+			CALCULATE (
+			    SUM ( v_fleet_transition[Variación] ),
+			    v_fleet_transition[Movimiento] IN { "Entra a la flota", "Crece" }
+			)
+		formatString: #,##0
+		displayFolder: Transición medida
+		lineageTag: 101717f9-e59d-4bd3-8721-8014ebd29297
+
+	measure 'Aeronaves Saliendo' =
+			ABS (
+			    CALCULATE (
+			        SUM ( v_fleet_transition[Variación] ),
+			        v_fleet_transition[Movimiento] IN { "Sale de la flota", "Se reduce" }
+			    )
+			)
+		formatString: #,##0
+		displayFolder: Transición medida
+		lineageTag: 6e41ae23-e93a-4238-87c0-bd5f9d057825
+
+	/// Tipos que aparecen desde cero. Es la señal mas fuerte de introduccion de flota: implica transicion de records y entrenamiento, no una ampliacion del mismo contrato.
+	measure 'Modelos Entrando' =
+			CALCULATE (
+			    DISTINCTCOUNT ( v_fleet_transition[Modelo] ),
+			    v_fleet_transition[Movimiento] = "Entra a la flota"
+			)
+		formatString: 0
+		displayFolder: Transición medida
+		lineageTag: 33c53160-5286-4928-9f68-179d3a202f0d
+
+	measure 'Modelos Saliendo' =
+			CALCULATE (
+			    DISTINCTCOUNT ( v_fleet_transition[Modelo] ),
+			    v_fleet_transition[Movimiento] = "Sale de la flota"
+			)
+		formatString: 0
+		displayFolder: Transición medida
+		lineageTag: a1081e3e-4e4e-4d20-8a18-f5b2015fe37f
+
+	/// Cobertura de la medicion. Sin esto un cero en las medidas de transicion se lee como ausencia de movimiento cuando en realidad es ausencia de datos.
+	measure 'Grupos con Serie de Flota' = DISTINCTCOUNT ( v_fleet_transition[group_id] )
+		formatString: 0
+		displayFolder: Transición medida
+		lineageTag: 7398237b-b738-44f7-98f4-615eed544e75
+
+	/// Tasa anualizada del pasivo por arrendamiento entre los extremos de la serie.
+	measure 'Var Anual Arrendamiento' = AVERAGE ( v_financial_trend[lease_var_anual] )
+		formatString: 0.0%
+		displayFolder: Transición financiera
+		lineageTag: aeef1335-a82b-499f-b478-6011c8a808ef
+
+	/// Cuanto mas rapido crece el arrendamiento que el negocio. Positivo alto es rotacion de flota hacia leasing, no crecimiento.
+	measure 'Arrendamiento sobre Ingresos' = AVERAGE ( v_financial_trend[lease_sobre_ingresos] )
+		formatString: 0.0%
+		displayFolder: Transición financiera
+		lineageTag: f006096b-c4a0-4f9b-925b-c0e84d5cc98d
+
+	/// Intensidad de renovacion con capital propio. Por encima de uno se invierte mas de lo que se deprecia.
+	measure 'Capex sobre Depreciación' = AVERAGE ( v_financial_trend[capex_dep_final] )
+		formatString: 0.00
+		displayFolder: Transición financiera
+		lineageTag: 8e021cda-c688-47a5-84e7-03d629ee0a4b
+
+	/// Cobertura de la medicion financiera, por el mismo motivo que en la de flota.
+	measure 'Grupos con Serie Financiera' = CALCULATE ( DISTINCTCOUNT ( v_financial_trend[group_id] ), v_financial_trend[es_medida] = TRUE )
+		formatString: 0
+		displayFolder: Transición financiera
+		lineageTag: 47a90aca-6f1f-4c7f-b01d-b2609cfedfe5
+
+	/// Si la aerolinea publica edad de flota. Sin ella no hay presion de reemplazo.
+	measure 'Cob Edad' =
+			VAR falta = SELECTEDVALUE ( v_prospect_score[Sin dato de edad] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( falta ), "—  sin evaluar",
+			        falta, "✗  sin dato",
+			        "✓  con dato"
+			    )
+		displayFolder: Cobertura
+		lineageTag: 0f39ac80-5100-489f-a4cd-973858ecff4b
+
+	/// Color de Cob Edad. Solo para formato condicional.
+	measure 'Cob Edad Color' =
+			VAR falta = SELECTEDVALUE ( v_prospect_score[Sin dato de edad] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( falta ), "#9AA5B1",
+			        falta, "#C99700",
+			        "#2E7D52"
+			    )
+		displayFolder: Cobertura
+		lineageTag: 136df5bc-2569-4135-bd10-c5afb3f9041c
+
+	/// Si publica el calendario de vencimientos de arrendamiento.
+	measure 'Cob Vencimientos' =
+			VAR falta = SELECTEDVALUE ( v_prospect_score[Sin dato de vencimientos] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( falta ), "—  sin evaluar",
+			        falta, "✗  sin dato",
+			        "✓  con dato"
+			    )
+		displayFolder: Cobertura
+		lineageTag: 1dd8a8e3-1f51-4346-b988-5b90f573ed82
+
+	/// Color de Cob Vencimientos. Solo para formato condicional.
+	measure 'Cob Vencimientos Color' =
+			VAR falta = SELECTEDVALUE ( v_prospect_score[Sin dato de vencimientos] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( falta ), "#9AA5B1",
+			        falta, "#C99700",
+			        "#2E7D52"
+			    )
+		displayFolder: Cobertura
+		lineageTag: f26f6713-f93b-449d-93d5-4e02e56e09ef
+
+	/// Si tiene metricas financieras normalizadas.
+	measure 'Cob Financieros' =
+			VAR falta = SELECTEDVALUE ( v_prospect_score[Sin datos financieros] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( falta ), "—  sin evaluar",
+			        falta, "✗  sin dato",
+			        "✓  con dato"
+			    )
+		displayFolder: Cobertura
+		lineageTag: bb469512-a375-4054-ad33-7d23c3ffed11
+
+	/// Color de Cob Financieros. Solo para formato condicional.
+	measure 'Cob Financieros Color' =
+			VAR falta = SELECTEDVALUE ( v_prospect_score[Sin datos financieros] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( falta ), "#9AA5B1",
+			        falta, "#C99700",
+			        "#2E7D52"
+			    )
+		displayFolder: Cobertura
+		lineageTag: 93cda339-d562-4e78-ba8d-d9481bff3a1c
+
+	/// Ejercicios financieros comparables. Con menos de dos no hay tendencia.
+	measure 'Cob Serie Financiera' =
+			VAR n = CALCULATE ( MAX ( v_financial_trend[Años con datos] ) )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( n ) || n < 1, "✗  sin serie",
+			        n = 1, "✗  1 ejercicio",
+			        "✓  " & FORMAT ( n, "0" ) & " ejercicios"
+			    )
+		displayFolder: Cobertura
+		lineageTag: 899b39a4-dc00-42ed-a568-47b62a199b7a
+
+	/// Color de Cob Serie Financiera. Solo para formato condicional.
+	measure 'Cob Serie Financiera Color' =
+			VAR n = CALCULATE ( MAX ( v_financial_trend[Años con datos] ) )
+			RETURN
+			    IF ( ISBLANK ( n ) || n < 2, "#C99700", "#2E7D52" )
+		displayFolder: Cobertura
+		lineageTag: 93415b18-2aa7-46fc-9ad8-b21a2d15dacf
+
+	/// Ejercicios de flota comparables. Con menos de dos la transicion se infiere, no se mide.
+	measure 'Cob Serie Flota' =
+			VAR n = CALCULATE ( MAX ( v_fleet_transition[Ejercicios] ) )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( n ) || n < 1, "✗  sin serie",
+			        n = 1, "✗  1 ejercicio",
+			        "✓  " & FORMAT ( n, "0" ) & " ejercicios"
+			    )
+		displayFolder: Cobertura
+		lineageTag: 1657ca9d-ecba-486f-b0d4-88d7e515d1ef
+
+	/// Color de Cob Serie Flota. Solo para formato condicional.
+	measure 'Cob Serie Flota Color' =
+			VAR n = CALCULATE ( MAX ( v_fleet_transition[Ejercicios] ) )
+			RETURN
+			    IF ( ISBLANK ( n ) || n < 2, "#C99700", "#2E7D52" )
+		displayFolder: Cobertura
+		lineageTag: a929e071-7461-406e-a3da-53c50beed69a
+
+	/// Grupos cuya flota solo se conoce en una foto. Es el limite duro de la pagina de transicion.
+	measure 'Grupos sin Serie de Flota' =
+			
+			COUNTROWS (
+			    FILTER (
+			        FILTER ( VALUES ( dim_airline[airline_id] ), NOT ISBLANK ( [Flota Total] ) ),
+			        VAR n = CALCULATE ( MAX ( v_fleet_transition[Ejercicios] ) )
+			        RETURN ISBLANK ( n ) || n < 2
+			    )
+			)
+		formatString: #,##0
+		displayFolder: Cobertura
+		lineageTag: ac7a452c-469c-4579-8eef-6447a5912957
+
+	/// Aeronaves cuyo reporte desglosa anios restantes de arrendamiento. Es el universo real de la dispersion de vencimientos, no la flota entera.
+	measure 'Flota con Dato de Vencimiento' =
+			CALCULATE (
+			    SUM ( v_fleet_normalized[Aeronaves] ),
+			    NOT ISBLANK ( v_fleet_normalized[remaining_lease_years] )
+			)
+		formatString: #,##0
+		displayFolder: Reemplazo
+		lineageTag: 7362dac2-b0db-406f-a6c2-86d3f541d3fe
+
+	/// Cuantos grupos desglosan el vencimiento por aeronave.
+	measure 'Aerolineas con Dato de Vencimiento' =
+			CALCULATE (
+			    DISTINCTCOUNT ( v_fleet_normalized[group_id] ),
+			    NOT ISBLANK ( v_fleet_normalized[remaining_lease_years] )
+			)
+		formatString: #,##0
+		displayFolder: Reemplazo
+		lineageTag: d4c71088-f6f3-486c-a559-766bc7901ae1
+
+	/// Anios que le quedan de arrendamiento a la flota, ponderado por cantidad. El denominador excluye lo que no lo reporta: si no, saldria artificialmente bajo.
+	measure 'Vencimiento Medio de Lease' =
+			VAR conDato =
+			    FILTER (
+			        v_fleet_normalized,
+			        NOT ISBLANK ( v_fleet_normalized[remaining_lease_years] )
+			    )
+			RETURN
+			    DIVIDE (
+			        SUMX ( conDato, v_fleet_normalized[Aeronaves] * v_fleet_normalized[remaining_lease_years] ),
+			        SUMX ( conDato, v_fleet_normalized[Aeronaves] )
+			    )
+		formatString: 0.0
+		displayFolder: Reemplazo
+		lineageTag: bf633ec2-4974-4bdf-a187-786fc07ad3e3
+
+	/// Cuantas aeronaves estan en arrendamiento operativo. El porcentaje dice que proporcion; esto dice cuantos contratos hay detras, que es lo que se negocia.
+	measure 'Aeronaves en Arrendamiento Operativo' =
+			VAR arrendadas =
+			    CALCULATE (
+			        SUM ( v_fleet_normalized[Aeronaves] ),
+			        v_fleet_normalized[Tipo de propiedad] = "Operating Lease"
+			    )
+			RETURN
+			    IF ( ISBLANK ( arrendadas ) && NOT ISBLANK ( [Flota Total] ), 0, arrendadas )
+		formatString: #,##0
+		displayFolder: Leasing
+		lineageTag: b42ebb31-dff8-4b0e-9ede-84bf0c65c302
+
+	/// Score recalculado con los pesos que fijan las segmentaciones de la pagina de
+	/// ranking. Con los valores por defecto reproduce exactamente el prospect_score
+	/// de BigQuery; moverlos permite probar otra tesis comercial -por ejemplo, todo
+	/// el peso en leasing- y ver el ranking reordenarse sin tocar el almacen.
+	/// 
+	/// Se divide por la suma de los pesos, no por 100, para que el resultado siga
+	/// leyendose sobre 100 aunque el usuario no cuadre los pesos a mano.
+	/// 
+	/// REMOVEFILTERS(dim_aircraft_type) es deliberado. El score esta definido por
+	/// aerolinea y no tiene lectura por modelo: si alguien filtra un fabricante, la
+	/// cifra correcta sigue siendo la de la aerolinea entera. Hoy no hay relacion
+	/// entre esa dimension y v_prospect_score, asi que la funcion no cambia nada;
+	/// esta para que siga siendo cierto si alguien la crea mañana.
+	measure 'Score Ponderado' =
+			VAR pesoLeasing = [Peso leasing valor]
+			VAR pesoReemplazo = [Peso reemplazo valor]
+			VAR pesoComplejidad = [Peso complejidad valor]
+			VAR pesoTransicion = [Peso transicion valor]
+			VAR pesoApalancamiento = [Peso apalancamiento valor]
+			VAR total = pesoLeasing + pesoReemplazo + pesoComplejidad + pesoTransicion + pesoApalancamiento
+			VAR porAerolinea = CALCULATETABLE ( v_prospect_score, REMOVEFILTERS ( dim_aircraft_type ) )
+			RETURN
+			    IF (
+			        total = 0,
+			        BLANK (),
+			        DIVIDE (
+			            AVERAGEX (
+			                porAerolinea,
+			                v_prospect_score[score_leasing] * pesoLeasing
+			                    + v_prospect_score[score_reemplazo] * pesoReemplazo
+			                    + v_prospect_score[score_complejidad] * pesoComplejidad
+			                    + v_prospect_score[score_transicion] * pesoTransicion
+			                    + v_prospect_score[score_apalancamiento] * pesoApalancamiento
+			            ),
+			            total
+			        )
+			    )
+		formatString: 0.0
+		displayFolder: Prospeccion
+		lineageTag: 75053dbc-417c-464e-a0e6-0b4f52638e95
+
+	/// Pedidos en firme del modelo que se este mirando, no de la aerolinea entera. El eje de la Ficha filtra v_fleet_normalized, que no propaga al order book: TREATAS traslada ese filtro a v_order_book_normalized para que la cifra corresponda al modelo.
+	measure 'Pedidos del Modelo' =
+			CALCULATE (
+			    [Pedidos Totales],
+			    TREATAS ( VALUES ( v_fleet_normalized[Modelo] ), v_order_book_normalized[Modelo] )
+			)
+		formatString: #,##0
+		displayFolder: Pedidos
+		lineageTag: 617eb036-dc8b-4a1d-ac19-ec240e48c1e3
+
+	/// Lo mismo, restringido a las entregas de los proximos dos ejercicios. Es la parte del pedido que ya es trabajo en curso: devoluciones, transiciones y entradas en linea.
+	measure 'Pedidos del Modelo Proximos 2 Anios' =
+			CALCULATE (
+			    [Pedidos Próximos 2 Años],
+			    TREATAS ( VALUES ( v_fleet_normalized[Modelo] ), v_order_book_normalized[Modelo] )
+			)
+		formatString: #,##0
+		displayFolder: Pedidos
+		lineageTag: 767e0bb8-22fd-4cd9-806a-ec6c65909f27
+
+	column _
+		lineageTag: 97d461ac-8f00-4641-b113-22ec5bcd49d6
+		isNameInferred
+		sourceColumn: [_]
+
+	partition _Medidas = calculated
+		source = ROW("_", 1)
+

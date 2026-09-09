@@ -1,0 +1,186 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "45a204e04d99f48804e1",
+  "position": {
+    "x": 648,
+    "y": 432,
+    "z": 1000,
+    "height": 272,
+    "width": 616,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_transition"
+                    }
+                  },
+                  "Property": "Aerolínea"
+                }
+              },
+              "queryRef": "v_fleet_transition.aerolinea",
+              "nativeQueryRef": "aerolinea"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_transition"
+                    }
+                  },
+                  "Property": "Modelo"
+                }
+              },
+              "queryRef": "v_fleet_transition.aircraft_model",
+              "nativeQueryRef": "aircraft_model"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_transition"
+                    }
+                  },
+                  "Property": "Año inicial"
+                }
+              },
+              "queryRef": "Sum(v_fleet_transition.anio_inicial)",
+              "nativeQueryRef": "anio_inicial"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_transition"
+                    }
+                  },
+                  "Property": "Año final"
+                }
+              },
+              "queryRef": "Sum(v_fleet_transition.anio_final)",
+              "nativeQueryRef": "anio_final"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "v_fleet_transition"
+                        }
+                      },
+                      "Property": "Aeronaves inicial"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(v_fleet_transition.aeronaves_inicial)",
+              "nativeQueryRef": "Aeronaves inicial",
+              "displayName": "Aeronaves inicial"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "v_fleet_transition"
+                        }
+                      },
+                      "Property": "Aeronaves final"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(v_fleet_transition.aeronaves_final)",
+              "nativeQueryRef": "Aeronaves final",
+              "displayName": "Aeronaves final"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "v_fleet_transition"
+                        }
+                      },
+                      "Property": "Variación"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(v_fleet_transition.variacion)",
+              "nativeQueryRef": "Variación",
+              "displayName": "Variación"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_transition"
+                    }
+                  },
+                  "Property": "Movimiento"
+                }
+              },
+              "queryRef": "v_fleet_transition.movimiento",
+              "nativeQueryRef": "movimiento"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_fleet_transition"
+                  }
+                },
+                "Property": "Aerolínea"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Movimiento de flota, aerolínea por modelo'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

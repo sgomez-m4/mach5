@@ -1,0 +1,131 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "1c7aca1157b46f591746",
+  "position": {
+    "x": 646.25836335563554,
+    "y": 440.06176016469374,
+    "z": 3000,
+    "height": 264,
+    "width": 618,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "Modelo"
+                }
+              },
+              "queryRef": "v_order_book_normalized.aircraft_model",
+              "nativeQueryRef": "aircraft_model"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "Ventana de entrega"
+                }
+              },
+              "queryRef": "v_order_book_normalized.ventana_entrega",
+              "nativeQueryRef": "ventana_entrega"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "Primera entrega"
+                }
+              },
+              "queryRef": "Sum(v_order_book_normalized.anio_primera_entrega)",
+              "nativeQueryRef": "anio_primera_entrega"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "v_order_book_normalized"
+                        }
+                      },
+                      "Property": "Unidades comprometidas"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(v_order_book_normalized.quantity_committed)",
+              "nativeQueryRef": "Suma de quantity_committed"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "Fecha aproximada"
+                }
+              },
+              "queryRef": "v_order_book_normalized.fecha_aproximada",
+              "nativeQueryRef": "fecha_aproximada"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_order_book_normalized"
+                  }
+                },
+                "Property": "Primera entrega"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Pedidos en firme por ventana de entrega'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

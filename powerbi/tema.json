@@ -31,37 +31,37 @@
   "null": "#9AA5B1",
   "textClasses": {
     "title": {
-      "fontFace": "Nunito",
+      "fontFace": "Segoe UI",
       "color": "#333333",
       "fontSize": 16
     },
     "header": {
-      "fontFace": "Nunito",
+      "fontFace": "Segoe UI",
       "color": "#333333",
       "fontSize": 13
     },
     "label": {
-      "fontFace": "Nunito",
+      "fontFace": "Segoe UI",
       "color": "#333333",
       "fontSize": 10
     },
     "callout": {
-      "fontFace": "Nunito",
-      "fontSize": 32,
+      "fontFace": "Segoe UI",
+      "fontSize": 24,
       "color": "#0E4C7A"
     },
     "largeTitle": {
-      "fontFace": "Nunito",
+      "fontFace": "Segoe UI",
       "color": "#333333",
       "fontSize": 20
     },
     "lightLabel": {
-      "fontFace": "Nunito",
+      "fontFace": "Segoe UI",
       "fontSize": 10,
       "color": "#6F6F6E"
     },
     "boldLabel": {
-      "fontFace": "Nunito",
+      "fontFace": "Segoe UI",
       "color": "#333333",
       "fontSize": 10
     }

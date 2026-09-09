@@ -1,0 +1,24 @@
+/// Cuanto pesa el contexto financiero. Es un matiz, no un motor: un balance tenso empuja hacia sale-leaseback, pero por si solo no hace a nadie cliente.
+/// Parametro What-If: no sale de ningun reporte, lo fija el consultor con la
+/// segmentacion de la pagina de ranking. Por defecto 8, que es el peso
+/// con el que v_prospect_score calcula prospect_score en BigQuery.
+table 'Peso apalancamiento'
+	lineageTag: 18a2b45e-de23-4236-8fa2-ff26a0c0c6e5
+
+	/// Valor elegido en la segmentacion. Si no hay seleccion, 8.
+	measure 'Peso apalancamiento valor' = SELECTEDVALUE ( 'Peso apalancamiento'[Peso apalancamiento], 8 )
+		formatString: 0
+		displayFolder: Ponderacion
+		lineageTag: 00579879-f0f6-46a1-ad4d-f5bd88afc7eb
+
+	column 'Peso apalancamiento'
+		dataType: int64
+		lineageTag: b74514ac-b613-4627-99fe-cb68629db26a
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Peso apalancamiento' = calculated
+		source = GENERATESERIES ( 0, 100, 1 )
+

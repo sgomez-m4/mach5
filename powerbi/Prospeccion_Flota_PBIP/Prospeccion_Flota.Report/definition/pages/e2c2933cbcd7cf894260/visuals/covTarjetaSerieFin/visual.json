@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "covTarjetaSerieFin",
+  "position": {
+    "x": 864,
+    "y": 64,
+    "z": 1000,
+    "height": 104,
+    "width": 408,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Grupos con Serie Financiera"
+                }
+              },
+              "queryRef": "_Medidas.Grupos con Serie Financiera",
+              "nativeQueryRef": "Grupos con Serie Financiera",
+              "displayName": "Con serie financiera"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

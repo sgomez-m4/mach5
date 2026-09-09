@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "venTarjetaSinEdad",
+  "position": {
+    "x": 16,
+    "y": 64,
+    "z": 2000,
+    "height": 104,
+    "width": 618,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Flota Sin Dato de Edad"
+                }
+              },
+              "queryRef": "_Medidas.Flota Sin Dato de Edad",
+              "nativeQueryRef": "Flota Sin Dato de Edad",
+              "displayName": "Aeronaves sin edad reportada"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

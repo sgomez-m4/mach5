@@ -31,6 +31,13 @@ WITH base AS (
   WHERE h.airline_id IS NOT NULL
     AND NOT h.es_fila_agregada
     AND h.quantity IS NOT NULL
+    -- Epigrafes que no son aeronaves. Aparecen sobre todo al extraer informes de
+    -- ejercicios anteriores, donde la seccion viene menos acotada: "Aircraft and
+    -- Engines" o "Contractual Fleet" son lineas del calendario de arrendamiento,
+    -- y contadas como modelo inventan entradas y salidas de flota que no existen.
+    AND NOT REGEXP_CONTAINS(
+          LOWER(h.aircraft_type),
+          r'(engine|contractual|total fleet|commercial aircraft|^\s*fleet\s*$|^\s*aircraft\s*$)')
 ),
 
 por_anio AS (

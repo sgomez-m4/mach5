@@ -1,0 +1,97 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "pipMatrizVentana",
+  "position": {
+    "x": 16,
+    "y": 452,
+    "z": 7000,
+    "height": 252,
+    "width": 1248,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "Ventana de entrega"
+                }
+              },
+              "queryRef": "v_order_book_normalized.Ventana de entrega",
+              "nativeQueryRef": "Ventana de entrega",
+              "active": true
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "grupo"
+                }
+              },
+              "queryRef": "v_order_book_normalized.grupo",
+              "nativeQueryRef": "Aerolínea",
+              "active": true,
+              "displayName": "Aerolínea"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "v_order_book_normalized"
+                        }
+                      },
+                      "Property": "Unidades comprometidas"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(v_order_book_normalized.Unidades comprometidas)",
+              "nativeQueryRef": "Unidades"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Aerolínea por ventana de entrega'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

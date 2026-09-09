@@ -1,0 +1,36 @@
+relationship Relación
+	fromColumn: v_fleet_normalized.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 1'
+	fromColumn: v_fleet_normalized.Modelo
+	toColumn: dim_aircraft_type.model
+
+relationship 'Relación 2'
+	fromColumn: v_order_book_normalized.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 3'
+	fromColumn: v_order_book_normalized.Modelo
+	toColumn: dim_aircraft_type.model
+
+relationship 'Relación 4'
+	fromColumn: v_prospect_score.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 5'
+	fromColumn: v_fleet_transition.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 6'
+	fromColumn: v_fleet_transition.Modelo
+	toColumn: dim_aircraft_type.model
+
+relationship 'Relación 7'
+	fromColumn: v_financial_trend.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación serie flota'
+	fromColumn: v_fleet_series.group_id
+	toColumn: dim_airline.airline_id
+

@@ -167,7 +167,9 @@ def construir(fuente):
             "title":      dict(texto_base, fontSize=16),
             "header":     dict(texto_base, fontSize=13),
             "label":      dict(texto_base, fontSize=10),
-            "callout":    {"fontFace": fuente, "fontSize": 32, "color": AZUL_PROFUNDO},
+            # 24 y no 32: a 32 el numero no cabe en una tarjeta de 88 px de alto
+            # y Power BI lo recorta por abajo sin avisar.
+            "callout":    {"fontFace": fuente, "fontSize": 24, "color": AZUL_PROFUNDO},
             "largeTitle": dict(texto_base, fontSize=20),
             "lightLabel": {"fontFace": fuente, "fontSize": 10, "color": GRIS_MARCA},
             "boldLabel":  dict(texto_base, fontSize=10),
@@ -210,9 +212,14 @@ def construir(fuente):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--fuente", default="Nunito",
-                    help="Familia tipografica. Nunito es la de marca pero hay que "
-                         "instalarla; si no esta, Power BI cae a otra en silencio.")
+    # Segoe UI por defecto y no Nunito: Nunito es la de la web de la empresa pero
+    # hay que instalarla en cada maquina que abra el informe, y cuando falta Power
+    # BI no avisa: cae a una serif y el panel entero pasa a parecer un documento.
+    # Segoe UI viene con Windows y con el servicio, asi que se ve igual en todas
+    # partes. Con --fuente Nunito se recupera la de marca donde este instalada.
+    ap.add_argument("--fuente", default="Segoe UI",
+                    help="Familia tipografica. Segoe UI esta garantizada; Nunito es "
+                         "la de marca pero hay que instalarla en cada maquina.")
     args = ap.parse_args()
 
     tema = construir(args.fuente)

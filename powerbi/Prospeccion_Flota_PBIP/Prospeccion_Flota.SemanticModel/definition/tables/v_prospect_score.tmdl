@@ -1,0 +1,333 @@
+table v_prospect_score
+	lineageTag: 3485170c-1ab4-40df-85e5-428f03d35d2e
+
+	column group_id
+		dataType: string
+		lineageTag: 77270bf7-a66b-4b53-b3b5-489ce31c3223
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Grupo
+		dataType: string
+		lineageTag: 98be0042-4bf6-475b-ac00-2ef9d167f577
+		summarizeBy: none
+		sourceColumn: Grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column region
+		dataType: string
+		lineageTag: eea02676-9409-4873-87d9-bc5f1d4b9fd6
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	column country
+		dataType: string
+		lineageTag: b55b73c2-e86f-4af6-a011-42c07d511ad6
+		summarizeBy: none
+		sourceColumn: country
+
+		annotation SummarizationSetBy = Automatic
+
+	column business_model
+		dataType: string
+		lineageTag: cac17e3f-f759-4058-ae75-ef5d9063b032
+		summarizeBy: none
+		sourceColumn: business_model
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flota total'
+		dataType: int64
+		formatString: 0
+		lineageTag: fe945d8c-fd03-4092-840d-7b4c04b030ee
+		summarizeBy: sum
+		sourceColumn: Flota total
+
+		annotation SummarizationSetBy = Automatic
+
+	column tier_tamano
+		dataType: string
+		lineageTag: 8ad56f86-c7f5-499b-9a56-0b2849124f0f
+		summarizeBy: none
+		sourceColumn: tier_tamano
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: 9e76366a-15df-4443-bcb4-490809c2627a
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column prospect_score
+		dataType: double
+		lineageTag: 15d4876f-615e-4eb1-b527-6588dca4af4a
+		summarizeBy: sum
+		sourceColumn: prospect_score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_leasing
+		dataType: double
+		lineageTag: ba4c70b9-f32d-47fd-9da9-9e46f9a982ea
+		summarizeBy: sum
+		sourceColumn: score_leasing
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_reemplazo
+		dataType: double
+		lineageTag: 999ce94e-9819-4603-aaa7-c40e6d4655b5
+		summarizeBy: sum
+		sourceColumn: score_reemplazo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_complejidad
+		dataType: double
+		lineageTag: 49d8c1cd-d297-4ada-bf23-3e6ae1e0c246
+		summarizeBy: sum
+		sourceColumn: score_complejidad
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_transicion
+		dataType: double
+		lineageTag: b982f27a-76d5-4ff4-8d37-cdd39306cf63
+		summarizeBy: sum
+		sourceColumn: score_transicion
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column score_apalancamiento
+		dataType: double
+		lineageTag: 28edf798-4e5f-409c-9bb8-ad5576141338
+		summarizeBy: sum
+		sourceColumn: score_apalancamiento
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column '% arrendamiento operativo'
+		dataType: double
+		lineageTag: 12ebcb9e-ca8b-4e09-94ca-1d384d4d6107
+		summarizeBy: sum
+		sourceColumn: % arrendamiento operativo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pct_finance_lease
+		dataType: double
+		lineageTag: 381b57ca-aae4-45ef-9c3f-8505c81f4cd8
+		summarizeBy: sum
+		sourceColumn: pct_finance_lease
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column pct_ventana_reemplazo
+		dataType: double
+		lineageTag: af5a2c2e-cc48-4138-b8cc-47480a3cc24c
+		summarizeBy: sum
+		sourceColumn: pct_ventana_reemplazo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Edad ponderada'
+		dataType: double
+		lineageTag: ca9d83d0-6d83-418e-a730-195099621b9f
+		summarizeBy: sum
+		sourceColumn: Edad ponderada
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column vida_remanente
+		dataType: double
+		lineageTag: 57f8d2b5-72f1-469b-93d7-5d283f055a11
+		summarizeBy: sum
+		sourceColumn: vida_remanente
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column n_modelos
+		dataType: int64
+		formatString: 0
+		lineageTag: 029a640c-a817-4969-83d5-c49ec63aa754
+		summarizeBy: sum
+		sourceColumn: n_modelos
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_fabricantes
+		dataType: int64
+		formatString: 0
+		lineageTag: 2597df13-bfd8-46cb-97e2-1382d6658c7b
+		summarizeBy: sum
+		sourceColumn: n_fabricantes
+
+		annotation SummarizationSetBy = Automatic
+
+	column mezcla_generaciones
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 13afec46-b885-47a8-9dc0-d365fc112d53
+		summarizeBy: none
+		sourceColumn: mezcla_generaciones
+
+		annotation SummarizationSetBy = Automatic
+
+	column pedidos_total
+		dataType: int64
+		formatString: 0
+		lineageTag: da2cf1d3-86cd-478d-9784-ed9e06b7b3a4
+		summarizeBy: sum
+		sourceColumn: pedidos_total
+
+		annotation SummarizationSetBy = Automatic
+
+	column pedidos_proximos_2a
+		dataType: int64
+		formatString: 0
+		lineageTag: d6b26637-ea65-4231-8708-f5c89bb65094
+		summarizeBy: sum
+		sourceColumn: pedidos_proximos_2a
+
+		annotation SummarizationSetBy = Automatic
+
+	column pct_renovacion
+		dataType: double
+		lineageTag: 37b04e34-c1ff-4ba9-9289-8db626762b30
+		summarizeBy: sum
+		sourceColumn: pct_renovacion
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column '% vence en 3 años'
+		dataType: double
+		lineageTag: 70931a99-0d82-4687-9023-e0339113f7f4
+		summarizeBy: sum
+		sourceColumn: % vence en 3 años
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column '% vence en 1 año'
+		dataType: double
+		lineageTag: 583310a1-ff00-4281-b884-db240f7cd67f
+		summarizeBy: sum
+		sourceColumn: % vence en 1 año
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Vencimientos (M USD)'
+		dataType: double
+		lineageTag: 827fe42a-eea0-4500-a082-c922868e5ae0
+		summarizeBy: sum
+		sourceColumn: Vencimientos (M USD)
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column net_debt_ebitda
+		dataType: double
+		lineageTag: acaeebae-f328-4933-9a55-5e91449fdda4
+		summarizeBy: sum
+		sourceColumn: net_debt_ebitda
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column revenue_usdm
+		dataType: double
+		lineageTag: 98846b1d-3edb-421d-a0d6-35d8f7a2c640
+		summarizeBy: sum
+		sourceColumn: revenue_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Sin dato de edad'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8d7d5c01-103b-4995-ab93-c95c4e77c691
+		summarizeBy: none
+		sourceColumn: Sin dato de edad
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Sin dato de vencimientos'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 362c68e4-66d4-43fa-8d04-27f72690a4b2
+		summarizeBy: none
+		sourceColumn: Sin dato de vencimientos
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Sin datos financieros'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 581f1520-52ff-4055-9c05-c5938b1d275a
+		summarizeBy: none
+		sourceColumn: Sin datos financieros
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Aeronaves en filas agregadas'
+		dataType: int64
+		formatString: 0
+		lineageTag: 1752b36a-ffa4-49c5-8e66-bd8063e13f6d
+		summarizeBy: sum
+		sourceColumn: Aeronaves en filas agregadas
+
+		annotation SummarizationSetBy = Automatic
+
+	partition v_prospect_score = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    #"mach5-gemini-project_Database" = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    dataset_integrado_Schema = #"mach5-gemini-project_Database"{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    v_prospect_score_View = dataset_integrado_Schema{[Name="v_prospect_score",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(v_prospect_score_View,{{"aeronaves_en_filas_agregadas", "Aeronaves en filas agregadas"}, {"edad_ponderada", "Edad ponderada"}, {"flota_total", "Flota total"}, {"grupo", "Grupo"}, {"segmento_prospecto", "Segmento"}, {"sin_dato_edad", "Sin dato de edad"}, {"sin_dato_vencimientos", "Sin dato de vencimientos"}, {"sin_datos_financieros", "Sin datos financieros"}, {"pct_venc_leasing_3a", "% vence en 3 años"}, {"pct_venc_leasing_1a", "% vence en 1 año"}, {"pct_operating_lease", "% arrendamiento operativo"}, {"leasing_venc_total_usdm", "Vencimientos (M USD)"}})
+				in
+				    #"Columnas con nombre cambiado"
+
+	annotation PBI_ResultType = Table
+
