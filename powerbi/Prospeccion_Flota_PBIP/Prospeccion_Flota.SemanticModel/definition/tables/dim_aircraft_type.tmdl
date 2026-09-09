@@ -1,0 +1,51 @@
+/// Taxonomia de modelos: fabricante, categoria, generacion y vida util de diseño.
+table dim_aircraft_type
+	lineageTag: 78916644-a7f4-4750-bb8a-a3a3bd144bce
+
+	column origen
+		dataType: string
+		lineageTag: 0d31a044-58a5-4f7a-95a3-1e0dcb63f20b
+		sourceColumn: origen
+
+	column replacement_target
+		dataType: int64
+		lineageTag: 5bca9cda-8dd0-4a22-9911-6d9d1a2dbd74
+		sourceColumn: replacement_target
+
+	column design_life_years
+		dataType: int64
+		lineageTag: c4520dd1-6702-4959-ac7b-5bfb17cc9082
+		sourceColumn: design_life_years
+
+	column generation
+		dataType: string
+		lineageTag: a2618e45-20bb-4e32-a054-bb9fde333720
+		sourceColumn: generation
+
+	column Categoría
+		dataType: string
+		lineageTag: 496cc535-5975-4f5b-991e-58feb570f856
+		sourceColumn: Categoría
+
+	column Fabricante
+		dataType: string
+		lineageTag: fa8bf1ec-d6de-4fd9-be81-aa242175c353
+		sourceColumn: Fabricante
+
+	column model
+		dataType: string
+		isHidden
+		lineageTag: 59bed899-cc4c-468d-99b6-9aa9f35646d2
+		sourceColumn: model
+
+	partition dim_aircraft_type = m
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([BillingProject="mach5-gemini-project"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    Tabla = Dataset{[Name="dim_aircraft_type",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(Tabla,{{"manufacturer", "Fabricante"}, {"category", "Categoría"}})
+				in
+				    #"Columnas con nombre cambiado"
+

@@ -1,0 +1,192 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "c045850e9df26e0c9bd2",
+  "position": {
+    "x": 16,
+    "y": 440,
+    "z": 4000,
+    "height": 264,
+    "width": 618,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Modelo"
+                }
+              },
+              "queryRef": "v_fleet_normalized.aircraft_model",
+              "nativeQueryRef": "aircraft_model"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Fabricante"
+                }
+              },
+              "queryRef": "v_fleet_normalized.manufacturer",
+              "nativeQueryRef": "manufacturer"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Categoría"
+                }
+              },
+              "queryRef": "v_fleet_normalized.category",
+              "nativeQueryRef": "category"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Generación"
+                }
+              },
+              "queryRef": "v_fleet_normalized.generation",
+              "nativeQueryRef": "generation"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "v_fleet_normalized"
+                        }
+                      },
+                      "Property": "Aeronaves"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(v_fleet_normalized.quantity)",
+              "nativeQueryRef": "Suma de quantity"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Tipo de propiedad"
+                }
+              },
+              "queryRef": "v_fleet_normalized.tipo_propiedad",
+              "nativeQueryRef": "tipo_propiedad"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Edad media (años)"
+                }
+              },
+              "queryRef": "Sum(v_fleet_normalized.average_age_years)",
+              "nativeQueryRef": "Edad media (años)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Vida remanente (años)"
+                }
+              },
+              "queryRef": "Sum(v_fleet_normalized.remaining_replacement_life)",
+              "nativeQueryRef": "Vida remanente (años)"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Estado de reemplazo"
+                }
+              },
+              "queryRef": "v_fleet_normalized.fleet_replacement_status",
+              "nativeQueryRef": "fleet_replacement_status"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "v_fleet_normalized"
+                      }
+                    },
+                    "Property": "Aeronaves"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Flota actual, línea por línea'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

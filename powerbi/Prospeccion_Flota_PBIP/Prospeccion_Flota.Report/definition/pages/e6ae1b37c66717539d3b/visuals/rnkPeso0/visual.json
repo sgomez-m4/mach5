@@ -1,0 +1,54 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "rnkPeso0",
+  "position": {
+    "x": 16,
+    "y": 248,
+    "z": 5100,
+    "height": 64,
+    "width": 198,
+    "tabOrder": 5100
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Peso leasing"
+                    }
+                  },
+                  "Property": "Peso leasing"
+                }
+              },
+              "queryRef": "Peso leasing.Peso leasing",
+              "nativeQueryRef": "Peso leasing",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Single'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

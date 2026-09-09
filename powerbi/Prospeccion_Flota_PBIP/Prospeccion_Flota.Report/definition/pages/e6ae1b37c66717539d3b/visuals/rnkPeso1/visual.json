@@ -1,0 +1,54 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "rnkPeso1",
+  "position": {
+    "x": 226,
+    "y": 248,
+    "z": 5101,
+    "height": 64,
+    "width": 198,
+    "tabOrder": 5101
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Peso reemplazo"
+                    }
+                  },
+                  "Property": "Peso reemplazo"
+                }
+              },
+              "queryRef": "Peso reemplazo.Peso reemplazo",
+              "nativeQueryRef": "Peso reemplazo",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Single'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "pipOlaPorFabricante",
+  "position": {
+    "x": 16,
+    "y": 180,
+    "z": 2000,
+    "height": 260,
+    "width": 828,
+    "tabOrder": 20
+  },
+  "visual": {
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "Primera entrega"
+                }
+              },
+              "queryRef": "v_order_book_normalized.Primera entrega",
+              "nativeQueryRef": "Primera entrega",
+              "active": true
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_order_book_normalized"
+                    }
+                  },
+                  "Property": "manufacturer"
+                }
+              },
+              "queryRef": "v_order_book_normalized.manufacturer",
+              "nativeQueryRef": "Fabricante",
+              "displayName": "Fabricante"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "v_order_book_normalized"
+                        }
+                      },
+                      "Property": "Unidades comprometidas"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(v_order_book_normalized.Unidades comprometidas)",
+              "nativeQueryRef": "Unidades"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cuándo llega la ola, por fabricante'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

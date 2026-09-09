@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "pipAerolineas",
+  "position": {
+    "x": 646,
+    "y": 64,
+    "z": 1002,
+    "height": 104,
+    "width": 303,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Aerolíneas con Pedidos"
+                }
+              },
+              "queryRef": "_Medidas.Aerolíneas con Pedidos",
+              "nativeQueryRef": "Aerolíneas con Pedidos",
+              "displayName": "Aerolíneas con pedidos"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

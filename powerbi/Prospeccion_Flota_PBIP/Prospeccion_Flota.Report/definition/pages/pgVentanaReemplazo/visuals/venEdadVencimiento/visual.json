@@ -1,0 +1,162 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "venEdadVencimiento",
+  "position": {
+    "x": 646,
+    "y": 180,
+    "z": 2001,
+    "height": 524,
+    "width": 618,
+    "tabOrder": 21
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "grupo"
+                }
+              },
+              "queryRef": "v_fleet_normalized.grupo",
+              "nativeQueryRef": "Aerolínea",
+              "active": true,
+              "displayName": "Aerolínea"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Modelo"
+                }
+              },
+              "queryRef": "v_fleet_normalized.Modelo",
+              "nativeQueryRef": "Modelo",
+              "active": false
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "region"
+                }
+              },
+              "queryRef": "v_fleet_normalized.region",
+              "nativeQueryRef": "region",
+              "displayName": "Región"
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Flota con Dato de Vencimiento"
+                }
+              },
+              "queryRef": "_Medidas.Flota con Dato de Vencimiento",
+              "nativeQueryRef": "Flota con Dato de Vencimiento",
+              "active": true,
+              "displayName": "Aeronaves medidas"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Vencimiento Medio de Lease"
+                }
+              },
+              "queryRef": "_Medidas.Vencimiento Medio de Lease",
+              "nativeQueryRef": "Vencimiento Medio de Lease",
+              "active": true,
+              "displayName": "Años hasta vencimiento"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Edad Promedio Ponderada"
+                }
+              },
+              "queryRef": "_Medidas.Edad Promedio Ponderada",
+              "nativeQueryRef": "Edad Promedio Ponderada",
+              "active": true,
+              "displayName": "Edad media"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Edad frente a vencimiento de arrendamiento'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

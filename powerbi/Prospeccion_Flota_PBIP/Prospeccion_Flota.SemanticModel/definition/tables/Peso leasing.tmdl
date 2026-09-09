@@ -1,0 +1,23 @@
+/// Cuanto pesa la exposicion a arrendamiento en el score. Es el motor de la linea de gestion de leasing: subirlo prioriza a quien tiene mas superficie de contrato que renegociar.
+/// Parametro What-If: no sale de ningun reporte, lo fija el consultor con la
+/// segmentacion de la pagina de ranking. Por defecto 35, que es el peso
+/// con el que v_prospect_score calcula prospect_score en BigQuery.
+table 'Peso leasing'
+	lineageTag: 729d8b9f-eb4c-48f6-a318-3532ce4d310d
+
+	/// Valor elegido en la segmentacion. Si no hay seleccion, 35.
+	measure 'Peso leasing valor' = SELECTEDVALUE ( 'Peso leasing'[Peso leasing], 35 )
+		formatString: 0
+		displayFolder: Ponderacion
+		lineageTag: ea2f42ec-3d4c-46d7-bc0e-813bfad2bcd7
+
+	column 'Peso leasing'
+		dataType: int64
+		lineageTag: 398eca9c-c59d-4eb2-8fcd-fc7b4fd14496
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Peso leasing' = calculated
+		source = GENERATESERIES ( 0, 100, 1 )

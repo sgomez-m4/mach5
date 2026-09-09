@@ -1,0 +1,54 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "rnkPeso2",
+  "position": {
+    "x": 436,
+    "y": 248,
+    "z": 5102,
+    "height": 64,
+    "width": 198,
+    "tabOrder": 5102
+  },
+  "visual": {
+    "visualType": "slicer",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Peso complejidad"
+                    }
+                  },
+                  "Property": "Peso complejidad"
+                }
+              },
+              "queryRef": "Peso complejidad.Peso complejidad",
+              "nativeQueryRef": "Peso complejidad",
+              "active": true
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Single'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

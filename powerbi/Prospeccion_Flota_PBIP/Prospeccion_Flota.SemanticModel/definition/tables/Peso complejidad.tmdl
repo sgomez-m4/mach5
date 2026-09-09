@@ -1,0 +1,23 @@
+/// Cuanto pesa la complejidad del portafolio -numero de familias, convivencia de generaciones, mezcla de fabricantes-. Subirlo prioriza encargos tecnicamente dificiles.
+/// Parametro What-If: no sale de ningun reporte, lo fija el consultor con la
+/// segmentacion de la pagina de ranking. Por defecto 15, que es el peso
+/// con el que v_prospect_score calcula prospect_score en BigQuery.
+table 'Peso complejidad'
+	lineageTag: f7acaf64-b7b0-4780-8397-c4e1ac506cf8
+
+	/// Valor elegido en la segmentacion. Si no hay seleccion, 15.
+	measure 'Peso complejidad valor' = SELECTEDVALUE ( 'Peso complejidad'[Peso complejidad], 15 )
+		formatString: 0
+		displayFolder: Ponderacion
+		lineageTag: c3372234-ea84-4763-9448-5b25a9f8313a
+
+	column 'Peso complejidad'
+		dataType: int64
+		lineageTag: 971b4364-bb01-4322-9574-14bfccab8c66
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Peso complejidad' = calculated
+		source = GENERATESERIES ( 0, 100, 1 )

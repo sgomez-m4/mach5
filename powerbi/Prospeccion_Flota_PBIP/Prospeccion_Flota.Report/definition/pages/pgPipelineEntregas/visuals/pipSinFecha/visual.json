@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "pipSinFecha",
+  "position": {
+    "x": 961,
+    "y": 64,
+    "z": 1003,
+    "height": 104,
+    "width": 303,
+    "tabOrder": 13
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Pedidos Sin Fecha"
+                }
+              },
+              "queryRef": "_Medidas.Pedidos Sin Fecha",
+              "nativeQueryRef": "Pedidos Sin Fecha",
+              "displayName": "Sin fecha de entrega"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

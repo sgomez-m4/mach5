@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "pipTotales",
+  "position": {
+    "x": 16,
+    "y": 64,
+    "z": 1000,
+    "height": 104,
+    "width": 303,
+    "tabOrder": 10
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Pedidos Totales"
+                }
+              },
+              "queryRef": "_Medidas.Pedidos Totales",
+              "nativeQueryRef": "Pedidos Totales",
+              "displayName": "Unidades en firme"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "covTarjetaSinSerie",
+  "position": {
+    "x": 440,
+    "y": 64,
+    "z": 1000,
+    "height": 104,
+    "width": 408,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Grupos sin Serie de Flota"
+                }
+              },
+              "queryRef": "_Medidas.Grupos sin Serie de Flota",
+              "nativeQueryRef": "Grupos sin Serie de Flota",
+              "displayName": "Sin serie de flota"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d2d4c66e0425e10a00b6",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Grupos sin Serie de Flota"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

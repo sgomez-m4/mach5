@@ -1,0 +1,235 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "venMetaDisenoEdad",
+  "position": {
+    "x": 16,
+    "y": 180,
+    "z": 2000,
+    "height": 524,
+    "width": 618,
+    "tabOrder": 20
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "grupo"
+                }
+              },
+              "queryRef": "v_fleet_normalized.grupo",
+              "nativeQueryRef": "Aerolínea",
+              "active": true,
+              "displayName": "Aerolínea"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Modelo"
+                }
+              },
+              "queryRef": "v_fleet_normalized.Modelo",
+              "nativeQueryRef": "Modelo",
+              "active": false
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "v_fleet_normalized"
+                    }
+                  },
+                  "Property": "Fabricante"
+                }
+              },
+              "queryRef": "v_fleet_normalized.Fabricante",
+              "nativeQueryRef": "Fabricante"
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Flota Total"
+                }
+              },
+              "queryRef": "_Medidas.Flota Total",
+              "nativeQueryRef": "Flota Total",
+              "active": true,
+              "displayName": "Aeronaves"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Edad Promedio Ponderada"
+                }
+              },
+              "queryRef": "_Medidas.Edad Promedio Ponderada",
+              "nativeQueryRef": "Edad Promedio Ponderada",
+              "active": true,
+              "displayName": "Edad media"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Vida Remanente Ponderada"
+                }
+              },
+              "queryRef": "_Medidas.Vida Remanente Ponderada",
+              "nativeQueryRef": "Vida Remanente Ponderada",
+              "active": true,
+              "displayName": "Vida remanente"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Meta de diseño frente a edad, por modelo'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "785efdb5266693db99ce",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_normalized"
+              }
+            },
+            "Property": "Modelo"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "48e66e21e56b17b7e475",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_normalized"
+              }
+            },
+            "Property": "Fabricante"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "523bd7ecb4836a85e406",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Edad Promedio Ponderada"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "eba8baa9d1dd823034e0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Vida Remanente Ponderada"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "54eb2f70b5c08b02bbeb",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Flota Total"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+/// Cuanto pesa la presion de reemplazo tecnico. Subirlo prioriza flota vieja y cerca de su meta de reemplazo, que es donde entra la gestion tecnica.
+/// Parametro What-If: no sale de ningun reporte, lo fija el consultor con la
+/// segmentacion de la pagina de ranking. Por defecto 30, que es el peso
+/// con el que v_prospect_score calcula prospect_score en BigQuery.
+table 'Peso reemplazo'
+	lineageTag: 52adcb3d-b1b7-41fd-ba7d-f340fceb9983
+
+	/// Valor elegido en la segmentacion. Si no hay seleccion, 30.
+	measure 'Peso reemplazo valor' = SELECTEDVALUE ( 'Peso reemplazo'[Peso reemplazo], 30 )
+		formatString: 0
+		displayFolder: Ponderacion
+		lineageTag: ef1a297c-171e-4847-9077-6e5cfa19de02
+
+	column 'Peso reemplazo'
+		dataType: int64
+		lineageTag: 8c01363c-9f91-4706-9edd-3de072dcda0d
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Peso reemplazo' = calculated
+		source = GENERATESERIES ( 0, 100, 1 )

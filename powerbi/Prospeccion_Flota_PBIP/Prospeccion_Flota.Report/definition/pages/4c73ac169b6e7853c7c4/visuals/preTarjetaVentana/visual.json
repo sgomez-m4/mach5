@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "preTarjetaVentana",
+  "position": {
+    "x": 856,
+    "y": 64,
+    "z": 999,
+    "height": 104,
+    "width": 198,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "% en Ventana de Reemplazo"
+                }
+              },
+              "queryRef": "_Medidas.% en Ventana de Reemplazo",
+              "nativeQueryRef": "% en Ventana de Reemplazo",
+              "displayName": "Flota en ventana de reemplazo"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b9c2842db462ac31c987",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "% en Ventana de Reemplazo"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

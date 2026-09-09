@@ -1,0 +1,85 @@
+/// Catalogo canonico de aerolineas. group_id pliega las subsidiarias en su matriz.
+table dim_airline
+	lineageTag: 53b85708-caf0-4592-90e9-6c999de0bd36
+
+	column regulator
+		dataType: string
+		lineageTag: 0c0a29f7-3e93-41a4-8426-ed70b4141fb2
+		sourceColumn: regulator
+
+	column País
+		dataType: string
+		lineageTag: 40e8f677-3bd0-470e-a5b5-61e2456fe51e
+		sourceColumn: País
+
+	column Región
+		dataType: string
+		lineageTag: 7dd39548-0f61-4a39-9531-3bcebcc1eaed
+		sourceColumn: Región
+
+	column financial_company
+		dataType: string
+		isHidden
+		lineageTag: 961010cf-2487-49f2-b797-84bb8607b685
+		sourceColumn: financial_company
+
+	column Aerolínea
+		dataType: string
+		lineageTag: 71f663b3-d849-4fb5-9637-5ef8470af5c5
+		sourceColumn: Aerolínea
+
+	column legal_name
+		dataType: string
+		lineageTag: d8fe2b59-fb47-47ee-83ed-6d55fb6c3e8a
+		sourceColumn: legal_name
+
+	column parent_id
+		dataType: string
+		isHidden
+		lineageTag: 6e93203d-25e2-47d7-931c-d80478f2f14c
+		sourceColumn: parent_id
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 71cf7b85-ff2f-45e7-b389-0e5adb9d0110
+		sourceColumn: group_id
+
+	column 'Modelo de negocio'
+		dataType: string
+		lineageTag: 7a2b5fd5-f246-478c-999e-6890ef7cc4b5
+		sourceColumn: Modelo de negocio
+
+	column airline_id
+		dataType: string
+		isHidden
+		lineageTag: 1072f05a-9bbe-4595-ba89-f648afc6b6e1
+		sourceColumn: airline_id
+
+	column match_keys
+		dataType: string
+		lineageTag: bacae367-45d0-462e-8a7e-d81bb3c2666c
+		summarizeBy: none
+		sourceColumn: match_keys
+
+		annotation SummarizationSetBy = Automatic
+
+	column name_variants
+		dataType: string
+		lineageTag: c274ece7-7a73-41b4-8412-f89403746aef
+		summarizeBy: none
+		sourceColumn: name_variants
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_airline = m
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([BillingProject="mach5-gemini-project"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    Tabla = Dataset{[Name="dim_airline",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(Tabla,{{"display_name", "Aerolínea"}, {"business_model", "Modelo de negocio"}, {"country", "País"}, {"region", "Región"}})
+				in
+				    #"Columnas con nombre cambiado"
+
