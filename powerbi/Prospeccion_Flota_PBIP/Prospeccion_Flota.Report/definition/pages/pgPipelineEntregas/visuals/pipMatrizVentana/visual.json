@@ -6,7 +6,7 @@
     "y": 452,
     "z": 7000,
     "height": 252,
-    "width": 1248,
+    "width": 828,
     "tabOrder": 7000
   },
   "visual": {
@@ -93,5 +93,56 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b5c8865b281016b203d1",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_order_book_normalized"
+              }
+            },
+            "Property": "Ventana de entrega"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "7ab19e7e405333b07373",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_order_book_normalized"
+              }
+            },
+            "Property": "grupo"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "53fcad8670e805521d97",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_order_book_normalized"
+                  }
+                },
+                "Property": "Unidades comprometidas"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

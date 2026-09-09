@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "45a204e04d99f48804e1",
   "position": {
-    "x": 648,
-    "y": 432,
+    "x": 16,
+    "y": 456,
     "z": 1000,
-    "height": 272,
-    "width": 616,
+    "height": 248,
+    "width": 1248,
     "tabOrder": 2000
   },
   "visual": {
@@ -182,5 +182,136 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "f28bedf2b09d0077b15a",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_transition"
+              }
+            },
+            "Property": "Aerolínea"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "b4f974f564b24680c24c",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_transition"
+              }
+            },
+            "Property": "Modelo"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "bfd14a8aa26d8da247c1",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_transition"
+              }
+            },
+            "Property": "Año inicial"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "674555a58e08aa4d7a04",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_transition"
+              }
+            },
+            "Property": "Año final"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "367cb5ec065b00bd7288",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_fleet_transition"
+                  }
+                },
+                "Property": "Aeronaves inicial"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "25f3674e2c8cccd6cc6d",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_fleet_transition"
+                  }
+                },
+                "Property": "Aeronaves final"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7bfdd6b030a17945ea5b",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_fleet_transition"
+                  }
+                },
+                "Property": "Variación"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f0c537600e2b0480e229",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_transition"
+              }
+            },
+            "Property": "Movimiento"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

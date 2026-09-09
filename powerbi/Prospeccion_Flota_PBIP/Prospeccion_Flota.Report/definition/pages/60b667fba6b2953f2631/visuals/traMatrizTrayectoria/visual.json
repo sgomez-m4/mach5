@@ -5,8 +5,8 @@
     "x": 16,
     "y": 180,
     "z": 4000,
-    "height": 240,
-    "width": 1248,
+    "height": 264,
+    "width": 618,
     "tabOrder": 1000
   },
   "visual": {
@@ -92,5 +92,56 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "1fe199972991674d3b42",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_series"
+              }
+            },
+            "Property": "Ejercicio"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "885477b92a002414e1b5",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_series"
+              }
+            },
+            "Property": "Aerolínea"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "f132cb0792110505016e",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_fleet_series"
+                  }
+                },
+                "Property": "Aeronaves"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

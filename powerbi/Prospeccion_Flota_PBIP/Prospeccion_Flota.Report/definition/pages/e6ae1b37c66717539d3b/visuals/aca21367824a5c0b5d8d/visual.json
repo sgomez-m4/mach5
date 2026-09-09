@@ -28,9 +28,9 @@
                   {
                     "value": "     Los pesos del score arrancan en los de BigQuery; muévelos para simular otra tesis.",
                     "textStyle": {
-                      "fontSize": "9pt",
                       "fontStyle": "italic",
-                      "color": "#6F6F6E"
+                      "fontSize": "9pt",
+                      "color": "#6f6f6e"
                     }
                   }
                 ]
