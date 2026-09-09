@@ -7,7 +7,8 @@
   "width": 340,
   "pageBinding": {
     "name": "pgInfoModeloBinding",
-    "type": "Tooltip"
+    "type": "Tooltip",
+    "parameters": []
   },
   "visibility": "HiddenInViewMode"
 }

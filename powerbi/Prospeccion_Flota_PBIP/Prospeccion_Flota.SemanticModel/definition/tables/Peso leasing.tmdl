@@ -21,3 +21,4 @@ table 'Peso leasing'
 
 	partition 'Peso leasing' = calculated
 		source = GENERATESERIES ( 0, 100, 1 )
+

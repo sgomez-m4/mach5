@@ -21,3 +21,4 @@ table 'Peso transicion'
 
 	partition 'Peso transicion' = calculated
 		source = GENERATESERIES ( 0, 100, 1 )
+

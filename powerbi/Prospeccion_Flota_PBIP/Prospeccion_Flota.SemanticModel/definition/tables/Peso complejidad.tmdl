@@ -21,3 +21,4 @@ table 'Peso complejidad'
 
 	partition 'Peso complejidad' = calculated
 		source = GENERATESERIES ( 0, 100, 1 )
+

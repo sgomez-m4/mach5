@@ -112,15 +112,7 @@
     "objects": {
       "card": [
         {
-          "properties": {
-            "outline": {
-              "expr": {
-                "Literal": {
-                  "Value": "'None'"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ],
       "dataLabels": [

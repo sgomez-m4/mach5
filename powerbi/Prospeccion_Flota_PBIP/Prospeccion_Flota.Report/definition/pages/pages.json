@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.1.0/schema.json",
   "pageOrder": [
     "e6ae1b37c66717539d3b",
-    "e10a233f5b6e0579a9bc",
     "d145e06a1c4ba8c9a08c",
+    "e10a233f5b6e0579a9bc",
     "4c73ac169b6e7853c7c4",
     "pgVentanaReemplazo",
     "60b667fba6b2953f2631",
@@ -11,5 +11,5 @@
     "e2c2933cbcd7cf894260",
     "pgInfoModelo"
   ],
-  "activePageName": "4c73ac169b6e7853c7c4"
+  "activePageName": "e6ae1b37c66717539d3b"
 }

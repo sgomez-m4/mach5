@@ -5,7 +5,7 @@
     "x": 646,
     "y": 248,
     "z": 5103,
-    "height": 64,
+    "height": 92,
     "width": 198,
     "tabOrder": 5103
   },
@@ -28,7 +28,8 @@
               },
               "queryRef": "Peso transicion.Peso transicion",
               "nativeQueryRef": "Peso transicion",
-              "active": true
+              "active": true,
+              "displayName": "Peso transición"
             }
           ]
         }
@@ -50,5 +51,62 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "frnkPeso3",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Peso transicion"
+              }
+            },
+            "Property": "Peso transicion"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "p",
+              "Entity": "Peso transicion",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "p"
+                          }
+                        },
+                        "Property": "Peso transicion"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "12L"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
   }
 }

@@ -3,9 +3,9 @@
   "name": "rnkCuadrantes",
   "position": {
     "x": 856,
-    "y": 324,
+    "y": 352,
     "z": 4100,
-    "height": 380,
+    "height": 352,
     "width": 408,
     "tabOrder": 4100
   },
@@ -28,8 +28,8 @@
               },
               "queryRef": "dim_airline.display_name",
               "nativeQueryRef": "Aerolínea",
-              "displayName": "Aerolínea",
-              "active": true
+              "active": true,
+              "displayName": "Aerolínea"
             }
           ]
         },
@@ -48,46 +48,8 @@
               },
               "queryRef": "v_prospect_score.region",
               "nativeQueryRef": "region",
-              "displayName": "Región",
-              "active": true
-            }
-          ]
-        },
-        "X": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Medidas"
-                    }
-                  },
-                  "Property": "Score Leasing"
-                }
-              },
-              "queryRef": "_Medidas.Score Leasing",
-              "nativeQueryRef": "Score Leasing",
-              "displayName": "Score de leasing"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Medidas"
-                    }
-                  },
-                  "Property": "Score Reemplazo"
-                }
-              },
-              "queryRef": "_Medidas.Score Reemplazo",
-              "nativeQueryRef": "Score Reemplazo",
-              "displayName": "Score de reemplazo"
+              "active": true,
+              "displayName": "Región"
             }
           ]
         },
@@ -114,106 +76,49 @@
               "displayName": "Flota"
             }
           ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Score Leasing"
+                }
+              },
+              "queryRef": "_Medidas.Score Leasing",
+              "nativeQueryRef": "Score Leasing",
+              "active": true,
+              "displayName": "Score de leasing"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Score Reemplazo"
+                }
+              },
+              "queryRef": "_Medidas.Score Reemplazo",
+              "nativeQueryRef": "Score Reemplazo",
+              "displayName": "Score de reemplazo"
+            }
+          ]
         }
       }
     },
     "objects": {
-      "xAxisReferenceLine": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "'45'"
-                }
-              }
-            },
-            "lineColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#9AA5B1'"
-                    }
-                  }
-                }
-              }
-            },
-            "style": {
-              "expr": {
-                "Literal": {
-                  "Value": "'dashed'"
-                }
-              }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "20D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "id": "refLeasing"
-          }
-        }
-      ],
-      "y1AxisReferenceLine": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "'25'"
-                }
-              }
-            },
-            "lineColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#9AA5B1'"
-                    }
-                  }
-                }
-              }
-            },
-            "style": {
-              "expr": {
-                "Literal": {
-                  "Value": "'dashed'"
-                }
-              }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "20D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "id": "refReemplazo"
-          }
-        }
-      ],
       "bubbles": [
         {
           "properties": {
@@ -290,5 +195,84 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "a0311d8a734a11a524ac",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "dim_airline"
+              }
+            },
+            "Property": "Aerolínea"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "47e531802c8608e5bb65",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_prospect_score"
+              }
+            },
+            "Property": "region"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ff7831ae033b1d05609d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Score Leasing"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "beadc6704016d749acaa",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Score Reemplazo"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "39118e8723a0928d3062",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_prospect_score"
+                  }
+                },
+                "Property": "Flota total"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

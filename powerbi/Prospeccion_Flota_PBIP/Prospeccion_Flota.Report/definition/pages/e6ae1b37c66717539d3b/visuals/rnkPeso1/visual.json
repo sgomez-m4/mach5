@@ -5,7 +5,7 @@
     "x": 226,
     "y": 248,
     "z": 5101,
-    "height": 64,
+    "height": 92,
     "width": 198,
     "tabOrder": 5101
   },
@@ -28,7 +28,8 @@
               },
               "queryRef": "Peso reemplazo.Peso reemplazo",
               "nativeQueryRef": "Peso reemplazo",
-              "active": true
+              "active": true,
+              "displayName": "Peso reemplazo"
             }
           ]
         }
@@ -50,5 +51,62 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "frnkPeso1",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Peso reemplazo"
+              }
+            },
+            "Property": "Peso reemplazo"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "p",
+              "Entity": "Peso reemplazo",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "p"
+                          }
+                        },
+                        "Property": "Peso reemplazo"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "30L"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
   }
 }

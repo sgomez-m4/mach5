@@ -5,7 +5,7 @@
     "x": 856,
     "y": 248,
     "z": 5104,
-    "height": 64,
+    "height": 92,
     "width": 198,
     "tabOrder": 5104
   },
@@ -28,7 +28,8 @@
               },
               "queryRef": "Peso apalancamiento.Peso apalancamiento",
               "nativeQueryRef": "Peso apalancamiento",
-              "active": true
+              "active": true,
+              "displayName": "Peso apalancamiento"
             }
           ]
         }
@@ -50,5 +51,62 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "frnkPeso4",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Peso apalancamiento"
+              }
+            },
+            "Property": "Peso apalancamiento"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "p",
+              "Entity": "Peso apalancamiento",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "p"
+                          }
+                        },
+                        "Property": "Peso apalancamiento"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "8L"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
   }
 }

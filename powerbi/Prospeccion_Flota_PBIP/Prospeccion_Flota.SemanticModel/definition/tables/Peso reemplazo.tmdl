@@ -21,3 +21,4 @@ table 'Peso reemplazo'
 
 	partition 'Peso reemplazo' = calculated
 		source = GENERATESERIES ( 0, 100, 1 )
+

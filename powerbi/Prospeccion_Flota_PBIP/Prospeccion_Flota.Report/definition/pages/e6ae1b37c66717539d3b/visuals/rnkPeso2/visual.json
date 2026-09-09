@@ -5,7 +5,7 @@
     "x": 436,
     "y": 248,
     "z": 5102,
-    "height": 64,
+    "height": 92,
     "width": 198,
     "tabOrder": 5102
   },
@@ -28,7 +28,8 @@
               },
               "queryRef": "Peso complejidad.Peso complejidad",
               "nativeQueryRef": "Peso complejidad",
-              "active": true
+              "active": true,
+              "displayName": "Peso complejidad"
             }
           ]
         }
@@ -50,5 +51,62 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "frnkPeso2",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Peso complejidad"
+              }
+            },
+            "Property": "Peso complejidad"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "p",
+              "Entity": "Peso complejidad",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "p"
+                          }
+                        },
+                        "Property": "Peso complejidad"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "15L"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
   }
 }

@@ -21,3 +21,4 @@ table 'Peso apalancamiento'
 
 	partition 'Peso apalancamiento' = calculated
 		source = GENERATESERIES ( 0, 100, 1 )
+

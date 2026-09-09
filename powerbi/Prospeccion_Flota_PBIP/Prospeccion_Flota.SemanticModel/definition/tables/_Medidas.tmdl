@@ -424,15 +424,14 @@ table _Medidas
 		displayFolder: Leasing
 		lineageTag: b42ebb31-dff8-4b0e-9ede-84bf0c65c302
 
-
 	/// Score recalculado con los pesos que fijan las segmentaciones de la pagina de
 	/// ranking. Con los valores por defecto reproduce exactamente el prospect_score
 	/// de BigQuery; moverlos permite probar otra tesis comercial -por ejemplo, todo
 	/// el peso en leasing- y ver el ranking reordenarse sin tocar el almacen.
-	///
+	/// 
 	/// Se divide por la suma de los pesos, no por 100, para que el resultado siga
 	/// leyendose sobre 100 aunque el usuario no cuadre los pesos a mano.
-	///
+	/// 
 	/// REMOVEFILTERS(dim_aircraft_type) es deliberado. El score esta definido por
 	/// aerolinea y no tiene lectura por modelo: si alguien filtra un fabricante, la
 	/// cifra correcta sigue siendo la de la aerolinea entera. Hoy no hay relacion
@@ -465,7 +464,6 @@ table _Medidas
 		formatString: 0.0
 		displayFolder: Prospeccion
 		lineageTag: 75053dbc-417c-464e-a0e6-0b4f52638e95
-
 
 	/// Pedidos en firme del modelo que se este mirando, no de la aerolinea entera. El eje de la Ficha filtra v_fleet_normalized, que no propaga al order book: TREATAS traslada ese filtro a v_order_book_normalized para que la cifra corresponda al modelo.
 	measure 'Pedidos del Modelo' =
