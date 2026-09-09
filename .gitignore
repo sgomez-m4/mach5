@@ -8,3 +8,7 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+
+# Power BI: cache local y ajustes de maquina, no del proyecto
+.pbi/
+*.abf
