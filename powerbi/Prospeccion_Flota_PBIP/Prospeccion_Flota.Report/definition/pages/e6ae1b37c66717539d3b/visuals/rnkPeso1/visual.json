@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "rnkPeso1",
   "position": {
-    "x": 226,
+    "x": 268,
     "y": 248,
     "z": 8000,
     "height": 92,
-    "width": 198,
+    "width": 240,
     "tabOrder": 8000
   },
   "visual": {
