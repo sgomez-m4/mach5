@@ -54,8 +54,11 @@ WITH flota AS (
 
     SUM(IF(es_fila_agregada, quantity, 0)) AS aeronaves_en_filas_agregadas
   FROM `mach5-gemini-project.dataset_integrado.v_fleet_normalized`
-  WHERE report_year = 2025
-    AND NOT es_fila_agregada
+  -- Sin filtro de anio a proposito. v_fleet_normalized lee current_fleet_fact,
+  -- que ya es una sola foto por aerolinea, asi que el filtro era redundante; y
+  -- era danino, porque fijaba 2025 a mano: FedEx cierra ejercicio en mayo, su
+  -- ultimo 10-K es de 2026 y se caia del ranking entero sin avisar.
+  WHERE NOT es_fila_agregada
   GROUP BY group_id, grupo, region, country, business_model
 ),
 
@@ -71,7 +74,8 @@ pedidos AS (
   FROM `mach5-gemini-project.dataset_integrado.order_book_fact` o
   JOIN `mach5-gemini-project.dataset_integrado.dim_airline` d
     ON d.airline_id = o.group_id
-  WHERE o.report_year = 2025
+  -- Mismo motivo: el order book tambien es una foto por aerolinea y hay
+  -- ejercicios 2024 y 2026 legitimos que el anio fijo descartaba.
   GROUP BY d.group_id
 ),
 

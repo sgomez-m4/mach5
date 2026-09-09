@@ -74,4 +74,13 @@ LEFT JOIN `mach5-gemini-project.dataset_integrado.dim_airline` d
 LEFT JOIN `mach5-gemini-project.dataset_integrado.dim_airline` g
   ON g.airline_id = f.group_id
 LEFT JOIN `mach5-gemini-project.dataset_integrado.dim_aircraft_type` m
-  ON m.model = `mach5-gemini-project.dataset_integrado.normalizar_modelo_aeronave`(f.aircraft_type);
+  ON m.model = `mach5-gemini-project.dataset_integrado.normalizar_modelo_aeronave`(f.aircraft_type)
+
+-- Guardia de identidad. Una fila sin group_id no se puede atribuir, ni puntuar,
+-- ni filtrar por region: no es una aerolinea, es un nombre que la capa de
+-- identidad no supo resolver. Dejarla pasar la suma a Flota Total y el panel
+-- reporta mas aviones de los que puede explicar -paso con 372 al ingerir los
+-- informes de ejercicios anteriores, donde Alaska nombra a Hawaiian aparte-.
+-- Lo que quede fuera aqui hay que resolverlo en config/dim_airline.json, no
+-- silenciarlo: el nombre sin resolver sale en el log de ejecutar-pipeline-anuales.
+WHERE f.group_id IS NOT NULL;

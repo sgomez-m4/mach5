@@ -95,7 +95,12 @@ def subir_reporte_markdown(filing, ticker, seccion_flota):
 # =========================================================
 # PROCESAR EMPRESA
 # =========================================================
-def procesar_empresa(empresa):
+def procesar_empresa(empresa, ejercicios=1):
+    """Baja los `ejercicios` 20-F mas recientes.
+
+    Igual que en el 10-K: para medir transicion de flota hacen falta varias
+    fotos, y un solo informe trae una. Ver extraccion-10k-md.
+    """
     ticker = empresa["ticker"]
     cik = empresa["cik"]
     seccion_flota = empresa["seccion_flota"]
@@ -131,22 +136,28 @@ def procesar_empresa(empresa):
             return
 
         # =====================================================
-        # SOLO EL REPORTE ANUAL MÁS RECIENTE
+        # LOS N MAS RECIENTES
         # =====================================================
-        ultimo_filing = filings.latest()
+        recientes = filings.latest(ejercicios)
 
-        if not ultimo_filing:
+        if recientes is None:
             print(f"⚠ No se pudo obtener el último 20-F para {ticker}")
             return
 
-        subir_reporte_markdown(
-            filing=ultimo_filing,
-            ticker=ticker,
-            seccion_flota=seccion_flota
-        )
+        if not isinstance(recientes, (list, tuple)):
+            recientes = [recientes] if ejercicios == 1 else list(recientes)
 
-        # Rate limiting preventivo exigido por la SEC
-        time.sleep(0.25)
+        print(f"   {len(recientes)} filing(s) para {ticker}")
+
+        for filing in recientes:
+            subir_reporte_markdown(
+                filing=filing,
+                ticker=ticker,
+                seccion_flota=seccion_flota
+            )
+
+            # Rate limiting preventivo exigido por la SEC
+            time.sleep(0.25)
 
     except Exception as e:
         print(f"✖ Error procesando {ticker}: {e}")
@@ -156,11 +167,21 @@ def procesar_empresa(empresa):
 # =========================================================
 # @functions_framework.http
 def run_edgar_pipeline_20f(request):
-    print("🚀 Iniciando pipeline SEC EDGAR para reportes 20-F (Internacionales)")
+    # ?ejercicios=3 para poblar historia; 1 en la corrida rutinaria.
+    ejercicios = 1
+    try:
+        crudo = (request.args.get("ejercicios")
+                 or (request.get_json(silent=True) or {}).get("ejercicios"))
+        if crudo:
+            ejercicios = max(1, min(10, int(crudo)))
+    except Exception:
+        pass
+
+    print(f"🚀 Iniciando pipeline SEC EDGAR 20-F (ejercicios={ejercicios})")
     inicio = datetime.now()
 
     for empresa in LISTA_EMPRESAS:
-        procesar_empresa(empresa)
+        procesar_empresa(empresa, ejercicios=ejercicios)
 
     fin = datetime.now()
     duracion = str(fin - inicio)
@@ -170,5 +191,6 @@ def run_edgar_pipeline_20f(request):
         "bucket": BUCKET_NAME,
         "folder": "20f-md",
         "duration": duracion,
+        "ejercicios": ejercicios,
         "companies_processed": len(LISTA_EMPRESAS)
     }
