@@ -42,7 +42,7 @@
             "numericStart": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "40D"
                 }
               }
             },
@@ -86,7 +86,7 @@
                         },
                         "Right": {
                           "Literal": {
-                            "Value": "0D"
+                            "Value": "40D"
                           }
                         }
                       }
@@ -100,5 +100,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "05602f647a148becaec4",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Peso leasing"
+              }
+            },
+            "Property": "Peso leasing"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
