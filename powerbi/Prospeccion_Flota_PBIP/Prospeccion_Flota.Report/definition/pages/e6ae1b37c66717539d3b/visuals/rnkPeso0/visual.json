@@ -42,7 +42,7 @@
             "numericStart": {
               "expr": {
                 "Literal": {
-                  "Value": "40D"
+                  "Value": "35D"
                 }
               }
             },
@@ -86,7 +86,7 @@
                         },
                         "Right": {
                           "Literal": {
-                            "Value": "40D"
+                            "Value": "35D"
                           }
                         }
                       }

@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Mueve los pesos: el ranking y la dispersión se reordenan. Sin selección, cada uno vale su peso de BigQuery (35 / 30 / 15 / 12 / 8).",
+                    "value": "Arranca con los pesos de BigQuery (35 / 30 / 15 / 12 / 8), así que Score ponderado coincide con Prospect Score. Muévelos para simular otra tesis.",
                     "textStyle": {
                       "fontSize": "9pt",
                       "fontStyle": "italic"
