@@ -129,6 +129,21 @@
         }
       }
     },
+    "objects": {
+      "bubbles": [
+        {
+          "properties": {
+            "bubbleSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "15D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -157,22 +172,7 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true,
-    "objects": {
-      "bubbles": [
-        {
-          "properties": {
-            "bubbleSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "15D"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
@@ -225,90 +225,6 @@
         },
         "type": "Advanced",
         "howCreated": "User"
-      },
-      {
-        "name": "562f8e7470eb41710779",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Flota Total"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "5eb730eab52d3627500e",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "% Arrendamiento Operativo"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "ef62298b308956d88ae8",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_fleet_normalized"
-              }
-            },
-            "Property": "grupo"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "3c138617ccdc004a9045",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_fleet_normalized"
-              }
-            },
-            "Property": "Modelo"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "dc0351155d4d2aed43d4",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_fleet_normalized"
-              }
-            },
-            "Property": "region"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "31cc36916564116de843",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Aeronaves en Arrendamiento Operativo"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

@@ -4,10 +4,10 @@
   "position": {
     "x": 856,
     "y": 352,
-    "z": 4100,
+    "z": 5000,
     "height": 352,
     "width": 408,
-    "tabOrder": 4100
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "scatterChart",
@@ -195,84 +195,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "a0311d8a734a11a524ac",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "dim_airline"
-              }
-            },
-            "Property": "Aerolínea"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "47e531802c8608e5bb65",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_prospect_score"
-              }
-            },
-            "Property": "region"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "ff7831ae033b1d05609d",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Score Leasing"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "beadc6704016d749acaa",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Score Reemplazo"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "39118e8723a0928d3062",
-        "field": {
-          "Aggregation": {
-            "Expression": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "v_prospect_score"
-                  }
-                },
-                "Property": "Flota total"
-              }
-            },
-            "Function": 0
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

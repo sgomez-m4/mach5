@@ -9770,6 +9770,111 @@ cultureInfo es-MX
 			          }
 			        }
 			      ]
+			    },
+			    "peso_leasing.peso_leasing": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Peso leasing",
+			          "ConceptualProperty": "Peso leasing"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Peso leasing": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "peso_reemplazo.peso_reemplazo": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Peso reemplazo",
+			          "ConceptualProperty": "Peso reemplazo"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Peso reemplazo": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "peso_complejidad.peso_complejidad": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Peso complejidad",
+			          "ConceptualProperty": "Peso complejidad"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Peso complejidad": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "peso_transicion.peso_transicion": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Peso transicion",
+			          "ConceptualProperty": "Peso transicion"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Peso transición": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "peso_apalancamiento.peso_apalancamiento": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Peso apalancamiento",
+			          "ConceptualProperty": "Peso apalancamiento"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Peso apalancamiento": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
 			    }
 			  },
 			  "Relationships": {

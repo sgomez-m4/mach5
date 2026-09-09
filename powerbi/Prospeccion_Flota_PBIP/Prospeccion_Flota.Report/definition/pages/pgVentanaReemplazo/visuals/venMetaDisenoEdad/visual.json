@@ -4,10 +4,10 @@
   "position": {
     "x": 16,
     "y": 180,
-    "z": 2000,
+    "z": 3000,
     "height": 524,
     "width": 618,
-    "tabOrder": 20
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "scatterChart",
@@ -157,79 +157,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "785efdb5266693db99ce",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_fleet_normalized"
-              }
-            },
-            "Property": "Modelo"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "48e66e21e56b17b7e475",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_fleet_normalized"
-              }
-            },
-            "Property": "Fabricante"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "523bd7ecb4836a85e406",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Edad Promedio Ponderada"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "eba8baa9d1dd823034e0",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Vida Remanente Ponderada"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "54eb2f70b5c08b02bbeb",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Flota Total"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

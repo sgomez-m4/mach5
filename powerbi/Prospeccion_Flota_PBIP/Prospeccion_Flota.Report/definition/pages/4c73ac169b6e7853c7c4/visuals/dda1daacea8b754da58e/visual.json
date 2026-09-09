@@ -4,10 +4,10 @@
   "position": {
     "x": 856,
     "y": 180,
-    "z": 1000,
+    "z": 2000,
     "height": 212,
     "width": 408,
-    "tabOrder": 1000
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -99,51 +99,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "1454f9f4060160d7ca58",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "dim_aircraft_type"
-              }
-            },
-            "Property": "Fabricante"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "daac9bc7c8804621cb4d",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Flota Total"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "abb87876eec216d13cae",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Vida Remanente Ponderada"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

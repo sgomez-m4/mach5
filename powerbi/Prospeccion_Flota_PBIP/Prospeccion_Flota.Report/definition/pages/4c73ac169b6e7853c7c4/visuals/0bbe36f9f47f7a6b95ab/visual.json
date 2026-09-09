@@ -106,35 +106,6 @@
         ]
       }
     },
-    "visualContainerObjects": {
-      "title": [
-        {
-          "properties": {
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Estado de reemplazo de la flota, por aerolínea'"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "subTitle": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "drillFilterOtherVisuals": true,
     "objects": {
       "dataPoint": [
         {
@@ -343,66 +314,35 @@
           }
         }
       ]
-    }
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "430d16ed31425c20621b",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "dim_airline"
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Estado de reemplazo de la flota, por aerolínea'"
+                }
               }
-            },
-            "Property": "Aerolínea"
+            }
           }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "ed27cb60b20ad7d0b620",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_fleet_normalized"
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
               }
-            },
-            "Property": "Estado de reemplazo"
+            }
           }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "9634fe020cab6480e25a",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Flota Total"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "c3828f103027da005856",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "% en Ventana de Reemplazo"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
   }
 }

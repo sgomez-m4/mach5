@@ -4,10 +4,10 @@
   "position": {
     "x": 856,
     "y": 404,
-    "z": 2000,
+    "z": 3000,
     "height": 292,
     "width": 408,
-    "tabOrder": 2000
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "barChart",
@@ -70,6 +70,21 @@
         "isDefaultSort": true
       }
     },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -98,22 +113,7 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true,
-    "objects": {
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
@@ -217,20 +217,6 @@
             }
           ]
         }
-      },
-      {
-        "name": "d723cfd3bcb9cd339a08",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Capex sobre Depreciación"
-          }
-        },
-        "type": "Advanced"
       }
     ]
   }

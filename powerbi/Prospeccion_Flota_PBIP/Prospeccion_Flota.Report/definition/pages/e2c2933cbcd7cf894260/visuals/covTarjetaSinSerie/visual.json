@@ -4,10 +4,10 @@
   "position": {
     "x": 440,
     "y": 64,
-    "z": 1000,
+    "z": 2000,
     "height": 104,
     "width": 408,
-    "tabOrder": 0
+    "tabOrder": 2000
   },
   "visual": {
     "visualType": "card",
@@ -35,23 +35,5 @@
       }
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "d2d4c66e0425e10a00b6",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Grupos sin Serie de Flota"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

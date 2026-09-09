@@ -4,10 +4,10 @@
   "position": {
     "x": 226,
     "y": 248,
-    "z": 5101,
+    "z": 8000,
     "height": 92,
     "width": 198,
-    "tabOrder": 5101
+    "tabOrder": 8000
   },
   "visual": {
     "visualType": "slicer",
@@ -48,65 +48,13 @@
             }
           }
         }
+      ],
+      "general": [
+        {
+          "properties": {}
+        }
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "frnkPeso1",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Peso reemplazo"
-              }
-            },
-            "Property": "Peso reemplazo"
-          }
-        },
-        "type": "Categorical",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "p",
-              "Entity": "Peso reemplazo",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "p"
-                          }
-                        },
-                        "Property": "Peso reemplazo"
-                      }
-                    }
-                  ],
-                  "Values": [
-                    [
-                      {
-                        "Literal": {
-                          "Value": "30L"
-                        }
-                      }
-                    ]
-                  ]
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
   }
 }

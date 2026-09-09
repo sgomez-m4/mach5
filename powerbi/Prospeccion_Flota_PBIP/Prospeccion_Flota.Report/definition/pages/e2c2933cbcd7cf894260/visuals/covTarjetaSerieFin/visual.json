@@ -7,7 +7,7 @@
     "z": 1000,
     "height": 104,
     "width": 408,
-    "tabOrder": 0
+    "tabOrder": 1000
   },
   "visual": {
     "visualType": "card",
@@ -35,23 +35,5 @@
       }
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "caa7905ac04239809e77",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Medidas"
-              }
-            },
-            "Property": "Grupos con Serie Financiera"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

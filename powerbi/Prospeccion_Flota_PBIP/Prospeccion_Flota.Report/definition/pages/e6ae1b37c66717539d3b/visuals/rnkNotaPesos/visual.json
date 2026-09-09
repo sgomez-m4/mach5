@@ -4,10 +4,10 @@
   "position": {
     "x": 1066,
     "y": 248,
-    "z": 5110,
+    "z": 12000,
     "height": 92,
     "width": 198,
-    "tabOrder": 5110
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "textbox",
@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Mueve los pesos: el ranking y la dispersión se reordenan. Por defecto reproducen el score de BigQuery.",
+                    "value": "Mueve los pesos: el ranking y la dispersión se reordenan. Sin selección, cada uno vale su peso de BigQuery (35 / 30 / 15 / 12 / 8).",
                     "textStyle": {
                       "fontSize": "9pt",
                       "fontStyle": "italic"
