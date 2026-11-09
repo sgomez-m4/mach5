@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "traMatrizTrayectoria",
   "position": {
-    "x": 16,
-    "y": 180,
+    "x": 645.88957055214723,
+    "y": 456.11451942740285,
     "z": 4000,
-    "height": 264,
-    "width": 618,
+    "height": 248.01635991820041,
+    "width": 617.7505112474438,
     "tabOrder": 1000
   },
   "visual": {
@@ -96,7 +96,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "1fe199972991674d3b42",
+        "name": "05132ee91e80c54d4e7b",
         "field": {
           "Column": {
             "Expression": {
@@ -110,7 +110,7 @@
         "type": "Advanced"
       },
       {
-        "name": "885477b92a002414e1b5",
+        "name": "a1b4db47d00085ce3e00",
         "field": {
           "Column": {
             "Expression": {
@@ -124,7 +124,7 @@
         "type": "Categorical"
       },
       {
-        "name": "f132cb0792110505016e",
+        "name": "3f915fcc0c3b2207ac69",
         "field": {
           "Aggregation": {
             "Expression": {

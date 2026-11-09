@@ -193,5 +193,149 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "47e7843900cd10853315",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "dim_airline"
+              }
+            },
+            "Property": "Aerolínea"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "4a1f6791077a31c6ae94",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Prospect Score"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5360e78dc18c7aa190a9",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Score Ponderado"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "9b31cc407b20d3b84192",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Score Leasing"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0afa508c8cbd0942ca88",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Score Reemplazo"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f040813402de432808a6",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "Score Complejidad"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0d0a3997db19b6de3eb0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_prospect_score"
+              }
+            },
+            "Property": "Segmento"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "c7e781cc773ba7652be3",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_prospect_score"
+              }
+            },
+            "Property": "Flota total"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "fef1e599533b01562254",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_prospect_score"
+              }
+            },
+            "Property": "% arrendamiento operativo"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "63ef25f395d012a5e39d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_prospect_score"
+              }
+            },
+            "Property": "Edad ponderada"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "45a204e04d99f48804e1",
   "position": {
-    "x": 16,
-    "y": 456,
+    "x": 15.705521472392638,
+    "y": 456.11451942740285,
     "z": 1000,
-    "height": 248,
-    "width": 1248,
+    "height": 248.01635991820041,
+    "width": 617.7505112474438,
     "tabOrder": 2000
   },
   "visual": {
@@ -186,7 +186,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "f28bedf2b09d0077b15a",
+        "name": "b5698aa9c541d0188dd3",
         "field": {
           "Column": {
             "Expression": {
@@ -200,7 +200,7 @@
         "type": "Categorical"
       },
       {
-        "name": "b4f974f564b24680c24c",
+        "name": "02f6c14ee13809dd0336",
         "field": {
           "Column": {
             "Expression": {
@@ -214,7 +214,7 @@
         "type": "Categorical"
       },
       {
-        "name": "bfd14a8aa26d8da247c1",
+        "name": "93c4a8d21c00ed008935",
         "field": {
           "Column": {
             "Expression": {
@@ -228,7 +228,7 @@
         "type": "Advanced"
       },
       {
-        "name": "674555a58e08aa4d7a04",
+        "name": "71e77ade0a00ee487d6b",
         "field": {
           "Column": {
             "Expression": {
@@ -242,7 +242,7 @@
         "type": "Advanced"
       },
       {
-        "name": "367cb5ec065b00bd7288",
+        "name": "82d99dce82ad08862102",
         "field": {
           "Aggregation": {
             "Expression": {
@@ -261,7 +261,7 @@
         "type": "Advanced"
       },
       {
-        "name": "25f3674e2c8cccd6cc6d",
+        "name": "764b963f2e00e3485d68",
         "field": {
           "Aggregation": {
             "Expression": {
@@ -280,7 +280,7 @@
         "type": "Advanced"
       },
       {
-        "name": "7bfdd6b030a17945ea5b",
+        "name": "5a98368d03b70c768a23",
         "field": {
           "Aggregation": {
             "Expression": {
@@ -299,7 +299,7 @@
         "type": "Advanced"
       },
       {
-        "name": "f0c537600e2b0480e229",
+        "name": "8596b5e24ba04cbc66e3",
         "field": {
           "Column": {
             "Expression": {

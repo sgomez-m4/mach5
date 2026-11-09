@@ -63,23 +63,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "993fc78beecb427e2014",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "v_prospect_score"
-              }
-            },
-            "Property": "Segmento"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

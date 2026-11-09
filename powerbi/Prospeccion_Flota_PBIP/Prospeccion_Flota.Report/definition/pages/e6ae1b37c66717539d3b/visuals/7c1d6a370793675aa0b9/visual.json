@@ -85,23 +85,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "65ca6f7ac00c1eae89e5",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "dim_airline"
-              }
-            },
-            "Property": "Modelo de negocio"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

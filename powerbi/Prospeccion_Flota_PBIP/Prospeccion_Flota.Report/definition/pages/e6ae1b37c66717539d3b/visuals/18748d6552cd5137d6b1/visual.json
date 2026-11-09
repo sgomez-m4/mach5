@@ -97,23 +97,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "3cbc351620d2423a94c0",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "dim_airline"
-              }
-            },
-            "Property": "Región"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }
