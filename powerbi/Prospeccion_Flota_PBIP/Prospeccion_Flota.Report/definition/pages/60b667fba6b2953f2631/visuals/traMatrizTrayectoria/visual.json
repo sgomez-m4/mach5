@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "traMatrizTrayectoria",
   "position": {
-    "x": 16,
-    "y": 180,
+    "x": 645.88957055214723,
+    "y": 456.11451942740285,
     "z": 4000,
-    "height": 240,
-    "width": 1248,
+    "height": 248.01635991820041,
+    "width": 617.7505112474438,
     "tabOrder": 1000
   },
   "visual": {
@@ -92,5 +92,56 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "05132ee91e80c54d4e7b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_series"
+              }
+            },
+            "Property": "Ejercicio"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a1b4db47d00085ce3e00",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_series"
+              }
+            },
+            "Property": "Aerolínea"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "3f915fcc0c3b2207ac69",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_fleet_series"
+                  }
+                },
+                "Property": "Aeronaves"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

@@ -100,23 +100,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "ae2098f6a6780785b324",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Peso reemplazo"
-              }
-            },
-            "Property": "Peso reemplazo"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

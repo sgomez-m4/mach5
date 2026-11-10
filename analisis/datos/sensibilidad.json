@@ -1,0 +1,580 @@
+{
+ "reproducibilidad": {
+  "max_dif": 0.0,
+  "n": 25
+ },
+ "esquemas": [
+  {
+   "esquema": "Línea base (35/30/15/12/8)",
+   "spearman": 1.0,
+   "kendall": 1.0,
+   "top5": 5,
+   "top10": 10,
+   "lider": "Azul"
+  },
+  {
+   "esquema": "Pesos iguales (20 c/u)",
+   "spearman": 0.893,
+   "kendall": 0.72,
+   "top5": 4,
+   "top10": 8,
+   "lider": "American Airlines"
+  },
+  {
+   "esquema": "Tesis leasing (60/15/10/10/5)",
+   "spearman": 0.753,
+   "kendall": 0.573,
+   "top5": 3,
+   "top10": 7,
+   "lider": "Azul"
+  },
+  {
+   "esquema": "Tesis técnica (15/60/10/10/5)",
+   "spearman": 0.733,
+   "kendall": 0.573,
+   "top5": 3,
+   "top10": 6,
+   "lider": "United Airlines"
+  },
+  {
+   "esquema": "Sin contexto financiero (35/30/15/12/0)",
+   "spearman": 0.923,
+   "kendall": 0.773,
+   "top5": 5,
+   "top10": 9,
+   "lider": "United Airlines"
+  },
+  {
+   "esquema": "Solo leasing y reemplazo (50/50/0/0/0)",
+   "spearman": 0.598,
+   "kendall": 0.451,
+   "top5": 2,
+   "top10": 8,
+   "lider": "Azul"
+  }
+ ],
+ "montecarlo": {
+  "N": 10000,
+  "perturbacion": "x U(0.5, 1.5) por peso, renormalizado",
+  "kendall_mediana": 0.8,
+  "kendall_p5": 0.687,
+  "spearman_mediana": 0.932,
+  "spearman_p5": 0.843,
+  "top5_media": 4.4,
+  "top5_p5": 4,
+  "por_aerolinea": [
+   {
+    "grupo": "Azul",
+    "rango_base": 1,
+    "p5": 1,
+    "p95": 4,
+    "prob_top5": 0.995
+   },
+   {
+    "grupo": "United Airlines",
+    "rango_base": 2,
+    "p5": 1,
+    "p95": 4,
+    "prob_top5": 0.995
+   },
+   {
+    "grupo": "American Airlines",
+    "rango_base": 3,
+    "p5": 1,
+    "p95": 4,
+    "prob_top5": 1.0
+   },
+   {
+    "grupo": "Volaris",
+    "rango_base": 4,
+    "p5": 2,
+    "p95": 5,
+    "prob_top5": 0.966
+   },
+   {
+    "grupo": "Delta Air Lines",
+    "rango_base": 5,
+    "p5": 4,
+    "p95": 11,
+    "prob_top5": 0.448
+   },
+   {
+    "grupo": "Hainan Airlines",
+    "rango_base": 6,
+    "p5": 5,
+    "p95": 12,
+    "prob_top5": 0.419
+   },
+   {
+    "grupo": "Air China",
+    "rango_base": 7,
+    "p5": 6,
+    "p95": 14,
+    "prob_top5": 0.005
+   },
+   {
+    "grupo": "9 Air",
+    "rango_base": 8,
+    "p5": 5,
+    "p95": 18,
+    "prob_top5": 0.134
+   },
+   {
+    "grupo": "Southwest Airlines",
+    "rango_base": 9,
+    "p5": 6,
+    "p95": 16,
+    "prob_top5": 0.019
+   },
+   {
+    "grupo": "China Southern Airlines",
+    "rango_base": 10,
+    "p5": 7,
+    "p95": 13,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "LATAM Airlines Group",
+    "rango_base": 11,
+    "p5": 7,
+    "p95": 17,
+    "prob_top5": 0.004
+   },
+   {
+    "grupo": "JetBlue",
+    "rango_base": 12,
+    "p5": 6,
+    "p95": 20,
+    "prob_top5": 0.012
+   },
+   {
+    "grupo": "China Eastern Airlines",
+    "rango_base": 13,
+    "p5": 9,
+    "p95": 17,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "SkyWest Airlines",
+    "rango_base": 14,
+    "p5": 7,
+    "p95": 19,
+    "prob_top5": 0.004
+   },
+   {
+    "grupo": "China Express Airlines",
+    "rango_base": 15,
+    "p5": 9,
+    "p95": 19,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Aeromexico",
+    "rango_base": 16,
+    "p5": 10,
+    "p95": 20,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Copa Airlines",
+    "rango_base": 17,
+    "p5": 11,
+    "p95": 21,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Cathay Pacific Airways",
+    "rango_base": 18,
+    "p5": 13,
+    "p95": 22,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Alaska Air Group",
+    "rango_base": 19,
+    "p5": 11,
+    "p95": 21,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Frontier Airlines",
+    "rango_base": 20,
+    "p5": 11,
+    "p95": 23,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Allegiant Air",
+    "rango_base": 21,
+    "p5": 14,
+    "p95": 22,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Juneyao Airlines",
+    "rango_base": 22,
+    "p5": 18,
+    "p95": 22,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Republic Airways",
+    "rango_base": 23,
+    "p5": 23,
+    "p95": 24,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "FedEx",
+    "rango_base": 24,
+    "p5": 22,
+    "p95": 25,
+    "prob_top5": 0.0
+   },
+   {
+    "grupo": "Spring Airlines",
+    "rango_base": 25,
+    "p5": 24,
+    "p95": 25,
+    "prob_top5": 0.0
+   }
+  ]
+ },
+ "faltantes": {
+  "n_sin_edad": 5,
+  "flota_sin_edad_grupos": 4216,
+  "kendall": 0.973,
+  "spearman": 0.995,
+  "top5_compartido": 5,
+  "suben_sin_edad": 3,
+  "subida_media_sin_edad": 0.4,
+  "movimientos": [
+   {
+    "grupo": "United Airlines",
+    "sin_edad": true,
+    "cobertura_edad": 0.72,
+    "reemplazo_base": 30.1,
+    "reemplazo_corr": 39.4,
+    "score_base": 47.1,
+    "score_excl": 49.9,
+    "rango_base": 2,
+    "rango_excl": 1,
+    "delta": 1
+   },
+   {
+    "grupo": "American Airlines",
+    "sin_edad": true,
+    "cobertura_edad": 0.64,
+    "reemplazo_base": 16.6,
+    "reemplazo_corr": 21.9,
+    "score_base": 47.0,
+    "score_excl": 48.6,
+    "rango_base": 3,
+    "rango_excl": 2,
+    "delta": 1
+   },
+   {
+    "grupo": "Azul",
+    "sin_edad": true,
+    "cobertura_edad": 0.87,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 47.3,
+    "score_excl": 47.3,
+    "rango_base": 1,
+    "rango_excl": 3,
+    "delta": -2
+   },
+   {
+    "grupo": "Volaris",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 43.9,
+    "score_excl": 43.9,
+    "rango_base": 4,
+    "rango_excl": 4,
+    "delta": 0
+   },
+   {
+    "grupo": "Delta Air Lines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 32.5,
+    "reemplazo_corr": 32.6,
+    "score_base": 37.7,
+    "score_excl": 37.7,
+    "rango_base": 5,
+    "rango_excl": 5,
+    "delta": 0
+   },
+   {
+    "grupo": "Hainan Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 37.5,
+    "score_excl": 37.5,
+    "rango_base": 6,
+    "rango_excl": 6,
+    "delta": 0
+   },
+   {
+    "grupo": "Air China",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 34.4,
+    "score_excl": 34.4,
+    "rango_base": 7,
+    "rango_excl": 7,
+    "delta": 0
+   },
+   {
+    "grupo": "9 Air",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 34.2,
+    "score_excl": 34.2,
+    "rango_base": 8,
+    "rango_excl": 8,
+    "delta": 0
+   },
+   {
+    "grupo": "Southwest Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 24.7,
+    "reemplazo_corr": 24.7,
+    "score_base": 34.0,
+    "score_excl": 34.0,
+    "rango_base": 9,
+    "rango_excl": 9,
+    "delta": 0
+   },
+   {
+    "grupo": "China Southern Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 33.9,
+    "score_excl": 33.9,
+    "rango_base": 10,
+    "rango_excl": 10,
+    "delta": 0
+   },
+   {
+    "grupo": "LATAM Airlines Group",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 33.2,
+    "score_excl": 33.2,
+    "rango_base": 11,
+    "rango_excl": 11,
+    "delta": 0
+   },
+   {
+    "grupo": "JetBlue",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 31.6,
+    "reemplazo_corr": 31.6,
+    "score_base": 32.0,
+    "score_excl": 32.0,
+    "rango_base": 12,
+    "rango_excl": 12,
+    "delta": 0
+   },
+   {
+    "grupo": "China Eastern Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 31.9,
+    "score_excl": 31.9,
+    "rango_base": 13,
+    "rango_excl": 13,
+    "delta": 0
+   },
+   {
+    "grupo": "SkyWest Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 33.6,
+    "reemplazo_corr": 33.6,
+    "score_base": 31.8,
+    "score_excl": 31.8,
+    "rango_base": 14,
+    "rango_excl": 14,
+    "delta": 0
+   },
+   {
+    "grupo": "China Express Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 30.0,
+    "score_excl": 30.0,
+    "rango_base": 15,
+    "rango_excl": 15,
+    "delta": 0
+   },
+   {
+    "grupo": "Aeromexico",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 29.7,
+    "score_excl": 29.7,
+    "rango_base": 16,
+    "rango_excl": 16,
+    "delta": 0
+   },
+   {
+    "grupo": "Copa Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 4.7,
+    "reemplazo_corr": 4.7,
+    "score_base": 29.3,
+    "score_excl": 29.3,
+    "rango_base": 17,
+    "rango_excl": 17,
+    "delta": 0
+   },
+   {
+    "grupo": "Cathay Pacific Airways",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 4.7,
+    "reemplazo_corr": 4.7,
+    "score_base": 29.0,
+    "score_excl": 29.0,
+    "rango_base": 18,
+    "rango_excl": 18,
+    "delta": 0
+   },
+   {
+    "grupo": "Alaska Air Group",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 5.2,
+    "reemplazo_corr": 5.2,
+    "score_base": 28.6,
+    "score_excl": 28.6,
+    "rango_base": 19,
+    "rango_excl": 19,
+    "delta": 0
+   },
+   {
+    "grupo": "Frontier Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 26.6,
+    "score_excl": 26.6,
+    "rango_base": 20,
+    "rango_excl": 20,
+    "delta": 0
+   },
+   {
+    "grupo": "Allegiant Air",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 23.4,
+    "reemplazo_corr": 23.5,
+    "score_base": 26.0,
+    "score_excl": 26.1,
+    "rango_base": 21,
+    "rango_excl": 21,
+    "delta": 0
+   },
+   {
+    "grupo": "FedEx",
+    "sin_edad": true,
+    "cobertura_edad": 0.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": null,
+    "score_base": 18.2,
+    "score_excl": 25.9,
+    "rango_base": 24,
+    "rango_excl": 22,
+    "delta": 2
+   },
+   {
+    "grupo": "Juneyao Airlines",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 25.7,
+    "score_excl": 25.7,
+    "rango_base": 22,
+    "rango_excl": 23,
+    "delta": -1
+   },
+   {
+    "grupo": "Republic Airways",
+    "sin_edad": false,
+    "cobertura_edad": 1.0,
+    "reemplazo_base": 10.5,
+    "reemplazo_corr": 10.5,
+    "score_base": 19.3,
+    "score_excl": 19.3,
+    "rango_base": 23,
+    "rango_excl": 24,
+    "delta": -1
+   },
+   {
+    "grupo": "Spring Airlines",
+    "sin_edad": true,
+    "cobertura_edad": 0.5,
+    "reemplazo_base": 0.0,
+    "reemplazo_corr": 0.0,
+    "score_base": 13.7,
+    "score_excl": 13.7,
+    "rango_base": 25,
+    "rango_excl": 25,
+    "delta": 0
+   }
+  ]
+ },
+ "suelo_reemplazo": {
+  "n": 14,
+  "grupos": [
+   "Azul",
+   "Volaris",
+   "Hainan Airlines",
+   "Air China",
+   "9 Air",
+   "China Southern Airlines",
+   "LATAM Airlines Group",
+   "China Eastern Airlines",
+   "China Express Airlines",
+   "Aeromexico",
+   "Frontier Airlines",
+   "Juneyao Airlines",
+   "FedEx",
+   "Spring Airlines"
+  ]
+ },
+ "segmentos": {
+  "Leasing": 6,
+  "Tecnico / Reemplazo": 4,
+  "Complejidad de portafolio": 6,
+  "Transicion de flota": 4,
+  "Sin señal dominante": 5
+ }
+}

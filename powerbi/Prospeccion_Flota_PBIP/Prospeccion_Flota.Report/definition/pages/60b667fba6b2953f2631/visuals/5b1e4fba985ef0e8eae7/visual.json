@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "5b1e4fba985ef0e8eae7",
   "position": {
-    "x": 16,
-    "y": 432,
+    "x": 15.705521472392638,
+    "y": 179.95910020449898,
     "z": 0,
-    "height": 272,
-    "width": 616,
+    "height": 263.72188139059307,
+    "width": 1248.5889570552147,
     "tabOrder": 0
   },
   "visual": {
@@ -109,5 +109,42 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "c9067e4d03b5893aea30",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "v_fleet_transition"
+              }
+            },
+            "Property": "Modelo"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "61ee584bcce7baeabb7e",
+        "field": {
+          "Aggregation": {
+            "Expression": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "v_fleet_transition"
+                  }
+                },
+                "Property": "Variación"
+              }
+            },
+            "Function": 0
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }
