@@ -71,3 +71,14 @@ py -3.12 -I cotas.py datos/score_full.csv datos/ventana.csv datos/sin_edad.csv d
 ```
 
 `datos/sin_edad.csv` sale de la consulta 3 de `exportar.sql`.
+
+## Parámetros internos de los componentes
+
+`parametros.py` responde a la objeción de que el Monte Carlo solo perturba los cinco pesos. Perturba con el mismo criterio, U(0,5; 1,5) multiplicativa y semilla 20261109, los repartos internos de cada componente (por ejemplo 0,50 / 0,20 / 0,30 en leasing, renormalizados) y sus constantes: el factor 2,5 de las emisoras IFRS, el horizonte de 10 años de vida, las saturaciones de 12 modelos, 3 fabricantes adicionales, 0,5 pedidos por avión, 0,2 entregas a dos años y 6 veces deuda/EBITDA, y la deuda por defecto de 2,5. Corre dos pruebas: solo parámetros, y parámetros y pesos a la vez.
+
+Los insumos sin redondear salen de la CTE `base` de la propia vista con `exportar_insumos.py`. Antes de simular, el script comprueba que reconstruye los cinco componentes publicados.
+
+```bash
+python exportar_insumos.py ../sql/v_prospect_score.sql datos/insumos.csv
+py -3.12 -I parametros.py datos/insumos.csv datos/score_full.csv datos/parametros.json
+```
