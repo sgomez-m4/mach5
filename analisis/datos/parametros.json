@@ -1,0 +1,369 @@
+{
+  "n": 10000,
+  "semilla": 20261109,
+  "reconstruccion_max_dif": 0.05,
+  "A_solo_parametros": {
+    "tau_mediana": 0.841,
+    "tau_p5": 0.761,
+    "top5_compartido_medio": 4.53,
+    "lider": {
+      "Azul": 0.542,
+      "United Airlines": 0.257,
+      "American Airlines": 0.172,
+      "Volaris": 0.029,
+      "Hainan Airlines": 0.0
+    },
+    "grupos": [
+      {
+        "grupo": "Azul",
+        "rango_base": 1,
+        "p_top5": 1.0,
+        "rango_p5": 1,
+        "rango_p95": 3
+      },
+      {
+        "grupo": "United Airlines",
+        "rango_base": 2,
+        "p_top5": 1.0,
+        "rango_p5": 1,
+        "rango_p95": 4
+      },
+      {
+        "grupo": "American Airlines",
+        "rango_base": 3,
+        "p_top5": 1.0,
+        "rango_p5": 1,
+        "rango_p95": 4
+      },
+      {
+        "grupo": "Volaris",
+        "rango_base": 4,
+        "p_top5": 0.97,
+        "rango_p5": 2,
+        "rango_p95": 5
+      },
+      {
+        "grupo": "Delta Air Lines",
+        "rango_base": 5,
+        "p_top5": 0.56,
+        "rango_p5": 4,
+        "rango_p95": 8
+      },
+      {
+        "grupo": "Hainan Airlines",
+        "rango_base": 6,
+        "p_top5": 0.39,
+        "rango_p5": 5,
+        "rango_p95": 11
+      },
+      {
+        "grupo": "Air China",
+        "rango_base": 7,
+        "p_top5": 0.01,
+        "rango_p5": 6,
+        "rango_p95": 11
+      },
+      {
+        "grupo": "Southwest Airlines",
+        "rango_base": 8,
+        "p_top5": 0.05,
+        "rango_p5": 6,
+        "rango_p95": 13
+      },
+      {
+        "grupo": "China Southern Airlines",
+        "rango_base": 9,
+        "p_top5": 0.02,
+        "rango_p5": 6,
+        "rango_p95": 12
+      },
+      {
+        "grupo": "LATAM Airlines Group",
+        "rango_base": 10,
+        "p_top5": 0.01,
+        "rango_p5": 6,
+        "rango_p95": 15
+      },
+      {
+        "grupo": "JetBlue",
+        "rango_base": 11,
+        "p_top5": 0.0,
+        "rango_p5": 7,
+        "rango_p95": 17
+      },
+      {
+        "grupo": "China Eastern Airlines",
+        "rango_base": 12,
+        "p_top5": 0.0,
+        "rango_p5": 8,
+        "rango_p95": 15
+      },
+      {
+        "grupo": "SkyWest Airlines",
+        "rango_base": 13,
+        "p_top5": 0.0,
+        "rango_p5": 8,
+        "rango_p95": 18
+      },
+      {
+        "grupo": "China Express Airlines",
+        "rango_base": 14,
+        "p_top5": 0.0,
+        "rango_p5": 12,
+        "rango_p95": 19
+      },
+      {
+        "grupo": "Juneyao Airlines",
+        "rango_base": 15,
+        "p_top5": 0.0,
+        "rango_p5": 13,
+        "rango_p95": 19
+      },
+      {
+        "grupo": "Aeromexico",
+        "rango_base": 16,
+        "p_top5": 0.0,
+        "rango_p5": 8,
+        "rango_p95": 20
+      },
+      {
+        "grupo": "Copa Airlines",
+        "rango_base": 17,
+        "p_top5": 0.0,
+        "rango_p5": 11,
+        "rango_p95": 19
+      },
+      {
+        "grupo": "Cathay Pacific Airways",
+        "rango_base": 18,
+        "p_top5": 0.0,
+        "rango_p5": 14,
+        "rango_p95": 20
+      },
+      {
+        "grupo": "Alaska Air Group",
+        "rango_base": 19,
+        "p_top5": 0.0,
+        "rango_p5": 14,
+        "rango_p95": 20
+      },
+      {
+        "grupo": "Frontier Airlines",
+        "rango_base": 20,
+        "p_top5": 0.0,
+        "rango_p5": 15,
+        "rango_p95": 21
+      },
+      {
+        "grupo": "Allegiant Air",
+        "rango_base": 21,
+        "p_top5": 0.0,
+        "rango_p5": 18,
+        "rango_p95": 21
+      },
+      {
+        "grupo": "Republic Airways",
+        "rango_base": 22,
+        "p_top5": 0.0,
+        "rango_p5": 22,
+        "rango_p95": 24
+      },
+      {
+        "grupo": "FedEx",
+        "rango_base": 23,
+        "p_top5": 0.0,
+        "rango_p5": 22,
+        "rango_p95": 24
+      },
+      {
+        "grupo": "Spring Airlines",
+        "rango_base": 24,
+        "p_top5": 0.0,
+        "rango_p5": 22,
+        "rango_p95": 24
+      }
+    ]
+  },
+  "B_parametros_y_pesos": {
+    "tau_mediana": 0.761,
+    "tau_p5": 0.63,
+    "top5_compartido_medio": 4.28,
+    "lider": {
+      "Azul": 0.452,
+      "United Airlines": 0.348,
+      "American Airlines": 0.126,
+      "Volaris": 0.073,
+      "Hainan Airlines": 0.002
+    },
+    "grupos": [
+      {
+        "grupo": "Azul",
+        "rango_base": 1,
+        "p_top5": 0.97,
+        "rango_p5": 1,
+        "rango_p95": 5
+      },
+      {
+        "grupo": "United Airlines",
+        "rango_base": 2,
+        "p_top5": 1.0,
+        "rango_p5": 1,
+        "rango_p95": 5
+      },
+      {
+        "grupo": "American Airlines",
+        "rango_base": 3,
+        "p_top5": 1.0,
+        "rango_p5": 1,
+        "rango_p95": 4
+      },
+      {
+        "grupo": "Volaris",
+        "rango_base": 4,
+        "p_top5": 0.87,
+        "rango_p5": 1,
+        "rango_p95": 8
+      },
+      {
+        "grupo": "Delta Air Lines",
+        "rango_base": 5,
+        "p_top5": 0.44,
+        "rango_p5": 3,
+        "rango_p95": 13
+      },
+      {
+        "grupo": "Hainan Airlines",
+        "rango_base": 6,
+        "p_top5": 0.39,
+        "rango_p5": 4,
+        "rango_p95": 14
+      },
+      {
+        "grupo": "Air China",
+        "rango_base": 7,
+        "p_top5": 0.04,
+        "rango_p5": 6,
+        "rango_p95": 13
+      },
+      {
+        "grupo": "Southwest Airlines",
+        "rango_base": 8,
+        "p_top5": 0.14,
+        "rango_p5": 5,
+        "rango_p95": 17
+      },
+      {
+        "grupo": "China Southern Airlines",
+        "rango_base": 9,
+        "p_top5": 0.02,
+        "rango_p5": 6,
+        "rango_p95": 13
+      },
+      {
+        "grupo": "LATAM Airlines Group",
+        "rango_base": 10,
+        "p_top5": 0.04,
+        "rango_p5": 6,
+        "rango_p95": 18
+      },
+      {
+        "grupo": "JetBlue",
+        "rango_base": 11,
+        "p_top5": 0.06,
+        "rango_p5": 5,
+        "rango_p95": 19
+      },
+      {
+        "grupo": "China Eastern Airlines",
+        "rango_base": 12,
+        "p_top5": 0.0,
+        "rango_p5": 8,
+        "rango_p95": 16
+      },
+      {
+        "grupo": "SkyWest Airlines",
+        "rango_base": 13,
+        "p_top5": 0.01,
+        "rango_p5": 7,
+        "rango_p95": 19
+      },
+      {
+        "grupo": "China Express Airlines",
+        "rango_base": 14,
+        "p_top5": 0.0,
+        "rango_p5": 9,
+        "rango_p95": 20
+      },
+      {
+        "grupo": "Juneyao Airlines",
+        "rango_base": 15,
+        "p_top5": 0.0,
+        "rango_p5": 11,
+        "rango_p95": 19
+      },
+      {
+        "grupo": "Aeromexico",
+        "rango_base": 16,
+        "p_top5": 0.02,
+        "rango_p5": 6,
+        "rango_p95": 20
+      },
+      {
+        "grupo": "Copa Airlines",
+        "rango_base": 17,
+        "p_top5": 0.0,
+        "rango_p5": 8,
+        "rango_p95": 21
+      },
+      {
+        "grupo": "Cathay Pacific Airways",
+        "rango_base": 18,
+        "p_top5": 0.0,
+        "rango_p5": 12,
+        "rango_p95": 21
+      },
+      {
+        "grupo": "Alaska Air Group",
+        "rango_base": 19,
+        "p_top5": 0.0,
+        "rango_p5": 11,
+        "rango_p95": 20
+      },
+      {
+        "grupo": "Frontier Airlines",
+        "rango_base": 20,
+        "p_top5": 0.01,
+        "rango_p5": 9,
+        "rango_p95": 23
+      },
+      {
+        "grupo": "Allegiant Air",
+        "rango_base": 21,
+        "p_top5": 0.0,
+        "rango_p5": 14,
+        "rango_p95": 22
+      },
+      {
+        "grupo": "Republic Airways",
+        "rango_base": 22,
+        "p_top5": 0.0,
+        "rango_p5": 21,
+        "rango_p95": 24
+      },
+      {
+        "grupo": "FedEx",
+        "rango_base": 23,
+        "p_top5": 0.0,
+        "rango_p5": 21,
+        "rango_p95": 24
+      },
+      {
+        "grupo": "Spring Airlines",
+        "rango_base": 24,
+        "p_top5": 0.0,
+        "rango_p5": 21,
+        "rango_p95": 24
+      }
+    ]
+  }
+}
