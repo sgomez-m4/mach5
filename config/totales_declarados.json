@@ -1,0 +1,30 @@
+{
+  "version": "2026-11-16",
+  "descripcion": "Flota total que declara cada informe, conciliada el 16-nov-2026 (analisis/datos/conciliacion_totales.csv). ejecutar-pipeline-anuales compara la suma de filas no agregadas por group_id del ultimo ejercicio contra totales_aceptados y no carga a BigQuery si difiere. Al llegar un filing de un ejercicio nuevo el grupo queda como advertencia hasta conciliarlo y anadir aqui su total.",
+  "grupos": {
+    "AAL":      {"report_year": 2025, "totales_aceptados": [1580], "fuente": "aal-2026-10k Item 2 lineas 27 y 57: 1013 mainline + 567 regional"},
+    "AEROMEX":  {"report_year": 2025, "totales_aceptados": [165],  "fuente": "aeromex-2026-20f Item 4 linea 1255, incluye Aeromexico Connect"},
+    "ALGT":     {"report_year": 2025, "totales_aceptados": [123],  "fuente": "algt-2026-10k Item 2 linea 23"},
+    "ALK":      {"report_year": 2025, "totales_aceptados": [413],  "fuente": "alk-2026-10k Item 2 linea 50: 324 mainline + 89 regional"},
+    "AZUL":     {"report_year": 2025, "totales_aceptados": [178, 227], "fuente": "azul-2026-20f flota lineas 450-489: operativa 178 o contractual 227"},
+    "CAO":      {"report_year": 2025, "totales_aceptados": [964],  "fuente": "601111 informe anual linea 581"},
+    "CEA":      {"report_year": 2025, "totales_aceptados": [826],  "fuente": "600115 informe anual linea 706"},
+    "CHEXP":    {"report_year": 2025, "totales_aceptados": [80],   "fuente": "002928 informe anual linea 357"},
+    "CPA":      {"report_year": 2025, "totales_aceptados": [125],  "fuente": "cpa-2026-20f flota linea 241"},
+    "CPACIFIC": {"report_year": 2025, "totales_aceptados": [237],  "fuente": "00293 informe anual lineas 73 y 85: 179 Cathay + 44 HK Express + 14 Air Hong Kong"},
+    "CSN":      {"report_year": 2025, "totales_aceptados": [972],  "fuente": "600029 informe anual linea 61"},
+    "DAL":      {"report_year": 2025, "totales_aceptados": [989],  "fuente": "dal-2026-10k Item 2 lineas 32 y 44, solo mainline"},
+    "FDX":      {"report_year": 2026, "totales_aceptados": [700],  "fuente": "fdx-2026-10k Item 2 linea 26"},
+    "HNA":      {"report_year": 2025, "totales_aceptados": [359],  "fuente": "600221 informe anual linea 292"},
+    "JBLU":     {"report_year": 2025, "totales_aceptados": [288],  "fuente": "jblu-2026-10k Item 2 linea 17"},
+    "JUNEYAO":  {"report_year": 2025, "totales_aceptados": [129],  "fuente": "603885 informe anual lineas 495 y 606: 103 Juneyao + 26 9 Air"},
+    "LTM":      {"report_year": 2025, "totales_aceptados": [371],  "fuente": "ltm-2026-20f flota lineas 503 y 537"},
+    "LUV":      {"report_year": 2025, "totales_aceptados": [803],  "fuente": "luv-2026-10k Item 2 lineas 8 y 19"},
+    "RJET":     {"report_year": 2025, "totales_aceptados": [311],  "fuente": "rjet-2026-10k Item 2 linea 8"},
+    "SKYW":     {"report_year": 2025, "totales_aceptados": [487],  "fuente": "skyw-2026-10k Item 2 linea 61, en servicio o bajo contrato"},
+    "SPRING":   {"report_year": 2025, "totales_aceptados": [134],  "fuente": "601021 informe anual linea 578: 98 propios + 34 operativo + 2 financiero"},
+    "UAL":      {"report_year": 2025, "totales_aceptados": [1490], "fuente": "ual-2026-10k Item 2 lineas 28 y 44: 1066 mainline + 424 regional"},
+    "ULCC":     {"report_year": 2025, "totales_aceptados": [176],  "fuente": "ulcc-2026-10k Item 2"},
+    "VLRS":     {"report_year": 2025, "totales_aceptados": [155],  "fuente": "vlrs-2026-20f flota linea 904"}
+  }
+}
