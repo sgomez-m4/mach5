@@ -17,3 +17,11 @@ FROM `mach5-gemini-project.dataset_integrado.v_fleet_normalized`
 WHERE NOT es_fila_agregada
 GROUP BY grupo
 ORDER BY grupo;
+
+-- 3. datos/sin_edad.csv: aeronaves sin edad declarada por grupo y modelo
+--    (para las cotas de cobertura, analisis/cotas.py)
+SELECT group_id, aircraft_model, replacement_target, SUM(quantity) AS sin_edad
+FROM `mach5-gemini-project.dataset_integrado.v_fleet_normalized`
+WHERE NOT es_fila_agregada AND average_age_years IS NULL
+GROUP BY 1, 2, 3
+ORDER BY 1, 4 DESC;

@@ -46,3 +46,28 @@ Este análisis se hizo **después de entregar el sistema**, para el artículo de
    ```
 
 La carpeta `datos/` conserva la exportación usada en el artículo. Si se vuelve a exportar después de una nueva carga trimestral, los resultados cambiarán.
+
+## Conciliación de totales
+
+`datos/conciliacion_totales.csv` compara, para cada grupo, el total de flota extraído con el total que declara su informe, con la fuente y la línea del documento donde aparece. Se hizo a mano sobre las secciones de flota en `gs://bucket-edgar/` y se contrastó con dos estados del almacén: el del 11 de noviembre de 2026 (el que usa el artículo) y el que dejó la reejecución del pipeline del 13 de noviembre.
+
+- 11 de noviembre: 23 de 24 grupos coinciden. Spring Airlines contaba dos veces sus 134 aeronaves (por propiedad y por modelo). Se corrigió marcando como agregadas las tres filas por modelo, con el mismo criterio que en Aeroméxico: conservar propiedad y edad a costa del tipo.
+- 13 de noviembre: 18 de 24. La reejecución asignó HK Express a Juneyao, perdió a 9 Air, contó dos veces la flota regional de American y añadió aeronaves sin respaldo en United y China Express. Se restauró el estado del 11 de noviembre; las tablas de esa ejecución se conservan con el sufijo `_bak_20261116_ejec13nov`.
+
+Los informes no declaran el mismo tipo de total: American y United incluyen su flota regional, Delta no; SkyWest cuenta las aeronaves en servicio o bajo contrato; Azul publica su flota contractual (227) y la operativa (178).
+
+## Cotas de cobertura
+
+`cotas.py` responde a la objeción de que la corrección de cobertura (prueba 4 de `sensibilidad.py`) supone que las aeronaves sin edad se parecen a las que la declaran. En lugar de suponer, calcula para cada grupo con edad incompleta el intervalo posible de la fracción en ventana:
+
+- **Cota inferior:** ninguna aeronave sin edad está en ventana (el denominador original).
+- **Cota inferior acotada:** las de modelos cuya producción terminó hace más años que el inicio de su ventana están en ventana con certeza. Hoy solo aplica a los CRJ200 de United y los MD-11 de FedEx. Los años de fin de producción están en `FIN_PRODUCCION` y deben citarse con fuente.
+- **Cota superior:** todas están en ventana.
+
+Antes de calcular, el script comprueba que reconstruye el componente de reemplazo de la vista; si no lo hace, se detiene.
+
+```bash
+py -3.12 -I cotas.py datos/score_full.csv datos/ventana.csv datos/sin_edad.csv datos/cotas.json
+```
+
+`datos/sin_edad.csv` sale de la consulta 3 de `exportar.sql`.

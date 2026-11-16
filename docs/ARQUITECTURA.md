@@ -362,11 +362,10 @@ respuesta HTTP, no solo en el log.
 
 Nada de esto está roto; son fronteras del sistema tal como está hoy.
 
-**Serie de flota solo en 3 de 25 grupos.** Aeroméxico y Volaris con tres ejercicios,
-SkyWest con dos. El resto publica la flota como una foto del cierre —LATAM, por ejemplo, da
-total, propiedad, edad media y plazo de arrendamiento remanente, pero de un solo año— así
-que su transición se sigue *infiriendo*. Recuperar más años para esas sí exigiría descargar
-filings anteriores.
+**Serie de flota en 16 de 24 grupos.** Los 16 grupos de EE. UU. y Latinoamérica tienen
+varios ejercicios gracias a los filings anteriores que se descargaron. Los 8 grupos de China
+y Hong Kong siguen con un solo ejercicio, así que su transición se sigue *infiriendo*.
+Recuperar más años para ellos exigiría descargar sus informes anuales anteriores.
 
 Cuidado al buscar candidatos por si un documento trae varios años: los reportes están llenos
 de tablas multi-ejercicio que no son de flota. En LATAM, las estadísticas de carga y las de
@@ -384,10 +383,12 @@ negocio. La normalización ahora reporta qué conversiones usaron una tasa susti
 
 **Azul declara la flota en una cubeta.** Su 20-F sí trae el desglose, pero la sección
 aislada iba desde una mención tardía de `ITEM 4` hasta el final del documento —822 KB de
-MD&A y estados financieros sin nombrar un solo modelo— y el modelo llenó el vacío con 227
-aeronaves bajo `Commercial Aircraft`, cifra que el filing no declara: dice 155 en flota
-operativa con edad media de 7.2 años. Corregido: la sección pasa a los 248 KB que arrancan
-en el Item 4 real, con 37 designaciones de modelo.
+MD&A y estados financieros sin nombrar un solo modelo— y el modelo devolvió 227
+aeronaves bajo `Commercial Aircraft`. La cifra sí está en el filing: es la flota contractual
+(39 propias y 188 arrendadas), pero llegó sin desglose por modelo. La flota operativa es
+de 178 (153 de pasajeros). Corregido: la sección pasa a los 248 KB que arrancan en el
+Item 4 real, con 37 designaciones de modelo, y la extracción recupera el desglose de la
+flota operativa.
 
 **Aeroméxico no admite tipo × propiedad.** Su flota aparece como `Boeing Fleet (B787/B737)`
 en vez de separar MAX de NG y 787-8 de 787-9, y **no es un fallo de extracción**: el filing

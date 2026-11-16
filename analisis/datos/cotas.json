@@ -1,0 +1,171 @@
+{
+  "detalle": {
+    "AAL": {
+      "grupo": "American Airlines",
+      "flota": 1580.0,
+      "sin_edad": 567.0,
+      "seguras_en_ventana": 0.0,
+      "fraccion_en_ventana": {
+        "inferior": 0.1437,
+        "inferior_acotada": 0.1437,
+        "supuesto_del_articulo": 0.2241,
+        "superior": 0.5025
+      }
+    },
+    "AZUL": {
+      "grupo": "Azul",
+      "flota": 178.0,
+      "sin_edad": 23.0,
+      "seguras_en_ventana": 0.0,
+      "fraccion_en_ventana": {
+        "inferior": 0.0,
+        "inferior_acotada": 0.0,
+        "supuesto_del_articulo": 0.0,
+        "superior": 0.1292
+      }
+    },
+    "FDX": {
+      "grupo": "FedEx",
+      "flota": 700.0,
+      "sin_edad": 700.0,
+      "seguras_en_ventana": 29.0,
+      "fraccion_en_ventana": {
+        "inferior": 0.0,
+        "inferior_acotada": 0.0414,
+        "supuesto_del_articulo": null,
+        "superior": 1.0
+      }
+    },
+    "UAL": {
+      "grupo": "United Airlines",
+      "flota": 1490.0,
+      "sin_edad": 424.0,
+      "seguras_en_ventana": 30.0,
+      "fraccion_en_ventana": {
+        "inferior": 0.3523,
+        "inferior_acotada": 0.3725,
+        "supuesto_del_articulo": 0.4925,
+        "superior": 0.6369
+      }
+    }
+  },
+  "escenarios": {
+    "inferior": {
+      "lider": "Azul",
+      "top5": [
+        "Azul",
+        "United Airlines",
+        "American Airlines",
+        "Volaris",
+        "Delta Air Lines"
+      ],
+      "grupos": {
+        "American Airlines": {
+          "puntuacion": 47.0,
+          "rango": 3
+        },
+        "Azul": {
+          "puntuacion": 47.3,
+          "rango": 1
+        },
+        "FedEx": {
+          "puntuacion": 18.2,
+          "rango": 23
+        },
+        "United Airlines": {
+          "puntuacion": 47.2,
+          "rango": 2
+        }
+      }
+    },
+    "inferior_acotada": {
+      "lider": "United Airlines",
+      "top5": [
+        "United Airlines",
+        "Azul",
+        "American Airlines",
+        "Volaris",
+        "Delta Air Lines"
+      ],
+      "grupos": {
+        "American Airlines": {
+          "puntuacion": 47.0,
+          "rango": 3
+        },
+        "Azul": {
+          "puntuacion": 47.3,
+          "rango": 2
+        },
+        "FedEx": {
+          "puntuacion": 19.0,
+          "rango": 23
+        },
+        "United Airlines": {
+          "puntuacion": 47.6,
+          "rango": 1
+        }
+      }
+    },
+    "supuesto_del_articulo": {
+      "lider": "United Airlines",
+      "top5": [
+        "United Airlines",
+        "American Airlines",
+        "Azul",
+        "Volaris",
+        "Delta Air Lines"
+      ],
+      "grupos": {
+        "American Airlines": {
+          "puntuacion": 48.6,
+          "rango": 2
+        },
+        "Azul": {
+          "puntuacion": 47.3,
+          "rango": 3
+        },
+        "United Airlines": {
+          "puntuacion": 49.9,
+          "rango": 1
+        }
+      }
+    },
+    "superior": {
+      "lider": "American Airlines",
+      "top5": [
+        "American Airlines",
+        "United Airlines",
+        "Azul",
+        "Volaris",
+        "Delta Air Lines"
+      ],
+      "grupos": {
+        "American Airlines": {
+          "puntuacion": 54.0,
+          "rango": 1
+        },
+        "Azul": {
+          "puntuacion": 49.8,
+          "rango": 3
+        },
+        "FedEx": {
+          "puntuacion": 37.7,
+          "rango": 6
+        },
+        "United Airlines": {
+          "puntuacion": 52.7,
+          "rango": 2
+        }
+      }
+    }
+  },
+  "base": {
+    "top5": [
+      "Azul",
+      "United Airlines",
+      "American Airlines",
+      "Volaris",
+      "Delta Air Lines"
+    ]
+  }
+}
