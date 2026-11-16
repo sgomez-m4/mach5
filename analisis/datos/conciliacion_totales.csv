@@ -1,0 +1,25 @@
+group_id,grupo,total_declarado,definicion_declarada,fuente,extraido_11nov,extraido_13nov,estado_11nov,estado_13nov,nota
+AAL,American Airlines,1580,"1013 mainline + 567 regional (Total, tablas de flota)",aal-2026-10k Item 2 lineas 27 y 57,1580,2165,coincide,error,"13 nov: la flota regional se suma dos veces (1580 en mainline + 585 American Eagle)"
+AEROMEX,Aeromexico,165,Total(1) incluye Aeromexico Connect,aeromex-2026-20f Item 4 linea 1255,165,165,coincide,coincide,
+ALGT,Allegiant Air,123,Total aircraft en servicio,algt-2026-10k Item 2 linea 23,123,123,coincide,coincide,
+ALK,Alaska Air Group,413,Total Air Group Fleet (324 mainline + 89 regional),alk-2026-10k Item 2 linea 50,413,413,coincide,coincide,
+AZUL,Azul,178 / 227,"Total Operating Fleet 178; Total Contractual Fleet 227 (39 propios + 188 arrendados)",azul-2026-20f flota lineas 450-489,178,227,coincide (operativa),coincide (contractual),"Dos definiciones declaradas; cada estado tomo una distinta"
+CAO,Air China,964,本集团机队共有飞机 964 架,601111 informe anual linea 581,964,964,coincide,coincide,
+CEA,China Eastern Airlines,826,共运营826架飞机,600115 informe anual linea 706,826,826,coincide,coincide,
+CHEXP,China Express Airlines,80,公司运营的机队规模达80架,002928 informe anual linea 357,80,106,coincide,error,"13 nov: +26 sin respaldo en el informe"
+CPA,Copa Airlines,125,Total fleet,cpa-2026-20f flota linea 241,125,125,coincide,coincide,
+CPACIFIC,Cathay Pacific Airways,237,集團共持有二百三十七架 (179 Cathay + 44 HK Express + 14 Air Hong Kong),00293 informe anual lineas 73 y 85,237,193,coincide,error,"13 nov: HK Express (44) asignada a Juneyao; Air Hong Kong sin filial propia"
+CSN,China Southern Airlines,972,客货运输飞机972架,600029 informe anual linea 61,972,972,coincide,coincide,
+DAL,Delta Air Lines,989,Total mainline (las 325 regionales de socios se declaran aparte),dal-2026-10k Item 2 lineas 32 y 44,989,989,coincide,coincide,"Definicion distinta de AAL y UAL, que incluyen su flota regional"
+FDX,FedEx,700,Total,fdx-2026-10k Item 2 linea 26,700,700,coincide,coincide,
+HNA,Hainan Airlines,359,合计 359,600221 informe anual linea 292,359,359,coincide,coincide,
+JBLU,JetBlue,288,Total operativo (excluye aeronaves estacionadas),jblu-2026-10k Item 2 linea 17,288,288,coincide,coincide,
+JUNEYAO,Juneyao Airlines,129,公司及子公司共拥有129架飞机 (103 Juneyao + 26 9 Air),603885 informe anual lineas 495 y 606,129,147,coincide,error,"13 nov: incluye las 44 de HK Express y pierde las 26 de 9 Air"
+LTM,LATAM Airlines Group,371,Total fleet (351 pasajeros + 20 carga),ltm-2026-20f flota lineas 503 y 537,371,371,coincide,coincide,
+LUV,Southwest Airlines,803,Totals,luv-2026-10k Item 2 lineas 8 y 19,803,803,coincide,coincide,
+RJET,Republic Airways,311,Total Aircraft (incluye 5 de reserva y 31 arrendadas a otra aerolinea),rjet-2026-10k Item 2 linea 8,311,311,coincide,coincide,
+SKYW,SkyWest Airlines,487,"En servicio o bajo contrato (flota total 637)",skyw-2026-10k Item 2 linea 61,487,487,coincide,coincide,"Definicion en servicio, no flota total"
+SPRING,Spring Airlines,134,机队共134架 (98 propios + 34 arrendamiento operativo + 2 financiero),601021 informe anual linea 578,268,268,error,error,"Ambos estados: el mismo 134 se cuenta dos veces (por propiedad y por modelo, este ultimo todo como Owned)"
+UAL,United Airlines,1490,1066 mainline + 424 regional,ual-2026-10k Item 2 lineas 28 y 44,1490,1521,coincide,error,"13 nov: +31 sin respaldo en el informe"
+ULCC,Frontier Airlines,176,Total de la tabla de flota,ulcc-2026-10k Item 2,176,176,coincide,coincide,
+VLRS,Volaris,155,fleet of 155 Airbus narrow-body aircraft,vlrs-2026-20f flota linea 904,155,155,coincide,coincide,

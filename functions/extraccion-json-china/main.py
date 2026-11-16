@@ -67,6 +67,7 @@ Campos obligatorios:
 2. **Normalización de modelos**: Convierte "波音737-800" → "B737-800", "空客A320neo" → "A320neo", "中国商飞C919" → "C919".
 3. **Subtotales**: Si hay filas de "合计" (Total) o "小计" (Subtotal), NO las incluyas como filas individuales.
 4. **Detección de aerolínea**: Identifica la aerolínea por el nombre en el texto (中国国际航空 → Air China, 中国东方航空 → China Eastern Airlines, 中国南方航空 → China Southern Airlines, 国泰航空 → Cathay Pacific Airways, 海南航空 → Hainan Airlines, 春秋航空 → Spring Airlines, 吉祥航空 → Juneyao Airlines, 华夏航空 → China Express Airlines).
+   **Filiales**: si el informe desglosa la flota de una filial, cada fila lleva el nombre de la filial que opera esas aeronaves, no el de la matriz ni el de otra aerolínea de la lista. Filiales conocidas: 香港快运 / 香港快運 / HK Express → "HK Express" (filial de Cathay Pacific); 华民航空 / 華民航空 / Air Hong Kong → "Air Hong Kong" (filial de Cathay Pacific); 九元航空 → "9 Air" (filial de Juneyao Airlines). Si aparece una filial que no está aquí, usa su nombre en inglés tal como lo publica; nunca la asignes a otra aerolínea de la lista. El prefijo de fleet_id usa el mismo nombre que el campo airline.
 5. **Año fiscal**: Extrae el año del título del reporte o del contexto (ej. "2025年年度报告" → 2025).
 6. **Sin datos**: Si un campo no existe en el texto, usa null. No inventes datos.
 7. **Formato de salida**: Devuelve ÚNICAMENTE un objeto JSON con dos claves raíz: "current_fleet" y "future_commitments". No uses bloques de código markdown. No agregues texto explicativo.

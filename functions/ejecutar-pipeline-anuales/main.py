@@ -2,15 +2,26 @@ import io
 import functions_framework
 import json
 import re
-import unicodedata
 from google.cloud import storage
 from google.cloud import bigquery
+
+from calidad_flota import (
+    clave_aerolinea,
+    elegir_entidad,
+    entidad_por_fleet_id,
+    grupo_documento,
+    marcar_desgloses_alternativos,
+    verificar_totales,
+)
 
 # Configuraciones fijas
 BUCKET_NAME = "bucket-edgar"
 DATASET_ID = "dataset_integrado"
 
 CONFIG_DIM_AIRLINE = "config/dim_airline.json"
+# Totales de flota que declara cada informe, ya conciliados. Si la extraccion no
+# los reproduce, la carga se detiene antes de tocar BigQuery.
+CONFIG_TOTALES = "config/totales_declarados.json"
 
 # Patrones de aircraft_type que representan un agregado del propio reporte
 # (p.ej. "Total Fleet (Includes B737-800NG and E190)") o una cubeta sin detalle
@@ -42,16 +53,6 @@ CHINESE_AIRLINES = [
     "Juneyao Airlines",
     "China Express Airlines"
 ]
-
-
-def clave_aerolinea(nombre):
-    """Normaliza un nombre de aerolinea para comparar: sin acentos, sin puntuacion,
-    en minusculas. 'Aeroméxico Connect' y 'aeromexico connect' dan la misma clave."""
-    if not nombre:
-        return ""
-    txt = unicodedata.normalize("NFKD", str(nombre))
-    txt = "".join(c for c in txt if not unicodedata.combining(c))
-    return "".join(c for c in txt.lower() if c.isalnum())
 
 
 # Sufijos que los extractores anexan al nombre del documento fuente. Un mismo
@@ -146,6 +147,16 @@ def cargar_indice_aerolineas(bucket):
     return indice
 
 
+def cargar_totales_declarados(bucket):
+    """Lee config/totales_declarados.json; None si no existe o no se puede leer."""
+    try:
+        raw = bucket.blob(CONFIG_TOTALES).download_as_text(encoding="utf-8")
+        return json.loads(raw.strip().lstrip('﻿'))
+    except Exception as e:
+        print(f"[TOTALES] ✗ No se pudo leer {CONFIG_TOTALES}: {type(e).__name__}: {e}")
+        return None
+
+
 def es_fila_agregada(aircraft_type):
     """True si la fila es un agregado del reporte y no un tipo de aeronave real."""
     if not aircraft_type:
@@ -154,15 +165,28 @@ def es_fila_agregada(aircraft_type):
     return any(re.search(p, txt) for p in PATRONES_FILA_AGREGADA)
 
 
-def resolver_identidad(fila, indice, no_resueltos):
+def resolver_identidad(fila, indice, no_resueltos, grupo_doc=None, correcciones=None):
     """Añade airline_id / group_id / airline_canonical a la fila.
 
     Si el nombre no esta en el catalogo se conserva la fila y se registra el nombre
     en no_resueltos, para que aparezca como advertencia en la respuesta en vez de
     degradar en silencio.
+
+    El nombre se contrasta con el prefijo del fleet_id y con el grupo dueño del
+    documento (ver calidad_flota.elegir_entidad); si se corrige, se anota en
+    `correcciones`.
     """
     nombre = (fila.get("airline") or "").strip()
-    entidad = indice.get(clave_aerolinea(nombre))
+    entidad_nombre = indice.get(clave_aerolinea(nombre))
+    entidad_fleet = entidad_por_fleet_id(fila.get("fleet_id") or fila.get("order_id"), indice)
+    entidad, motivo = elegir_entidad(entidad_nombre, entidad_fleet, grupo_doc)
+    if motivo and correcciones is not None:
+        correcciones.append({
+            "fila": fila.get("fleet_id") or fila.get("order_id"),
+            "airline_extraido": nombre,
+            "airline_id_asignado": entidad["airline_id"],
+            "motivo": motivo,
+        })
 
     if entidad is None:
         if nombre:
@@ -190,13 +214,16 @@ def ejecutar_pipeline_flota(request):
     Query params opcionales:
       - source: Filtrar por fuente específica ("10k", "20f", "china", "all")
       - dry_run: "true" para solo contar filas sin cargar a BigQuery
+      - forzar_carga: "true" para cargar aunque falle el control de calidad
+        (solo a mano, despues de conciliar y actualizar la referencia)
     """
     print("[START] Iniciando pipeline de unificación y carga a BigQuery (10-K + 20-F + China)...")
-    
+
     # Parámetros opcionales
     request_args = request.args or {}
     source_filter = request_args.get("source", "all").lower()
     dry_run = (request_args.get("dry_run", "false").lower() == "true")
+    forzar_carga = (request_args.get("forzar_carga", "false").lower() == "true")
     
     # Filtrar prefijos según el parámetro source
     prefixes_a_procesar = SOURCE_PREFIXES
@@ -272,21 +299,33 @@ def ejecutar_pipeline_flota(request):
         seleccionadas.append(candidatas[0])
 
     # --- Fase 3: normalizar las filas de las extracciones elegidas ------------
+    correcciones_identidad = []
+    filas_fuera_de_grupo = []
+    documentos_sin_grupo = []
+    desgloses_alternativos = []
     for nombre_blob, data in seleccionadas:
+        grupo_doc = grupo_documento(nombre_blob, indice_aerolineas)
+        if grupo_doc is None:
+            documentos_sin_grupo.append(nombre_blob)
         try:
             # Extraccion y limpieza de Flota Actual (current_fleet)
+            filas_doc = []
             if "current_fleet" in data and isinstance(data["current_fleet"], list):
                 for r in data["current_fleet"]:
                     cleaned = limpiar_fila(r)
                     if cleaned:
                         cleaned = resolver_identidad(
-                            cleaned, indice_aerolineas, aerolineas_no_resueltas
+                            cleaned, indice_aerolineas, aerolineas_no_resueltas,
+                            grupo_doc, correcciones_identidad
                         )
-                        current_rows.append(cleaned)
+                        filas_doc.append(cleaned)
                         # Trackear aerolinea ya canonizada
                         airline = cleaned.get("airline_canonical") or ""
                         if airline:
                             stats["aerolineas_detectadas"].add(airline)
+            # Una misma flota publicada por familia y por modelo se cuenta una vez.
+            desgloses_alternativos.extend(marcar_desgloses_alternativos(filas_doc))
+            current_rows.extend(filas_doc)
 
             # Extraccion y limpieza de Compromisos Futuros (future_commitments)
             if "future_commitments" in data and isinstance(data["future_commitments"], list):
@@ -294,9 +333,25 @@ def ejecutar_pipeline_flota(request):
                     cleaned = limpiar_fila(r)
                     if cleaned:
                         cleaned = resolver_identidad(
-                            cleaned, indice_aerolineas, aerolineas_no_resueltas
+                            cleaned, indice_aerolineas, aerolineas_no_resueltas,
+                            grupo_doc
                         )
                         commitment_rows.append(cleaned)
+
+            # Filas que, tras la correccion, siguen atribuidas a otro grupo que
+            # el dueño del filing: casi siempre una filial que el extractor
+            # rotulo con el nombre de otra aerolinea (9 Air como China Express).
+            if grupo_doc is not None:
+                for f in filas_doc:
+                    if f.get("group_id") and f["group_id"] != grupo_doc:
+                        filas_fuera_de_grupo.append({
+                            "documento": nombre_blob,
+                            "grupo_documento": grupo_doc,
+                            "fila": f.get("fleet_id"),
+                            "airline_extraido": f.get("airline"),
+                            "group_id_asignado": f["group_id"],
+                            "report_year": f.get("report_year"),
+                        })
 
             stats["archivos_leidos"] += 1
             print(f"  ✓ Procesado: {nombre_blob}")
@@ -340,10 +395,56 @@ def ejecutar_pipeline_flota(request):
     else:
         print("  ✓ Todos los nombres resolvieron contra el catalogo")
 
+    # --- Control de calidad antes de tocar BigQuery ---------------------------
+    # WRITE_TRUNCATE reemplaza el estado conciliado entero, asi que una
+    # extraccion que no reproduce los totales declarados no se carga.
+    cfg_totales = cargar_totales_declarados(bucket)
+    if cfg_totales is None:
+        errores_totales = [f"No se pudo leer gs://{BUCKET_NAME}/{CONFIG_TOTALES}; "
+                           "sin referencia no se reemplazan las tablas"]
+        advertencias_totales, detalle_totales = [], {}
+    else:
+        errores_totales, advertencias_totales, detalle_totales = verificar_totales(
+            current_rows, cfg_totales)
+
+    # Una fila del ultimo ejercicio atribuida a un grupo ajeno al filing es un
+    # error aunque ese grupo no tenga referencia de totales.
+    vigentes_fuera = [
+        c for c in filas_fuera_de_grupo
+        if c["report_year"] is not None
+        and int(c["report_year"]) == max(
+            (int(f["report_year"]) for f in current_rows
+             if f.get("group_id") == c["grupo_documento"]), default=-1)
+    ]
+    errores_calidad = list(errores_totales)
+    for c in vigentes_fuera:
+        errores_calidad.append(
+            f"{c['documento']}: fila {c['fila']} ('{c['airline_extraido']}') atribuida a "
+            f"{c['group_id_asignado']}, pero el filing es de {c['grupo_documento']}")
+
+    calidad = {
+        "errores": errores_calidad,
+        "advertencias": advertencias_totales,
+        "totales_por_grupo": detalle_totales,
+        "correcciones_identidad": correcciones_identidad,
+        "filas_fuera_del_grupo_del_documento": filas_fuera_de_grupo,
+        "documentos_sin_grupo_identificado": sorted(documentos_sin_grupo),
+        "desgloses_alternativos_marcados": desgloses_alternativos,
+    }
+    print(f"\n[CALIDAD] {len(errores_calidad)} errores, "
+          f"{len(advertencias_totales)} advertencias, "
+          f"{len(correcciones_identidad)} identidades corregidas, "
+          f"{len(desgloses_alternativos)} desgloses alternativos marcados")
+    for e in errores_calidad:
+        print(f"  ✗ {e}")
+    for a in advertencias_totales:
+        print(f"  ⚠ {a}")
+
     # Modo dry_run: solo reportar sin cargar
     if dry_run:
         return {
             "status": "dry_run",
+            "calidad": calidad,
             "mensaje": "Ejecución de prueba. No se cargó a BigQuery.",
             "filas_current_fleet": len(current_rows),
             "filas_flota_historica": len(historia_rows),
@@ -359,9 +460,21 @@ def ejecutar_pipeline_flota(request):
             "ultimo_ejercicio_por_aerolinea": {k: v for k, v in sorted(ultimo_ejercicio.items())}
         }, 200
 
+    if errores_calidad and not forzar_carga:
+        # 409 no entra en http.default_retry_predicate: el workflow falla en
+        # fase6_unificar sin reintentar y las tablas quedan como estaban.
+        print("[ABORTADO] La extraccion no reproduce el estado conciliado; "
+              "no se carga a BigQuery (forzar_carga=true para cargar igual)")
+        return {
+            "status": "abortado_por_control_de_calidad",
+            "mensaje": "No se cargó a BigQuery: la extracción no reproduce los totales "
+                       "declarados o atribuye filas a un grupo ajeno al filing.",
+            "calidad": calidad,
+        }, 409
+
     # Cargar a BigQuery
     resultados = {}
-    
+
     if current_rows:
         resultados["current_fleet_fact"] = cargar_a_bigquery(
             bq_client, current_rows, f"{DATASET_ID}.current_fleet_fact"
@@ -386,6 +499,8 @@ def ejecutar_pipeline_flota(request):
     return {
         "status": "Proceso completado (Fuentes: 10K + 20F + Aerolíneas Chinas)",
         "dry_run": False,
+        "forzar_carga": forzar_carga,
+        "calidad": calidad,
         "estadisticas": {
             "archivos_leidos": stats["archivos_leidos"],
             "archivos_con_error": stats["archivos_con_error"],
