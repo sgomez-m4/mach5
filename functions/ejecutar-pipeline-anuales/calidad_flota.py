@@ -254,3 +254,80 @@ def verificar_totales(filas_vigentes, cfg_totales):
         advertencias.append(f"{g}: sin total declarado de referencia")
 
     return errores, advertencias, detalle
+
+
+# ---------------------------------------------------------------------------
+# Order book
+# ---------------------------------------------------------------------------
+
+def _clave_fila(fila):
+    return fila.get("airline_id") or fila.get("airline_canonical")
+
+
+def alinear_pedidos_con_flota(pedidos, ultimo_flota):
+    """Descarta pedidos de un ejercicio anterior al de la flota vigente.
+
+    El ultimo ejercicio se toma por aerolinea, y una filial puede publicar
+    pedidos un anio y no el siguiente. Paso con American Eagle: su informe de
+    2025 no trae tabla de pedidos, asi que sus pedidos de 2024 eran "los
+    ultimos" y se sumaban a los de American 2025 (104 aviones de mas, varios
+    ya entregados). Si la flota de la aerolinea es de un ejercicio mas nuevo,
+    el pedido viejo esta superado, no vigente.
+
+    Devuelve (vigentes, descartados).
+    """
+    vigentes, descartados = [], []
+    for p in pedidos:
+        anio_flota = ultimo_flota.get(_clave_fila(p))
+        if anio_flota is not None and p.get("report_year") is not None \
+                and int(p["report_year"]) < int(anio_flota):
+            descartados.append(p)
+        else:
+            vigentes.append(p)
+    return vigentes, descartados
+
+
+def agregar_pedidos_complementarios(pedidos, cfg, ultimo_flota):
+    """Agrega pedidos publicados fuera de la seccion que lee el extractor.
+
+    Algunas aerolineas no ponen su tabla de pedidos en el Item 2 sino en una
+    nota de compromisos (Alaska, Nota 9). config/pedidos_complementarios.json
+    las transcribe con su fuente. Una entrada solo se usa si:
+      - su report_year coincide con el ultimo ejercicio de flota de la
+        aerolinea (al llegar un informe nuevo, la entrada vieja deja de aplicar
+        y aparece como advertencia para actualizarla), y
+      - la extraccion no trajo ningun pedido de esa aerolinea en ese ejercicio
+        (si el extractor empieza a leerlos, gana la extraccion).
+
+    Devuelve (pedidos, agregados, advertencias).
+    """
+    if not cfg:
+        return pedidos, [], []
+    con_extraccion = {(_clave_fila(p), int(p["report_year"]))
+                      for p in pedidos if p.get("report_year") is not None}
+    agregados, advertencias = [], []
+    for e in cfg.get("aerolineas", []):
+        aid, anio = e["airline_id"], int(e["report_year"])
+        if ultimo_flota.get(aid) != anio:
+            advertencias.append(
+                f"{aid}: pedidos complementarios de {anio} pero la flota vigente es de "
+                f"{ultimo_flota.get(aid)}; actualizar config/pedidos_complementarios.json")
+            continue
+        if (aid, anio) in con_extraccion:
+            advertencias.append(
+                f"{aid} {anio}: la extraccion ya trae pedidos; se ignoran los complementarios")
+            continue
+        for f in e["filas"]:
+            agregados.append({
+                "airline": e["display_name"],
+                "airline_id": aid,
+                "group_id": e["group_id"],
+                "airline_canonical": e["display_name"],
+                "report_year": anio,
+                "aircraft_type": f["aircraft_type"],
+                "quantity_committed": int(f["quantity_committed"]),
+                "delivery_period": f["delivery_period"],
+                "order_id": f"{e['display_name']}_{anio}_{f['aircraft_type']}_{f['delivery_period']}",
+                "es_fila_agregada": False,
+            })
+    return pedidos + agregados, agregados, advertencias

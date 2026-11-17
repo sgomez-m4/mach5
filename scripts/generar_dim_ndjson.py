@@ -34,8 +34,20 @@ def derivar_airline(fila):
     return fila
 
 
+def aplanar_pedidos(entrada):
+    """config/pedidos_complementarios.json agrupa las filas por aerolinea; la
+    tabla lleva una fila por pedido con la identidad y la fuente repetidas."""
+    comunes = {k: v for k, v in entrada.items() if k != "filas"}
+    return [dict(comunes, **f) for f in entrada["filas"]]
+
+
 DERIVACIONES = {
     "airlines": derivar_airline,
+}
+
+# Derivaciones que convierten una entrada del JSON en varias filas
+APLANADOS = {
+    "aerolineas": aplanar_pedidos,
 }
 
 # Columnas que las vistas necesitan. bq load --autodetect omite del esquema
@@ -47,6 +59,13 @@ REQUERIDAS = {
                  "name_variants", "match_keys"],
     "models": ["model", "manufacturer", "category", "generation",
                "design_life_years", "replacement_target"],
+    # Pedidos publicados fuera del Item 2 (config/pedidos_complementarios.json)
+    "aerolineas": ["airline_id", "group_id", "display_name", "report_year", "fuente",
+                   "aircraft_type", "quantity_committed", "delivery_period"],
+    # Puente con FAA y DOT (config/operadores_certificados.json)
+    "operadores": ["airline_id", "group_id", "operador", "faa_dsgn_code",
+                   "faa_certificate_number", "cfr_part", "dot_unique_carrier",
+                   "dot_airline_id", "en_flota_reportada"],
 }
 
 
@@ -57,6 +76,9 @@ def main(ruta_json, clave, ruta_salida):
     derivar = DERIVACIONES.get(clave)
     if derivar:
         filas = [derivar(f) for f in filas]
+    aplanar = APLANADOS.get(clave)
+    if aplanar:
+        filas = [fila for entrada in filas for fila in aplanar(entrada)]
 
     faltantes = [c for c in REQUERIDAS.get(clave, []) if c not in (filas[0] if filas else {})]
     if faltantes:

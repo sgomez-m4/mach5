@@ -75,7 +75,7 @@ jobs:
           # Cargar el config crudo deja la tabla sin ellas y v_prospect_score
           # deja de compilar.
           cargar() {
-            ARCHIVO="$1"; CLAVE="$2"; TABLA="$3"
+            ARCHIVO="$1"; CLAVE="$2"; TABLA="$3"; DATASET="${4:-dataset_integrado}"
             if [ ! -e "$ARCHIVO" ]; then
               echo "::warning::$ARCHIVO no existe, se omite"
               return 0
@@ -83,12 +83,15 @@ jobs:
             python3 scripts/generar_dim_ndjson.py "$ARCHIVO" "$CLAVE" /tmp/dim.ndjson
             bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
               --project_id="${{ secrets.GCP_PROJECT_ID }}" \
-              "dataset_integrado.$TABLA" /tmp/dim.ndjson
-            echo "cargada dataset_integrado.$TABLA"
+              "$DATASET.$TABLA" /tmp/dim.ndjson
+            echo "cargada $DATASET.$TABLA"
           }
 
           cargar config/dim_airline.json       airlines dim_airline
           cargar config/dim_aircraft_type.json models   dim_aircraft_type
+          # Prospeccion v2: dataset aparte del trabajo de la especializacion
+          cargar config/operadores_certificados.json operadores dim_operador_certificado dataset_prospeccion
+          cargar config/pedidos_complementarios.json aerolineas pedidos_complementarios dataset_prospeccion
 
       - name: Verificar
         run: |

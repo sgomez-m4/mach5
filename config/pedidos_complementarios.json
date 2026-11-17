@@ -1,0 +1,18 @@
+{
+  "version": "2026-11-17",
+  "descripcion": "Pedidos firmes que la aerolinea publica fuera del Item 2 (que es lo que lee extraccion-json-item2). ejecutar-pipeline-anuales los agrega a order_book_fact solo si report_year coincide con el ultimo ejercicio de flota de la aerolinea y la extraccion no trajo pedidos suyos. Al llegar un informe nuevo, actualizar o retirar la entrada.",
+  "aerolineas": [
+    {
+      "airline_id": "ALK",
+      "group_id": "ALK",
+      "display_name": "Alaska Air Group",
+      "report_year": 2025,
+      "fuente": "alk-2026-10k, Nota 9 Commitments and Contingencies, tabla 'Details for contractual aircraft delivery commitments' (gs://bucket-edgar/10k-notes-md/alk-2026-10k_Notes_filtrado.md lineas 921-928). Solo pedidos firmes; las 71 opciones quedan fuera. La nota advierte retrasos de Boeing: B737-8 de 2025-2026 movidos a 2026-2027 y B737-10 sujetos a certificacion.",
+      "filas": [
+        {"aircraft_type": "Boeing 737 MAX",    "quantity_committed": 174, "delivery_period": "2026-2035"},
+        {"aircraft_type": "Boeing 787 Family", "quantity_committed": 12,  "delivery_period": "2026-2035"},
+        {"aircraft_type": "Embraer E175",      "quantity_committed": 3,   "delivery_period": "2026-2035"}
+      ]
+    }
+  ]
+}

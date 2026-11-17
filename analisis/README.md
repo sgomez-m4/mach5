@@ -72,6 +72,42 @@ py -3.12 -I cotas.py datos/score_full.csv datos/ventana.csv datos/sin_edad.csv d
 
 `datos/sin_edad.csv` sale de la consulta 3 de `exportar.sql`.
 
+## Comparación con la vista v2
+
+`datos/comparacion_score_v1_v2.csv` pone lado a lado, para los 24 grupos, el puesto y el score de `v_prospect_score` con el nivel, la línea de servicio y las aeronaves en juego de `v_prospect_score_v2`. La v2 no reemplaza a la v1: el artículo y el tablero actual siguen usando la v1.
+
+La v2 cuenta aeronaves en vez de sumar componentes ponderados:
+
+- **Leasing:** aviones en leasing operativo cuyo contrato vencería en 3 años. La escalera de pagos se convierte en contratos que vencen suponiendo plazos remanentes repartidos de forma pareja (fórmula en la vista). Sin ningún dato de vencimiento se usa la mediana del universo (26%) y la confianza queda baja.
+- **Técnica:** el mayor entre aviones en ventana de reemplazo y entregas en los próximos 24 meses, para no contar dos veces la misma transición. Para las aerolíneas de EE. UU. la ventana se calcula con la edad de cada avión del inventario Form 41 B-43 (`v_flota_b43`) cuando su número de aviones está a ±20% del informe; el promedio por fila del informe esconde las colas viejas. Los aviones que quedan sin ninguna edad se imputan con la tasa de ventana de su generación (legacy 88%, previous 22%, current 0%).
+- **Nivel A:** 50 aviones o más en juego y al menos 25% de la flota, o 15 o más y al menos 40%. **B:** 50 o más, o 15 o más y al menos 15%. **C:** el resto.
+
+Corte del 17 de noviembre de 2026: 11 grupos en A, 12 en B y 1 en C. Los movimientos más grandes frente a la v1:
+
+| Grupo | v1 | v2 | Por qué |
+|---|---|---|---|
+| FedEx | Puesto 23 | A | El informe no da edades; B-43 muestra 406 de 700 aviones en ventana (Cessna 208, 757, MD-11F, A300) |
+| Republic | Puesto 22 | A | Con edad por avión, 178 de 311 en ventana (E170 y los primeros E175); el promedio del informe daba 0 |
+| American | Puesto 3 | A, orden 1 | 529 aviones en ventana con B-43, frente a 227 con el informe: sus regionales no declaraban edad |
+| Southwest | Puesto 8 | A, orden 6 | Baja de 305 a 187 en ventana: el promedio de sus 737-700 metía filas enteras que por avión no están todas |
+| Azul | Puesto 1 | A, orden 9 | Sigue arriba, pero 97 aviones en juego no superan a las grandes en volumen |
+| Volaris | Puesto 4 | B | 151 aviones en leasing pero solo 19 vencen en 3 años según su reporte por avión |
+| Hainan | Puesto 6 | B, confianza baja | Su leasing pesaba sin dato de vencimiento; ahora es un supuesto marcado |
+| China Express | Puesto 14 | C | En la v1 puntuaba por complejidad; la v2 no la puntúa |
+
+La tolerancia de ±20% es la decisión más sensible: Republic y SkyWest difieren 19% de su B-43, y con ±15% Republic volvería a C.
+
+La v2 y todo lo que usa viven en `dataset_prospeccion`; `dataset_integrado` queda en el estado del artículo. El 17 de noviembre de 2026 se comprobó que `v_prospect_score` reproduce `datos/score_full.csv` sin ninguna diferencia (24 grupos, 34 columnas).
+
+Defectos de datos encontrados al construirla. Están corregidos en `ejecutar-pipeline-anuales` para las próximas cargas y, mientras tanto, en la vista `dataset_prospeccion.v_pedidos_vigentes`; `order_book_fact` sigue sin corregir para no mover la v1 antes de la sustentación:
+
+- El order book de American sumaba los pedidos 2024 de American Eagle (104 aviones, varios ya entregados), porque el último ejercicio se tomaba por aerolínea y el informe 2025 de Eagle no trae pedidos. Ahora un pedido de un ejercicio anterior al de la flota de la aerolínea se descarta (`alinear_pedidos_con_flota`).
+- Alaska Air Group no tenía pedidos: los publica en la Nota 9 del 10-K, no en el Item 2 que lee el extractor. Se transcribieron en `config/pedidos_complementarios.json` con su fuente (189 firmes: 174 B737 MAX, 12 B787, 3 E175, 2026-2035) y el pipeline los agrega mientras la extracción no los traiga (`agregar_pedidos_complementarios`).
+
+Cuando el pipeline corregido vuelva a cargar `order_book_fact` (después de la sustentación), la v1 cambiará: Alaska pasa del puesto 19 al 5 y American de 47,0 a 45,1 puntos. La v2 no cambiará, porque ya usa los pedidos corregidos.
+
+Sin corregir: `v_fleet_transition` reporta 1.464 entradas para United entre ejercicios, lo que no es creíble; por eso la v2 no usa movimiento medido.
+
 ## Parámetros internos de los componentes
 
 `parametros.py` responde a la objeción de que el Monte Carlo solo perturba los cinco pesos. Perturba con el mismo criterio, U(0,5; 1,5) multiplicativa y semilla 20261109, los repartos internos de cada componente (por ejemplo 0,50 / 0,20 / 0,30 en leasing, renormalizados) y sus constantes: el factor 2,5 de las emisoras IFRS, el horizonte de 10 años de vida, las saturaciones de 12 modelos, 3 fabricantes adicionales, 0,5 pedidos por avión, 0,2 entregas a dos años y 6 veces deuda/EBITDA, y la deuda por defecto de 2,5. Corre dos pruebas: solo parámetros, y parámetros y pesos a la vez.

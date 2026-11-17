@@ -6,6 +6,8 @@ from google.cloud import storage
 from google.cloud import bigquery
 
 from calidad_flota import (
+    agregar_pedidos_complementarios,
+    alinear_pedidos_con_flota,
     clave_aerolinea,
     elegir_entidad,
     entidad_por_fleet_id,
@@ -22,6 +24,8 @@ CONFIG_DIM_AIRLINE = "config/dim_airline.json"
 # Totales de flota que declara cada informe, ya conciliados. Si la extraccion no
 # los reproduce, la carga se detiene antes de tocar BigQuery.
 CONFIG_TOTALES = "config/totales_declarados.json"
+# Pedidos publicados fuera del Item 2 (p. ej. Alaska, en la nota de compromisos)
+CONFIG_PEDIDOS = "config/pedidos_complementarios.json"
 
 # Patrones de aircraft_type que representan un agregado del propio reporte
 # (p.ej. "Total Fleet (Includes B737-800NG and E190)") o una cubeta sin detalle
@@ -145,6 +149,16 @@ def cargar_indice_aerolineas(bucket):
         indice[clave_aerolinea(a["display_name"])] = entidad
         indice[clave_aerolinea(a["airline_id"])] = entidad
     return indice
+
+
+def cargar_json_config(bucket, ruta):
+    """Lee un JSON de gs://<bucket>/<ruta>; None si no existe o no se puede leer."""
+    try:
+        raw = bucket.blob(ruta).download_as_text(encoding="utf-8")
+        return json.loads(raw.strip().lstrip('﻿'))
+    except Exception as e:
+        print(f"[CONFIG] ✗ No se pudo leer {ruta}: {type(e).__name__}: {e}")
+        return None
 
 
 def cargar_totales_declarados(bucket):
@@ -366,6 +380,19 @@ def ejecutar_pipeline_flota(request):
     historia_rows = list(current_rows)
     current_rows, ultimo_ejercicio = separar_ultimo_ejercicio(current_rows)
     commitment_rows, _ = separar_ultimo_ejercicio(commitment_rows)
+    commitment_rows, pedidos_superados = alinear_pedidos_con_flota(
+        commitment_rows, ultimo_ejercicio)
+    for p in pedidos_superados:
+        print(f"  ⊘ Pedido superado por flota más nueva: {p.get('order_id')}")
+    commitment_rows, pedidos_agregados, advertencias_pedidos = agregar_pedidos_complementarios(
+        commitment_rows, cargar_json_config(bucket, CONFIG_PEDIDOS), ultimo_ejercicio)
+    for p in pedidos_agregados:
+        print(f"  + Pedido complementario: {p['order_id']}")
+    for a in advertencias_pedidos:
+        print(f"  ! {a}")
+    stats["pedidos_superados"] = [p.get("order_id") for p in pedidos_superados]
+    stats["pedidos_complementarios"] = [p["order_id"] for p in pedidos_agregados]
+    stats["advertencias_pedidos"] = advertencias_pedidos
     anios_flota = sorted({f.get("report_year") for f in historia_rows
                           if f.get("report_year") is not None})
 
@@ -509,7 +536,10 @@ def ejecutar_pipeline_flota(request):
             "filas_sin_airline_id": sin_id,
             "extracciones_duplicadas_descartadas": sorted(extracciones_descartadas),
             "anios_flota": anios_flota,
-            "ultimo_ejercicio_por_aerolinea": {k: v for k, v in sorted(ultimo_ejercicio.items())}
+            "ultimo_ejercicio_por_aerolinea": {k: v for k, v in sorted(ultimo_ejercicio.items())},
+            "pedidos_superados": stats["pedidos_superados"],
+            "pedidos_complementarios": stats["pedidos_complementarios"],
+            "advertencias_pedidos": stats["advertencias_pedidos"],
         },
         "detalles_carga": resultados
     }, 200

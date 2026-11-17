@@ -50,6 +50,9 @@ jobs:
             sql/v_fleet_normalized.sql
             sql/v_order_book_normalized.sql
             sql/v_prospect_score.sql
+            sql/v_pedidos_vigentes.sql
+            sql/v_flota_b43.sql
+            sql/v_prospect_score_v2.sql
             sql/v_financial_trend.sql
             sql/v_fleet_transition.sql
           "
@@ -76,12 +79,23 @@ jobs:
         run: |
           set -euo pipefail
 
+          # $1 es la vista; $2, el dataset (por defecto dataset_integrado)
           contar() {
             bq query --use_legacy_sql=false --format=csv \
               --project_id="${{ secrets.GCP_PROJECT_ID }}" \
-              "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.dataset_integrado.$1\`" \
+              "SELECT COUNT(*) FROM \`${{ secrets.GCP_PROJECT_ID }}.${2:-dataset_integrado}.$1\`" \
               | tail -1
           }
+
+          # Prospeccion v2, en su propio dataset
+          for v in v_pedidos_vigentes v_flota_b43 v_prospect_score_v2; do
+            n=$(contar "$v" dataset_prospeccion)
+            echo "dataset_prospeccion.$v: $n filas"
+            if [ "$n" = "0" ]; then
+              echo "::error::dataset_prospeccion.$v quedo vacia"
+              exit 1
+            fi
+          done
 
           # Estas dependen solo de tablas que ya estan pobladas: si quedan vacias,
           # algo se rompio en el SQL.
