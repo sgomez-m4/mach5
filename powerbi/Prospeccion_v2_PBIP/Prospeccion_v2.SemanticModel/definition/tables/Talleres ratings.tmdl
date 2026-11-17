@@ -1,0 +1,53 @@
+table 'Talleres ratings'
+	lineageTag: 928c515e-f6bc-450c-95d4-18b19f05e672
+
+	column clave_taller
+		dataType: string
+		isHidden
+		lineageTag: d30e4746-ef26-40b2-a993-f87fdbe9b79e
+		summarizeBy: none
+		sourceColumn: clave_taller
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Categoría de rating'
+		dataType: string
+		lineageTag: 594cd6a6-6a7d-44f0-9633-2680c74c04e4
+		summarizeBy: none
+		sourceColumn: categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column Rating
+		dataType: string
+		lineageTag: e507ae41-b61d-497e-864c-09f46093e7ae
+		summarizeBy: none
+		sourceColumn: rating
+		sortByColumn: 'Orden rating'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Orden rating'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e0265dad-ac1f-4a6a-8ee2-0c68f933d5a0
+		summarizeBy: none
+		sourceColumn: orden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Talleres ratings' = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_talleres_ratings",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"clave_taller", "categoria", "rating", "orden"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

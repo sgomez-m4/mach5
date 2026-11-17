@@ -1,0 +1,143 @@
+/// Tendencia de arrendamiento, deuda y capex sobre la serie financiera.
+table v_financial_trend
+	lineageTag: b62bead5-47e5-4ce0-82e9-9f44503a2edf
+
+	column airline_id
+		dataType: string
+		isHidden
+		lineageTag: e4a68e79-6e36-475e-a43b-f7e345b03a0b
+		sourceColumn: airline_id
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 5bc38edf-70e3-4e5b-9f67-f406d3518d47
+		sourceColumn: group_id
+
+	column Aerolínea
+		dataType: string
+		lineageTag: 73fdfafe-b71d-41bc-9c6b-f139433a545c
+		sourceColumn: Aerolínea
+
+	column region
+		dataType: string
+		lineageTag: 7878eeb6-6ca1-4779-9929-dd39a3e2aa20
+		sourceColumn: region
+
+	column country
+		dataType: string
+		lineageTag: 2e67bf41-cd27-4b48-bd25-ce5604c30667
+		sourceColumn: country
+
+	column business_model
+		dataType: string
+		lineageTag: d49ee5e6-b75f-4318-8dd8-5a3deaa17a62
+		sourceColumn: business_model
+
+	column financial_company
+		dataType: string
+		isHidden
+		lineageTag: b4ef417f-0f91-4eb4-9f1e-9ee7236a7503
+		sourceColumn: financial_company
+
+	column es_medida
+		dataType: boolean
+		lineageTag: 6e0608a6-e8cb-45bc-8532-2d6f2d24528e
+		sourceColumn: es_medida
+
+	column 'Años con datos'
+		dataType: int64
+		lineageTag: bcca05e5-37d2-41a0-a722-d5763c666831
+		sourceColumn: Años con datos
+
+	column 'Año inicial'
+		dataType: int64
+		lineageTag: 76111f1e-361e-4d4c-a16d-579d82aa0851
+		sourceColumn: Año inicial
+
+	column 'Año final'
+		dataType: int64
+		lineageTag: 693dde4b-1492-451f-97ca-df389c5b1411
+		sourceColumn: Año final
+
+	column lease_inicial_usd_m
+		dataType: double
+		lineageTag: 7aad96c5-bc98-4803-8155-d470d17be953
+		sourceColumn: lease_inicial_usd_m
+
+	column lease_final_usd_m
+		dataType: double
+		lineageTag: 5e240e66-c936-4c3e-bc7b-0c427222fc4a
+		sourceColumn: lease_final_usd_m
+
+	column lease_var_anual
+		dataType: double
+		lineageTag: a16e082f-d148-4f82-bbcc-5501b8378d91
+		sourceColumn: lease_var_anual
+
+	column lease_sobre_ingresos
+		dataType: double
+		lineageTag: d02d9f7f-0953-49a9-a3a4-7ef8f76db98b
+		sourceColumn: lease_sobre_ingresos
+
+	column deuda_final_usd_m
+		dataType: double
+		lineageTag: f3856306-262e-41d5-9145-3acd1ed19c2f
+		sourceColumn: deuda_final_usd_m
+
+	column deuda_var_anual
+		dataType: double
+		lineageTag: 2f618d5a-3382-432b-9837-a7e16da4020b
+		sourceColumn: deuda_var_anual
+
+	column capex_final_usd_m
+		dataType: double
+		lineageTag: 0e434318-530e-47b2-9c56-5c7b8140335b
+		sourceColumn: capex_final_usd_m
+
+	column capex_var_anual
+		dataType: double
+		lineageTag: 863b3c34-0e77-4dfd-941e-d9e58c9dc37e
+		sourceColumn: capex_var_anual
+
+	column capex_dep_inicial
+		dataType: double
+		lineageTag: 4ae003b5-a621-42ef-b660-5f9db5a68d54
+		sourceColumn: capex_dep_inicial
+
+	column capex_dep_final
+		dataType: double
+		lineageTag: f42d8558-ce96-47ec-a21c-0f05e9143083
+		sourceColumn: capex_dep_final
+
+	column ingresos_var_anual
+		dataType: double
+		lineageTag: 38b64705-750d-41be-b8c0-bea8e4d07cce
+		sourceColumn: ingresos_var_anual
+
+	column net_debt_ebitda
+		dataType: double
+		lineageTag: 1b7c0491-3ef6-4f75-a521-302747a5a517
+		sourceColumn: net_debt_ebitda
+
+	column 'Señal de transición'
+		dataType: string
+		lineageTag: d4a5c5a8-9db4-4dde-b453-2ffd3c32cbb3
+		sourceColumn: Señal de transición
+
+	column prioridad_transicion
+		dataType: int64
+		lineageTag: 1315847f-da4e-48a3-bd67-37e6f0ad9d8f
+		sourceColumn: prioridad_transicion
+
+	partition v_financial_trend = m
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([BillingProject="mach5-gemini-project"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    Tabla = Dataset{[Name="v_financial_trend",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(Tabla,{{"senal_transicion", "Señal de transición"}, {"anios_con_datos", "Años con datos"}, {"anio_inicial", "Año inicial"}, {"anio_final", "Año final"}, {"aerolinea", "Aerolínea"}})
+				in
+				    #"Columnas con nombre cambiado"
+

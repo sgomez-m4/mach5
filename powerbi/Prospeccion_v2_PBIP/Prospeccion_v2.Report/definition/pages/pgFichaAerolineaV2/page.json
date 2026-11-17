@@ -1,0 +1,46 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "pgFichaAerolineaV2",
+  "displayName": "Ficha de aerolínea",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "pageBinding": {
+    "name": "c45f58a79bea4324e857",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "2d014c147ee72ac9c695",
+        "boundFilter": "8a880e63c684fd834c34",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Prospectos aerolineas"
+              }
+            },
+            "Property": "Grupo"
+          }
+        }
+      }
+    ]
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "8a880e63c684fd834c34",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Prospectos aerolineas"
+              }
+            },
+            "Property": "Grupo"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

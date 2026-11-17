@@ -1,0 +1,186 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "8d0cae777de7b72a247c",
+  "position": {
+    "x": 16,
+    "y": 132,
+    "z": 5,
+    "height": 572,
+    "width": 820,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Taller"
+                }
+              },
+              "queryRef": "Talleres.Taller",
+              "nativeQueryRef": "Taller"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Estado"
+                }
+              },
+              "queryRef": "Talleres.Estado",
+              "nativeQueryRef": "Estado"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Nivel"
+                }
+              },
+              "queryRef": "Talleres.Nivel",
+              "nativeQueryRef": "Nivel"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Oferta sugerida"
+                }
+              },
+              "queryRef": "Talleres.Oferta sugerida",
+              "nativeQueryRef": "Oferta sugerida"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Puntaje mayor"
+                }
+              },
+              "queryRef": "Talleres.Puntaje mayor",
+              "nativeQueryRef": "Puntaje mayor",
+              "displayName": "Puntaje"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Puntaje personal"
+                }
+              },
+              "queryRef": "Talleres.Puntaje personal",
+              "nativeQueryRef": "Puntaje personal",
+              "displayName": "Personal"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Puntaje backoffice"
+                }
+              },
+              "queryRef": "Talleres.Puntaje backoffice",
+              "nativeQueryRef": "Puntaje backoffice",
+              "displayName": "Backoffice"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Certificado"
+                }
+              },
+              "queryRef": "Talleres.Certificado",
+              "nativeQueryRef": "Certificado"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Talleres"
+                  }
+                },
+                "Property": "Puntaje mayor"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

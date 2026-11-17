@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Prospeccion_v2"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "052ebb68-ce23-4858-a905-f5ee7ffa39d2"
+  }
+}

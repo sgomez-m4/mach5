@@ -1,0 +1,40 @@
+model Model
+	culture: es-MX
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-MX
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["v_prospect_score","dim_airline","dim_aircraft_type","v_fleet_normalized","v_order_book_normalized","v_fleet_transition","v_financial_trend","v_fleet_series","Prospectos aerolineas","Talleres","Talleres ratings","Talleres acuerdos","Talleres senales","Mercado mantenimiento","Directivos"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table v_prospect_score
+ref table dim_airline
+ref table dim_aircraft_type
+ref table v_fleet_normalized
+ref table v_order_book_normalized
+ref table v_fleet_transition
+ref table v_financial_trend
+ref table _Medidas
+ref table v_fleet_series
+ref table 'Peso leasing'
+ref table 'Peso reemplazo'
+ref table 'Peso complejidad'
+ref table 'Peso transicion'
+ref table 'Peso apalancamiento'
+ref table 'Prospectos aerolineas'
+ref table Talleres
+ref table 'Talleres ratings'
+ref table 'Talleres acuerdos'
+ref table 'Talleres senales'
+ref table 'Mercado mantenimiento'
+ref table Directivos
+ref table '_Medidas v2'
+
+ref cultureInfo es-MX
+

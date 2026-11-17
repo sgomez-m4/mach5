@@ -56,6 +56,10 @@ jobs:
             sql/v_mercado_mantenimiento.sql
             sql/v_talleres_calificacion.sql
             sql/v_talleres_senales.sql
+            sql/v_talleres_informe.sql
+            sql/v_talleres_ratings.sql
+            sql/v_talleres_acuerdos.sql
+            sql/v_directivos_operador.sql
             sql/v_financial_trend.sql
             sql/v_fleet_transition.sql
           "
@@ -92,7 +96,8 @@ jobs:
 
           # Prospeccion v2, en su propio dataset
           for v in v_pedidos_vigentes v_flota_b43 v_prospect_score_v2 \
-                   v_mercado_mantenimiento v_talleres_calificacion; do
+                   v_mercado_mantenimiento v_talleres_calificacion v_talleres_informe \
+                   v_talleres_ratings v_talleres_acuerdos v_directivos_operador; do
             n=$(contar "$v" dataset_prospeccion)
             echo "dataset_prospeccion.$v: $n filas"
             if [ "$n" = "0" ]; then

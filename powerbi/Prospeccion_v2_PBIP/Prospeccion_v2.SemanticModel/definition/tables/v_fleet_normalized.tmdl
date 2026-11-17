@@ -1,0 +1,159 @@
+/// Flota vigente resuelta contra ambas dimensiones, con vida remanente y estado de reemplazo.
+table v_fleet_normalized
+	lineageTag: 70295b1e-be45-4187-87a6-6799f394cf8f
+
+	column report_year
+		dataType: int64
+		lineageTag: d244da08-2e3e-4c8c-bd50-a48507ff493a
+		sourceColumn: report_year
+
+	column fleet_id
+		dataType: string
+		isHidden
+		lineageTag: c5295bd8-2935-4a50-8d2d-90896762e41a
+		sourceColumn: fleet_id
+
+	column airline_reportada
+		dataType: string
+		lineageTag: 7a83af26-2c52-46a5-9065-4a38157cb1fe
+		sourceColumn: airline_reportada
+
+	column airline_id
+		dataType: string
+		isHidden
+		lineageTag: a749f636-1d91-4568-9b06-f99741f8440b
+		sourceColumn: airline_id
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 954c48f8-d204-47e5-ac3a-fc02520f0e6d
+		sourceColumn: group_id
+
+	column airline
+		dataType: string
+		lineageTag: e607fa14-892d-4fa5-98b2-b813cb4a5504
+		sourceColumn: airline
+
+	column grupo
+		dataType: string
+		lineageTag: 605d1fb6-8275-49f3-8760-79ffa7ca6ff8
+		sourceColumn: grupo
+
+	column region
+		dataType: string
+		lineageTag: e58a130b-936e-4cbc-9c72-b69bf66c1186
+		sourceColumn: region
+
+	column country
+		dataType: string
+		lineageTag: 6dd5b3cf-4b72-4506-9534-21c33990c9f1
+		sourceColumn: country
+
+	column business_model
+		dataType: string
+		lineageTag: 0e034541-ce64-4689-8af7-837e36d2f9a0
+		sourceColumn: business_model
+
+	column financial_company
+		dataType: string
+		isHidden
+		lineageTag: 7fcbaa43-b725-4245-8ae0-6bb62e094ea4
+		sourceColumn: financial_company
+
+	column aircraft_type_reportado
+		dataType: string
+		lineageTag: b10704b6-6676-45da-b36b-b8f0aa5bd6c2
+		sourceColumn: aircraft_type_reportado
+
+	column Modelo
+		dataType: string
+		lineageTag: 96cab77b-46f0-4f4f-8c12-e4e8ea939388
+		sourceColumn: Modelo
+
+	column Fabricante
+		dataType: string
+		lineageTag: 9efa1ae0-6a6c-4c2a-9621-a35456cb716f
+		sourceColumn: Fabricante
+
+	column Categoría
+		dataType: string
+		lineageTag: 1783eede-5501-4f14-8037-d4d106b3323b
+		sourceColumn: Categoría
+
+	column Generación
+		dataType: string
+		lineageTag: 2a6badf6-14df-4f08-b184-2594cf58d9c2
+		sourceColumn: Generación
+
+	column design_life_years
+		dataType: int64
+		lineageTag: b21a7b1a-9da3-4ff5-88c7-6a66fb190d98
+		sourceColumn: design_life_years
+
+	column replacement_target
+		dataType: int64
+		lineageTag: 6f7a1cf1-dbf0-4807-be86-e1622cc5e0ef
+		sourceColumn: replacement_target
+
+	column Aeronaves
+		dataType: int64
+		lineageTag: f16ca36d-1f1e-429d-9795-0dcfcf49a544
+		sourceColumn: Aeronaves
+
+	column ownership_type
+		dataType: string
+		lineageTag: 9fed436c-4600-4a22-b90e-4d376c47a9ee
+		sourceColumn: ownership_type
+
+	column 'Edad media (años)'
+		dataType: double
+		lineageTag: d84ac9c2-68e1-4c83-aab6-bc064fbc62ad
+		sourceColumn: Edad media (años)
+
+	column remaining_lease_years
+		dataType: double
+		lineageTag: 57869c9a-9321-404f-959c-5bb55b5733e7
+		sourceColumn: remaining_lease_years
+
+	column seating_capacity_avg
+		dataType: int64
+		lineageTag: 6680281c-b5f4-4482-9755-7520445dfc33
+		sourceColumn: seating_capacity_avg
+
+	column es_fila_agregada
+		dataType: boolean
+		lineageTag: 042f6d73-0ae6-4211-b477-a22e124255f9
+		sourceColumn: es_fila_agregada
+
+	column 'Tipo de propiedad'
+		dataType: string
+		lineageTag: d02633f6-10df-4a30-88d1-0aa73d98ec0d
+		sourceColumn: Tipo de propiedad
+
+	column es_arrendada
+		dataType: boolean
+		lineageTag: 5c887370-cbbd-4747-b76b-b4f802788bb7
+		sourceColumn: es_arrendada
+
+	column 'Vida remanente (años)'
+		dataType: double
+		lineageTag: fcf6227c-c6d7-4f2d-9229-54b8204bb0c2
+		sourceColumn: Vida remanente (años)
+
+	column 'Estado de reemplazo'
+		dataType: string
+		lineageTag: d27bde3a-f8e7-46b3-b446-ee6fb7681a62
+		sourceColumn: Estado de reemplazo
+
+	partition v_fleet_normalized = m
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([BillingProject="mach5-gemini-project"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    Tabla = Dataset{[Name="v_fleet_normalized",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(Tabla,{{"aircraft_model", "Modelo"}, {"remaining_replacement_life", "Vida remanente (años)"}, {"quantity", "Aeronaves"}, {"generation", "Generación"}, {"fleet_replacement_status", "Estado de reemplazo"}, {"category", "Categoría"}, {"manufacturer", "Fabricante"}, {"average_age_years", "Edad media (años)"}, {"tipo_propiedad", "Tipo de propiedad"}})
+				in
+				    #"Columnas con nombre cambiado"
+

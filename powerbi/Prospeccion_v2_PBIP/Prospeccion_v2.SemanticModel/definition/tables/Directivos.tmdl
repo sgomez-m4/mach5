@@ -1,0 +1,138 @@
+table Directivos
+	lineageTag: cffa5ddf-c4aa-4108-a760-0c6883e0598b
+
+	column group_id
+		dataType: string
+		lineageTag: 9b7d5707-cb23-4ffc-a77a-6c3c24962c86
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column airline_id
+		dataType: string
+		lineageTag: 09661d9d-998d-4ff7-8c05-524dd4166a0d
+		summarizeBy: none
+		sourceColumn: airline_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Operador
+		dataType: string
+		lineageTag: 17711e52-a9bd-44e8-9747-e9a6c5f023b0
+		summarizeBy: none
+		sourceColumn: operador
+
+		annotation SummarizationSetBy = Automatic
+
+	column dsgn_code
+		dataType: string
+		lineageTag: 23300127-fd42-4bdf-b602-667f003ebc1f
+		summarizeBy: none
+		sourceColumn: dsgn_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column certificate_number
+		dataType: string
+		lineageTag: efddf1fb-baeb-43bd-ac40-9cf7e6a2a08c
+		summarizeBy: none
+		sourceColumn: certificate_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parte CFR'
+		dataType: string
+		lineageTag: 82b1ea67-2ab4-4a9d-ab2d-b6e6d59cec50
+		summarizeBy: none
+		sourceColumn: cfr_part
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Orden cargo'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 49a48a0a-ce4b-4ee8-b952-b08c11234b2a
+		summarizeBy: none
+		sourceColumn: orden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cargo
+		dataType: string
+		lineageTag: f86d9383-386e-48e6-a0ba-a160d1e31faf
+		summarizeBy: none
+		sourceColumn: cargo
+		sortByColumn: 'Orden cargo'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nombre
+		dataType: string
+		lineageTag: 84b1d77d-2268-434c-bf6a-41050425f6c4
+		summarizeBy: none
+		sourceColumn: nombre
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Teléfono del operador'
+		dataType: string
+		lineageTag: 11cc0ac7-0be8-4e32-8c7d-a03bc0a144d2
+		summarizeBy: none
+		sourceColumn: telefono_operador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sede
+		dataType: string
+		lineageTag: 62187e99-c556-4ca0-b7cb-27a4bf56addf
+		summarizeBy: none
+		sourceColumn: sede
+
+		annotation SummarizationSetBy = Automatic
+
+	column total_employees
+		dataType: int64
+		formatString: 0
+		lineageTag: 7bb1967d-2f01-4bf8-933d-7523f926448a
+		summarizeBy: sum
+		sourceColumn: total_employees
+
+		annotation SummarizationSetBy = Automatic
+
+	column certificated_mechanics
+		dataType: int64
+		formatString: 0
+		lineageTag: 4db224bf-47a6-4c84-9834-b31545fb628d
+		summarizeBy: sum
+		sourceColumn: certificated_mechanics
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_descarga
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: fc2f6444-54ab-4210-a80d-52c219451f29
+		summarizeBy: none
+		sourceColumn: fecha_descarga
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Directivos = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_directivos_operador",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"group_id", "airline_id", "operador", "dsgn_code", "certificate_number", "cfr_part", "orden", "cargo", "nombre", "telefono_operador", "sede", "total_employees", "certificated_mechanics", "fecha_descarga"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

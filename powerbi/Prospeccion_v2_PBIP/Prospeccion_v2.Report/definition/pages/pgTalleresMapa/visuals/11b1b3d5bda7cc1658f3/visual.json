@@ -1,0 +1,178 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "11b1b3d5bda7cc1658f3",
+  "position": {
+    "x": 16,
+    "y": 476,
+    "z": 2,
+    "height": 228,
+    "width": 820,
+    "tabOrder": 2
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Taller"
+                }
+              },
+              "queryRef": "Talleres.Taller",
+              "nativeQueryRef": "Taller"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Estado"
+                }
+              },
+              "queryRef": "Talleres.Estado",
+              "nativeQueryRef": "Estado"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Accountable Manager"
+                }
+              },
+              "queryRef": "Talleres.Accountable Manager",
+              "nativeQueryRef": "Accountable Manager"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Liaison"
+                }
+              },
+              "queryRef": "Talleres.Liaison",
+              "nativeQueryRef": "Liaison"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Correo de contacto"
+                }
+              },
+              "queryRef": "Talleres.Correo de contacto",
+              "nativeQueryRef": "Correo de contacto",
+              "displayName": "Correo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Teléfono de contacto"
+                }
+              },
+              "queryRef": "Talleres.Teléfono de contacto",
+              "nativeQueryRef": "Teléfono de contacto",
+              "displayName": "Teléfono"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Certificado"
+                }
+              },
+              "queryRef": "Talleres.Certificado",
+              "nativeQueryRef": "Certificado"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Talleres"
+                  }
+                },
+                "Property": "Taller"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Contactos'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

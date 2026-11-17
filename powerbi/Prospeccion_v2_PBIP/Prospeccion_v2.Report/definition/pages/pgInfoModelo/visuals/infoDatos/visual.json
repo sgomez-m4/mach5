@@ -1,0 +1,147 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "infoDatos",
+  "position": {
+    "x": 12,
+    "y": 44,
+    "z": 1000,
+    "height": 244,
+    "width": 316,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "multiRowCard",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Flota Total"
+                }
+              },
+              "queryRef": "_Medidas.Flota Total",
+              "nativeQueryRef": "Flota Total",
+              "displayName": "Aeronaves"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Edad Promedio Ponderada"
+                }
+              },
+              "queryRef": "_Medidas.Edad Promedio Ponderada",
+              "nativeQueryRef": "Edad Promedio Ponderada",
+              "displayName": "Edad media (años)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Vida Remanente Ponderada"
+                }
+              },
+              "queryRef": "_Medidas.Vida Remanente Ponderada",
+              "nativeQueryRef": "Vida Remanente Ponderada",
+              "displayName": "Vida remanente (años)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "% en Ventana de Reemplazo"
+                }
+              },
+              "queryRef": "_Medidas.% en Ventana de Reemplazo",
+              "nativeQueryRef": "% en Ventana de Reemplazo",
+              "displayName": "En ventana de reemplazo"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Pedidos del Modelo"
+                }
+              },
+              "queryRef": "_Medidas.Pedidos del Modelo",
+              "nativeQueryRef": "Pedidos del Modelo",
+              "displayName": "Pedidos en firme"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Pedidos del Modelo Proximos 2 Anios"
+                }
+              },
+              "queryRef": "_Medidas.Pedidos del Modelo Proximos 2 Anios",
+              "nativeQueryRef": "Pedidos del Modelo Proximos 2 Anios",
+              "displayName": "Entregas ≤ 2 años"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "card": [
+        {
+          "properties": {}
+        }
+      ],
+      "dataLabels": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryLabels": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

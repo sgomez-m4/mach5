@@ -1,0 +1,147 @@
+table 'Mercado mantenimiento'
+	lineageTag: 34ee834d-5cd6-4606-ba0a-ce5bfd813833
+
+	column unique_carrier
+		dataType: string
+		lineageTag: 274feb6a-9651-4897-87f7-4dc51120ab0b
+		summarizeBy: none
+		sourceColumn: unique_carrier
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Aerolínea DOT'
+		dataType: string
+		lineageTag: cf3ac7bd-5929-40b4-a109-0031993a6e65
+		summarizeBy: none
+		sourceColumn: aerolinea
+
+		annotation SummarizationSetBy = Automatic
+
+	column group_id
+		dataType: string
+		lineageTag: eed2fa2d-1cf0-49ab-99cd-5a603c646e16
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column carrier_group
+		dataType: int64
+		formatString: 0
+		lineageTag: 3c28c3b9-9fa5-4edc-a7b7-e3dd97d8c9de
+		summarizeBy: none
+		sourceColumn: carrier_group
+
+		annotation SummarizationSetBy = Automatic
+
+	column desde
+		dataType: string
+		lineageTag: 48d8f4de-b635-4ccf-9bee-109197a609e9
+		summarizeBy: none
+		sourceColumn: desde
+
+		annotation SummarizationSetBy = Automatic
+
+	column hasta
+		dataType: string
+		lineageTag: fa43fbbb-aafe-4407-bf0b-ec17c80f1df9
+		summarizeBy: none
+		sourceColumn: hasta
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mano de obra propia (M USD)'
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 034f6333-d3b5-4594-89ee-c6caf66533da
+		summarizeBy: sum
+		sourceColumn: mano_obra_propia_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column reparaciones_estructura_usdm
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 13909dbb-2b26-4fd5-a764-e591b9b42234
+		summarizeBy: sum
+		sourceColumn: reparaciones_estructura_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column reparaciones_motores_usdm
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 6cbf6c60-9b29-4300-acfd-9c334b9e2e43
+		summarizeBy: sum
+		sourceColumn: reparaciones_motores_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mantenimiento comprado (M USD)'
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 5bf10163-709f-4709-8ebb-d4f1638aec81
+		summarizeBy: sum
+		sourceColumn: reparaciones_compradas_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column materiales_usdm
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 8b3acd15-ce17-4286-a9ff-dc50f1051d7f
+		summarizeBy: sum
+		sourceColumn: materiales_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column mantenimiento_directo_usdm
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 4efb40aa-75bf-44cd-951c-7012a1bd0d55
+		summarizeBy: sum
+		sourceColumn: mantenimiento_directo_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column '% trabajo comprado'
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: f8a0551f-fa6d-469c-844c-e4522a9d2323
+		summarizeBy: none
+		sourceColumn: pct_trabajo_comprado
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Empleados de mantenimiento'
+		dataType: int64
+		formatString: 0
+		lineageTag: ee4d48bd-93e7-480d-a770-8ff4a352d784
+		summarizeBy: sum
+		sourceColumn: empleados_mantenimiento
+
+		annotation SummarizationSetBy = Automatic
+
+	column usd_mantenimiento_por_hora
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 6228ecc9-0733-47d4-a85c-153fff6c9459
+		summarizeBy: none
+		sourceColumn: usd_mantenimiento_por_hora
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Mercado mantenimiento' = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_mercado_mantenimiento",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"unique_carrier", "aerolinea", "group_id", "carrier_group", "desde", "hasta", "mano_obra_propia_usdm", "reparaciones_estructura_usdm", "reparaciones_motores_usdm", "reparaciones_compradas_usdm", "materiales_usdm", "mantenimiento_directo_usdm", "pct_trabajo_comprado", "empleados_mantenimiento", "usd_mantenimiento_por_hora"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

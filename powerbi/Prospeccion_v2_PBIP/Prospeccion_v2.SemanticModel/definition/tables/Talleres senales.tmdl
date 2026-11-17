@@ -1,0 +1,116 @@
+table 'Talleres senales'
+	lineageTag: 394728cf-112e-4060-917d-f4233d6cc14f
+
+	column clave_taller
+		dataType: string
+		isHidden
+		lineageTag: 45b86b7e-dcd1-4624-ad0d-e4ea945b778d
+		summarizeBy: none
+		sourceColumn: clave_taller
+
+		annotation SummarizationSetBy = Automatic
+
+	column cert_no
+		dataType: string
+		isHidden
+		lineageTag: 915f0988-466e-43ac-9508-8817515a2664
+		summarizeBy: none
+		sourceColumn: cert_no
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: c10c3c9e-9941-4c5c-ac3d-dd0e8786c651
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column Taller
+		dataType: string
+		lineageTag: 46fa8be3-34b8-489c-b7d2-52a30b4832b5
+		summarizeBy: none
+		sourceColumn: agency_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Descarga anterior'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: b36281e1-c6da-4573-94ab-60129d0aafef
+		summarizeBy: none
+		sourceColumn: fecha_anterior
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Descarga actual'
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 9127785c-5959-4a13-a566-c44a322cf52f
+		summarizeBy: none
+		sourceColumn: fecha_actual
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Señal
+		dataType: string
+		lineageTag: 7082ec46-1cc5-4a4c-a90d-0318e6195bad
+		summarizeBy: none
+		sourceColumn: senal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Detalle
+		dataType: string
+		lineageTag: 09bec422-289d-4aa2-8919-b16cf4cefeab
+		summarizeBy: none
+		sourceColumn: detalle
+
+		annotation SummarizationSetBy = Automatic
+
+	column en_zona_objetivo
+		dataType: boolean
+		isHidden
+		lineageTag: 149f3729-a36b-4e83-a099-9ed3d51741bd
+		summarizeBy: none
+		sourceColumn: en_zona_objetivo
+
+		annotation SummarizationSetBy = Automatic
+
+	column nivel
+		dataType: string
+		isHidden
+		lineageTag: e900be40-ed5a-4d22-9c6d-9bef498c075b
+		summarizeBy: none
+		sourceColumn: nivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipo_dueno
+		dataType: string
+		isHidden
+		lineageTag: fb8b71c9-a90c-485d-8ed5-c18aca74cbc0
+		summarizeBy: none
+		sourceColumn: tipo_dueno
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Talleres senales' = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_talleres_senales",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"clave_taller", "cert_no", "state", "agency_name", "fecha_anterior", "fecha_actual", "senal", "detalle", "en_zona_objetivo", "nivel", "tipo_dueno"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

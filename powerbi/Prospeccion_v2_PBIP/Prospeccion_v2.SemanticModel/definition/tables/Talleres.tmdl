@@ -1,0 +1,403 @@
+table Talleres
+	lineageTag: d8820a81-c022-44c8-97d9-588eb60e3da1
+
+	column clave_taller
+		dataType: string
+		isHidden
+		lineageTag: c43c6f78-eeeb-4a73-a3c2-6b4ad1e2b33a
+		summarizeBy: none
+		sourceColumn: clave_taller
+
+		annotation SummarizationSetBy = Automatic
+
+	column Certificado
+		dataType: string
+		lineageTag: b0a816e1-700e-4c5f-bc02-a4197f46fb6b
+		summarizeBy: none
+		sourceColumn: cert_no
+
+		annotation SummarizationSetBy = Automatic
+
+	column dsgn_code
+		dataType: string
+		lineageTag: 65251b8b-ae9b-44aa-9545-72f19920fdc9
+		summarizeBy: none
+		sourceColumn: dsgn_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column Taller
+		dataType: string
+		lineageTag: 2d369d2a-23b7-4b24-a545-682fbfd32f4f
+		summarizeBy: none
+		sourceColumn: agency_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nombre comercial'
+		dataType: string
+		lineageTag: ab22f66c-fb75-43f3-a7f6-a3ba85f23bfa
+		summarizeBy: none
+		sourceColumn: dba
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ciudad
+		dataType: string
+		lineageTag: 0fea2a0d-4097-4a96-a11a-ba2983a63a3a
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: bbcd2fc0-6cc0-4551-9b9f-6a84c9dfa7e5
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column zip5
+		dataType: string
+		lineageTag: 6e1028bd-d52f-4d47-bbc7-6464f18d4287
+		dataCategory: PostalCode
+		summarizeBy: none
+		sourceColumn: zip5
+
+		annotation SummarizationSetBy = Automatic
+
+	column Latitud
+		dataType: double
+		formatString: 0.0000
+		lineageTag: ee11f98e-20af-4720-81fb-1c4027be68d1
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: lat
+
+		annotation SummarizationSetBy = Automatic
+
+	column Longitud
+		dataType: double
+		formatString: 0.0000
+		lineageTag: 374d90ee-5fa4-49f5-8418-9cd4623570b0
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: lon
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Zona sur'
+		dataType: boolean
+		lineageTag: 9857813b-e6d5-43cd-ab2f-92ade5cd3313
+		summarizeBy: none
+		sourceColumn: en_zona_objetivo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de taller'
+		dataType: string
+		lineageTag: 2b6bf1c0-839e-49cc-b7d5-ee0dd469e135
+		summarizeBy: none
+		sourceColumn: tipo_taller
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de dueño'
+		dataType: string
+		lineageTag: c7bc50fb-f4cc-47db-8147-a819b9c31517
+		summarizeBy: none
+		sourceColumn: tipo_dueno
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Grupo empresarial'
+		dataType: string
+		lineageTag: 7924bbf2-a5b3-458c-921f-92b46dc3aa13
+		summarizeBy: none
+		sourceColumn: grupo_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Certificados del grupo'
+		dataType: int64
+		formatString: 0
+		lineageTag: 9e00f948-12a3-408b-a9d4-8c807b009ad9
+		summarizeBy: none
+		sourceColumn: certificados_grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_personal
+		dataType: boolean
+		lineageTag: 3cad7ffa-c845-46c1-8741-eea567ede57a
+		summarizeBy: none
+		sourceColumn: correo_personal
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Puntaje personal'
+		dataType: int64
+		formatString: 0
+		lineageTag: e1a88610-4514-4adf-81b5-4198ac70aff4
+		summarizeBy: none
+		sourceColumn: puntaje_personal
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Puntaje backoffice'
+		dataType: int64
+		formatString: 0
+		lineageTag: ce14acd6-c9d7-4210-9f85-f9b4aeff2fb3
+		summarizeBy: none
+		sourceColumn: puntaje_backoffice
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nivel
+		dataType: string
+		lineageTag: 9bbc6aa4-2935-4335-8295-4cc9bd3371ab
+		summarizeBy: none
+		sourceColumn: nivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Oferta sugerida'
+		dataType: string
+		lineageTag: 13af289b-2b05-48f5-973e-1955a8c54527
+		summarizeBy: none
+		sourceColumn: oferta_sugerida
+
+		annotation SummarizationSetBy = Automatic
+
+	column Canal
+		dataType: string
+		lineageTag: 271c02db-2d6e-467c-8276-0380be9aa349
+		summarizeBy: none
+		sourceColumn: canal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Motivo
+		dataType: string
+		lineageTag: 4bff8bfa-37e5-4430-85b8-27646f4b8426
+		summarizeBy: none
+		sourceColumn: motivo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Accountable Manager'
+		dataType: string
+		lineageTag: 591023ef-c7bc-4f47-a7ea-80f56119138d
+		summarizeBy: none
+		sourceColumn: am_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column am_email
+		dataType: string
+		lineageTag: 8d03e943-6267-4a87-a8e3-44b66fa630b3
+		summarizeBy: none
+		sourceColumn: am_email
+
+		annotation SummarizationSetBy = Automatic
+
+	column am_phone
+		dataType: string
+		lineageTag: 30d48f4c-cfe5-4fd5-bfd8-7c18c7b6eaf2
+		summarizeBy: none
+		sourceColumn: am_phone
+
+		annotation SummarizationSetBy = Automatic
+
+	column Liaison
+		dataType: string
+		lineageTag: bb6abcaf-5469-4033-8024-7b2b209ce7ac
+		summarizeBy: none
+		sourceColumn: liaison_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column liaison_email
+		dataType: string
+		lineageTag: 0f682ceb-0084-4c0d-a0a2-f38b33310466
+		summarizeBy: none
+		sourceColumn: liaison_email
+
+		annotation SummarizationSetBy = Automatic
+
+	column liaison_phone
+		dataType: string
+		lineageTag: 5de1d88c-b0bb-4e8f-86e3-95ca2b5561ff
+		summarizeBy: none
+		sourceColumn: liaison_phone
+
+		annotation SummarizationSetBy = Automatic
+
+	column agency_phone
+		dataType: string
+		lineageTag: 99e48dd7-66e4-441d-92dc-226d19410e50
+		summarizeBy: none
+		sourceColumn: agency_phone
+
+		annotation SummarizationSetBy = Automatic
+
+	column agency_email
+		dataType: string
+		lineageTag: 4191cdd6-f74c-4ac6-bf20-183705575699
+		summarizeBy: none
+		sourceColumn: agency_email
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Correo de contacto'
+		dataType: string
+		lineageTag: 54b708fe-e35d-4417-8d8c-5d3103629d9a
+		summarizeBy: none
+		sourceColumn: correo_contacto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Teléfono de contacto'
+		dataType: string
+		lineageTag: 1f3e8a7c-755d-4543-8725-ddd1db3e8661
+		summarizeBy: none
+		sourceColumn: telefono_contacto
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_categorias_rating
+		dataType: int64
+		formatString: 0
+		lineageTag: 88360159-7fa0-4190-b44b-9394c07efb07
+		summarizeBy: none
+		sourceColumn: n_categorias_rating
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_airframe
+		dataType: string
+		lineageTag: 4ca37449-5e1f-4028-986a-e151111fcbac
+		summarizeBy: none
+		sourceColumn: rating_airframe
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_powerplant
+		dataType: string
+		lineageTag: ed6bd7e3-a124-4529-8e68-c9964e052ea0
+		summarizeBy: none
+		sourceColumn: rating_powerplant
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_accessory
+		dataType: string
+		lineageTag: 70a8876f-e4f2-439b-8688-da46fb5abe04
+		summarizeBy: none
+		sourceColumn: rating_accessory
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_instrument
+		dataType: string
+		lineageTag: ea7b69e8-2e0e-44bc-8f3d-c2c187329674
+		summarizeBy: none
+		sourceColumn: rating_instrument
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_radio
+		dataType: string
+		lineageTag: 72a39c5c-c5cc-4053-945b-3880f47b862f
+		summarizeBy: none
+		sourceColumn: rating_radio
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_propeller
+		dataType: string
+		lineageTag: 8f256c3c-a3b2-4b18-b6bd-08c32b66e51d
+		summarizeBy: none
+		sourceColumn: rating_propeller
+
+		annotation SummarizationSetBy = Automatic
+
+	column rating_limited
+		dataType: string
+		lineageTag: c5531a2a-a79b-4d00-86cb-b0b18715b5e9
+		summarizeBy: none
+		sourceColumn: rating_limited
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_descarga
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: f2f672ec-59eb-4786-9e42-4b0d7661f71d
+		summarizeBy: none
+		sourceColumn: fecha_descarga
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Acuerdos bilaterales'
+		dataType: string
+		lineageTag: e41a2927-2f3d-4470-a44d-52748e7cae6f
+		summarizeBy: none
+		sourceColumn: acuerdos
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_acuerdos
+		dataType: int64
+		formatString: 0
+		lineageTag: b0139ce0-54ab-489a-a625-a3dbdd622978
+		summarizeBy: none
+		sourceColumn: n_acuerdos
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Especialidades limitadas'
+		dataType: string
+		lineageTag: 3ef77d7e-0e11-4d36-882a-1418c71b4191
+		summarizeBy: none
+		sourceColumn: especialidades_limitadas
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ratings
+		dataType: string
+		lineageTag: b5e15cde-b88c-4435-af91-dc3b8fb4b590
+		summarizeBy: none
+		sourceColumn: ratings_texto
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Puntaje mayor'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6eaacc18-bd36-490a-915e-d398ecbe1d2a
+		summarizeBy: none
+		sourceColumn: puntaje_mayor
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Talleres = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_talleres_informe",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"clave_taller", "cert_no", "dsgn_code", "agency_name", "dba", "city", "state", "zip5", "lat", "lon", "en_zona_objetivo", "tipo_taller", "tipo_dueno", "grupo_empresa", "certificados_grupo", "correo_personal", "puntaje_personal", "puntaje_backoffice", "nivel", "oferta_sugerida", "canal", "motivo", "am_name", "am_email", "am_phone", "liaison_name", "liaison_email", "liaison_phone", "agency_phone", "agency_email", "correo_contacto", "telefono_contacto", "n_categorias_rating", "rating_airframe", "rating_powerplant", "rating_accessory", "rating_instrument", "rating_radio", "rating_propeller", "rating_limited", "fecha_descarga", "acuerdos", "n_acuerdos", "especialidades_limitadas", "ratings_texto", "puntaje_mayor"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

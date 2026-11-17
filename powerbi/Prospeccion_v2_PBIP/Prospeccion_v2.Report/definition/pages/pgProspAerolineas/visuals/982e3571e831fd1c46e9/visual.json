@@ -1,0 +1,216 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "982e3571e831fd1c46e9",
+  "position": {
+    "x": 16,
+    "y": 132,
+    "z": 5,
+    "height": 572,
+    "width": 820,
+    "tabOrder": 5
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Prospectos aerolineas"
+                    }
+                  },
+                  "Property": "Orden"
+                }
+              },
+              "queryRef": "Prospectos aerolineas.Orden",
+              "nativeQueryRef": "Orden",
+              "displayName": "#"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Prospectos aerolineas"
+                    }
+                  },
+                  "Property": "Grupo"
+                }
+              },
+              "queryRef": "Prospectos aerolineas.Grupo",
+              "nativeQueryRef": "Grupo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Prospectos aerolineas"
+                    }
+                  },
+                  "Property": "Nivel"
+                }
+              },
+              "queryRef": "Prospectos aerolineas.Nivel",
+              "nativeQueryRef": "Nivel"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Prospectos aerolineas"
+                    }
+                  },
+                  "Property": "Servicio sugerido"
+                }
+              },
+              "queryRef": "Prospectos aerolineas.Servicio sugerido",
+              "nativeQueryRef": "Servicio sugerido"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Prospectos aerolineas"
+                        }
+                      },
+                      "Property": "Aeronaves en juego"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Prospectos aerolineas.Aeronaves en juego)",
+              "nativeQueryRef": "Suma de Aeronaves en juego",
+              "displayName": "Aeronaves en juego"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Prospectos aerolineas"
+                        }
+                      },
+                      "Property": "% flota en juego"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Prospectos aerolineas.% flota en juego)",
+              "nativeQueryRef": "Suma de % flota en juego",
+              "displayName": "% flota en juego"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Prospectos aerolineas"
+                        }
+                      },
+                      "Property": "Flota total"
+                    }
+                  },
+                  "Function": 0
+                }
+              },
+              "queryRef": "Sum(Prospectos aerolineas.Flota total)",
+              "nativeQueryRef": "Suma de Flota total",
+              "displayName": "Flota total"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Prospectos aerolineas"
+                    }
+                  },
+                  "Property": "Tamaño"
+                }
+              },
+              "queryRef": "Prospectos aerolineas.Tamaño",
+              "nativeQueryRef": "Tamaño"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Prospectos aerolineas"
+                    }
+                  },
+                  "Property": "Confianza del dato"
+                }
+              },
+              "queryRef": "Prospectos aerolineas.Confianza del dato",
+              "nativeQueryRef": "Confianza del dato"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Prospectos aerolineas"
+                  }
+                },
+                "Property": "Orden"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

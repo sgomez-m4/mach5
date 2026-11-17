@@ -1,0 +1,63 @@
+relationship Relación
+	fromColumn: v_fleet_normalized.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 1'
+	fromColumn: v_fleet_normalized.Modelo
+	toColumn: dim_aircraft_type.model
+
+relationship 'Relación 2'
+	fromColumn: v_order_book_normalized.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 3'
+	fromColumn: v_order_book_normalized.Modelo
+	toColumn: dim_aircraft_type.model
+
+relationship 'Relación 4'
+	fromColumn: v_prospect_score.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 5'
+	fromColumn: v_fleet_transition.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación 6'
+	fromColumn: v_fleet_transition.Modelo
+	toColumn: dim_aircraft_type.model
+
+relationship 'Relación 7'
+	fromColumn: v_financial_trend.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 'Relación serie flota'
+	fromColumn: v_fleet_series.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 9facc111-996d-4ee3-a912-b9af0376ce04
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Prospectos aerolineas'.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 17a7ec5f-3721-49f4-9fc5-7e7325dd1eba
+	fromColumn: 'Mercado mantenimiento'.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 5465079a-6729-4c90-93f9-1b6f16c8ada5
+	fromColumn: Directivos.group_id
+	toColumn: dim_airline.airline_id
+
+relationship d81e3fdc-2dd4-486d-8af8-d66cbcef92ee
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Talleres ratings'.clave_taller
+	toColumn: Talleres.clave_taller
+
+relationship 501cad0b-ab52-4fa1-88a1-434b97a3ab02
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Talleres acuerdos'.clave_taller
+	toColumn: Talleres.clave_taller
+
+relationship 2a7ba49e-03f8-4695-8d56-e11e4b356172
+	fromColumn: 'Talleres senales'.clave_taller
+	toColumn: Talleres.clave_taller
+

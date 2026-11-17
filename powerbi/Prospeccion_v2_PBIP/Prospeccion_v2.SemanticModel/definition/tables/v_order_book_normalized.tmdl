@@ -1,0 +1,118 @@
+/// Pedidos con el modelo normalizado y la fecha de entrega parseada.
+table v_order_book_normalized
+	lineageTag: 503fd1a5-4697-4f37-90fc-f2f2f9a28276
+
+	column order_id
+		dataType: string
+		isHidden
+		lineageTag: 6a91eb12-e446-4da6-add2-56fdaa2e1e75
+		sourceColumn: order_id
+
+	column airline_id
+		dataType: string
+		isHidden
+		lineageTag: 5fcd085f-40cb-456c-8279-35a5512f5b7f
+		sourceColumn: airline_id
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 9aa88f88-d599-4904-bd82-ac10a71ec2ad
+		sourceColumn: group_id
+
+	column grupo
+		dataType: string
+		lineageTag: 24e8ff7d-1cff-479c-8569-f9abfddb46f1
+		sourceColumn: grupo
+
+	column region
+		dataType: string
+		lineageTag: 5d5c150b-2cd9-439d-be09-914a4d639966
+		sourceColumn: region
+
+	column country
+		dataType: string
+		lineageTag: ea151cb1-fcdf-4105-835a-a31050e8f18e
+		sourceColumn: country
+
+	column business_model
+		dataType: string
+		lineageTag: 95e4367f-6054-4380-a33f-b2a65094eabd
+		sourceColumn: business_model
+
+	column report_year
+		dataType: int64
+		lineageTag: aacd1196-a3f6-44d0-997e-cddb6f65badb
+		sourceColumn: report_year
+
+	column aircraft_type_reportado
+		dataType: string
+		lineageTag: da2d266f-3c25-42b2-b243-9d2145f5de9f
+		sourceColumn: aircraft_type_reportado
+
+	column Modelo
+		dataType: string
+		lineageTag: d877881e-23a6-4625-870f-148a33226f36
+		sourceColumn: Modelo
+
+	column manufacturer
+		dataType: string
+		lineageTag: b6fa60eb-20c6-4b39-8f7f-f898f6c730df
+		sourceColumn: manufacturer
+
+	column category
+		dataType: string
+		lineageTag: d468c0db-7725-48cc-952d-e33906c77a42
+		sourceColumn: category
+
+	column generation
+		dataType: string
+		lineageTag: 4ded6a05-20f0-4c47-8510-c2470159b667
+		sourceColumn: generation
+
+	column 'Unidades comprometidas'
+		dataType: int64
+		lineageTag: 23eaf1d2-5893-443e-9ffa-caba71ec189f
+		sourceColumn: Unidades comprometidas
+
+	column delivery_period
+		dataType: string
+		lineageTag: 97050d52-4699-4ca5-a810-e155ea2178f8
+		sourceColumn: delivery_period
+
+	column 'Primera entrega'
+		dataType: int64
+		lineageTag: 76fead3b-0e9d-41b0-b860-2c4e19c8d115
+		sourceColumn: Primera entrega
+
+	column anios_hasta_entrega
+		dataType: int64
+		lineageTag: d2ef3dcb-e1a2-458f-bc94-5f67a0eb5bdf
+		sourceColumn: anios_hasta_entrega
+
+	column 'Fecha aproximada'
+		dataType: boolean
+		lineageTag: 9e6fa6aa-3479-4a4e-ab5b-8c2d655285b1
+		sourceColumn: Fecha aproximada
+
+	column 'Ventana de entrega'
+		dataType: string
+		lineageTag: 350191ab-51c2-42a7-9973-02f70533acff
+		sourceColumn: Ventana de entrega
+
+	column es_fila_agregada
+		dataType: boolean
+		lineageTag: a4a7da65-120f-45a8-acf9-f03be6131cc3
+		sourceColumn: es_fila_agregada
+
+	partition v_order_book_normalized = m
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([BillingProject="mach5-gemini-project"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    Tabla = Dataset{[Name="v_order_book_normalized",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(Tabla,{{"quantity_committed", "Unidades comprometidas"}, {"fecha_aproximada", "Fecha aproximada"}, {"anio_primera_entrega", "Primera entrega"}, {"ventana_entrega", "Ventana de entrega"}, {"aircraft_model", "Modelo"}})
+				in
+				    #"Columnas con nombre cambiado"
+

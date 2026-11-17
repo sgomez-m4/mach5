@@ -106,7 +106,8 @@ senales AS (
   WHERE esta_hoy AND estaba AND IFNULL(am_actual, '') != IFNULL(am_anterior, '')
 )
 
-SELECT s.*, c.en_zona_objetivo, c.nivel, c.tipo_dueno
+SELECT CONCAT(s.cert_no, '|', IFNULL(s.state, '')) AS clave_taller,
+       s.*, c.en_zona_objetivo, c.nivel, c.tipo_dueno
 FROM senales s
 LEFT JOIN `mach5-gemini-project.dataset_prospeccion.v_talleres_calificacion` c
   USING (cert_no, state)

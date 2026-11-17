@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Prospeccion_v2"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "f55788c3-0a82-4d9d-915d-2968d3328852"
+  }
+}

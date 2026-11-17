@@ -1,0 +1,152 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "d392e0c929924354962f",
+  "position": {
+    "x": 16,
+    "y": 64,
+    "z": 1,
+    "height": 400,
+    "width": 820,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "map",
+    "query": {
+      "queryState": {
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Nivel"
+                }
+              },
+              "queryRef": "Talleres.Nivel",
+              "nativeQueryRef": "Nivel"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Latitud"
+                }
+              },
+              "queryRef": "Talleres.Latitud",
+              "nativeQueryRef": "Latitud"
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Longitud"
+                }
+              },
+              "queryRef": "Talleres.Longitud",
+              "nativeQueryRef": "Longitud"
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Talleres"
+                        }
+                      },
+                      "Property": "Puntaje mayor"
+                    }
+                  },
+                  "Function": 1
+                }
+              },
+              "queryRef": "Sum(Talleres.Puntaje mayor)",
+              "nativeQueryRef": "Suma de Puntaje mayor",
+              "displayName": "Puntaje"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Taller"
+                }
+              },
+              "queryRef": "Talleres.Taller",
+              "nativeQueryRef": "Taller"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres"
+                    }
+                  },
+                  "Property": "Oferta sugerida"
+                }
+              },
+              "queryRef": "Talleres.Oferta sugerida",
+              "nativeQueryRef": "Oferta sugerida"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Talleres del sur por nivel'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,24 @@
+/// Cuanto pesa la actividad de transicion medida por el order book. Subirlo prioriza a quien ya tiene entregas en curso.
+/// Parametro What-If: no sale de ningun reporte, lo fija el consultor con la
+/// segmentacion de la pagina de ranking. Por defecto 12, que es el peso
+/// con el que v_prospect_score calcula prospect_score en BigQuery.
+table 'Peso transicion'
+	lineageTag: 1ee09157-c967-435b-9e1c-fcb0b245206a
+
+	/// Valor elegido en la segmentacion. Si no hay seleccion, 12.
+	measure 'Peso transicion valor' = SELECTEDVALUE ( 'Peso transicion'[Peso transicion], 12 )
+		formatString: 0
+		displayFolder: Ponderacion
+		lineageTag: 5624a380-53e7-406a-8a9a-60fbf421b875
+
+	column 'Peso transicion'
+		dataType: int64
+		lineageTag: 9ff7c431-e3f7-4f06-a941-fb9165ef4b35
+		summarizeBy: none
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Peso transicion' = calculated
+		source = GENERATESERIES ( 0, 100, 1 )
+

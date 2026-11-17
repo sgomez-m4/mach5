@@ -1,0 +1,368 @@
+table 'Prospectos aerolineas'
+	lineageTag: d06476a5-ea20-4867-94ba-b2452b433398
+
+	column group_id
+		dataType: string
+		lineageTag: edd5b32a-cad2-47b7-8874-1bf9fff7f081
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Grupo
+		dataType: string
+		lineageTag: c9cb9565-9278-4dfc-a9b6-e01a2d2936e8
+		summarizeBy: none
+		sourceColumn: grupo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Región
+		dataType: string
+		lineageTag: acf983e7-a3a4-4b63-b14d-f160e40a2cb3
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	column País
+		dataType: string
+		lineageTag: 7bb99764-787c-4e27-9ed3-1b588aefcabe
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: country
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Modelo de negocio'
+		dataType: string
+		lineageTag: e5b48223-2c53-491f-b7b8-6748a8746f5d
+		summarizeBy: none
+		sourceColumn: business_model
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Flota total'
+		dataType: int64
+		formatString: 0
+		lineageTag: 7640bb0d-cd51-40b3-95e1-8aa4928506eb
+		summarizeBy: sum
+		sourceColumn: flota_total
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tamaño
+		dataType: string
+		lineageTag: f4a9b5be-ce16-4b6c-a6b4-a8868ee9d397
+		summarizeBy: none
+		sourceColumn: tier_tamano
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nivel
+		dataType: string
+		lineageTag: 1b9994ea-cd42-4a0b-8bcd-0a5be0eb7471
+		summarizeBy: none
+		sourceColumn: nivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Servicio sugerido'
+		dataType: string
+		lineageTag: 3cf74572-6a7f-402e-9bc8-fcb04f3b1ef4
+		summarizeBy: none
+		sourceColumn: linea_principal
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Confianza del dato'
+		dataType: string
+		lineageTag: 11eb50c5-caf8-45ec-8c6d-e69e276d2012
+		summarizeBy: none
+		sourceColumn: confianza_dato
+
+		annotation SummarizationSetBy = Automatic
+
+	column Orden
+		dataType: int64
+		formatString: 0
+		lineageTag: 7fb9746d-40d0-4f89-9993-32932f446b7e
+		summarizeBy: none
+		sourceColumn: orden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Motivo
+		dataType: string
+		lineageTag: 2d433726-866f-42a6-bc23-17a8a6b0831a
+		summarizeBy: none
+		sourceColumn: motivo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Aeronaves en juego'
+		dataType: int64
+		formatString: 0
+		lineageTag: f26e9f14-0b31-414e-9bda-df860466a09d
+		summarizeBy: none
+		sourceColumn: aeronaves_en_juego
+
+		annotation SummarizationSetBy = Automatic
+
+	column '% flota en juego'
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 8ea7b8b8-a099-4eba-8b76-984c4aeef31e
+		summarizeBy: none
+		sourceColumn: pct_flota_en_juego
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Leasing que vence en 3 años'
+		dataType: int64
+		formatString: 0
+		lineageTag: ea5467a6-198d-4bec-9b32-71cb7b28f0c7
+		summarizeBy: sum
+		sourceColumn: leasing_vence_3a
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Aeronaves en juego técnico'
+		dataType: int64
+		formatString: 0
+		lineageTag: 0185ab1d-ea02-43a0-9b3a-a7f5f2358ede
+		summarizeBy: none
+		sourceColumn: tecnico_en_juego
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'En ventana de reemplazo'
+		dataType: int64
+		formatString: 0
+		lineageTag: f7394498-09cc-49dc-a1f1-6ad187d5803b
+		summarizeBy: sum
+		sourceColumn: ventana_reemplazo_est
+
+		annotation SummarizationSetBy = Automatic
+
+	column ventana_segun_informe
+		dataType: int64
+		formatString: 0
+		lineageTag: 1e204c67-92a4-40bc-b119-a92a5e37f295
+		summarizeBy: none
+		sourceColumn: ventana_segun_informe
+
+		annotation SummarizationSetBy = Automatic
+
+	column en_monitoreo
+		dataType: int64
+		formatString: 0
+		lineageTag: 70b0d2c7-54f9-4d0b-9a8e-81f88e6f0c21
+		summarizeBy: none
+		sourceColumn: en_monitoreo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Entregas en 24 meses'
+		dataType: int64
+		formatString: 0
+		lineageTag: d1e00d73-95a6-4407-8d94-e75bc1d54d23
+		summarizeBy: sum
+		sourceColumn: entregas_24m
+
+		annotation SummarizationSetBy = Automatic
+
+	column aeronaves_leasing_operativo
+		dataType: int64
+		formatString: 0
+		lineageTag: 2b164564-bce4-435a-b00a-89e9fff899ed
+		summarizeBy: sum
+		sourceColumn: aeronaves_leasing_operativo
+
+		annotation SummarizationSetBy = Automatic
+
+	column aeronaves_leasing_financiero
+		dataType: int64
+		formatString: 0
+		lineageTag: d7e16ae0-85b5-42c9-af43-6a6c3bf4c84b
+		summarizeBy: sum
+		sourceColumn: aeronaves_leasing_financiero
+
+		annotation SummarizationSetBy = Automatic
+
+	column pct_leasing_operativo
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 8a562101-17fb-4565-820f-4061366f8d50
+		summarizeBy: none
+		sourceColumn: pct_leasing_operativo
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fuente del vencimiento'
+		dataType: string
+		lineageTag: b100f8d1-1206-469c-94bb-4c78d6f109e3
+		summarizeBy: none
+		sourceColumn: fuente_vencimiento
+
+		annotation SummarizationSetBy = Automatic
+
+	column pct_leasing_vence_3a
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 34c3be4b-d501-40c5-b354-1533d7c941cd
+		summarizeBy: none
+		sourceColumn: pct_leasing_vence_3a
+
+		annotation SummarizationSetBy = Automatic
+
+	column pct_cobertura_edad
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 3f2c538f-cba2-4998-81fa-2b7fecaf3e27
+		summarizeBy: none
+		sourceColumn: pct_cobertura_edad
+
+		annotation SummarizationSetBy = Automatic
+
+	column pct_cobertura_edad_con_form41
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: c11aeaf0-821b-431f-91b3-1fc8438b28f7
+		summarizeBy: none
+		sourceColumn: pct_cobertura_edad_con_form41
+
+		annotation SummarizationSetBy = Automatic
+
+	column aviones_edad_form41
+		dataType: int64
+		formatString: 0
+		lineageTag: a3369fd6-c544-450c-a1d3-6aec4847cbf5
+		summarizeBy: none
+		sourceColumn: aviones_edad_form41
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Edad ponderada'
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 3bca3d26-4b42-4ef5-87c6-00d554f3836a
+		summarizeBy: none
+		sourceColumn: edad_ponderada
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Pedidos totales'
+		dataType: int64
+		formatString: 0
+		lineageTag: 10bf068a-1e75-4eb8-b03b-f79bcab72da5
+		summarizeBy: sum
+		sourceColumn: pedidos_total
+
+		annotation SummarizationSetBy = Automatic
+
+	column pedidos_sin_fecha
+		dataType: int64
+		formatString: 0
+		lineageTag: aaf922ff-23b4-4410-b982-dd2e3421d873
+		summarizeBy: none
+		sourceColumn: pedidos_sin_fecha
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_modelos
+		dataType: int64
+		formatString: 0
+		lineageTag: 35860b67-a1e0-48b3-b012-4674f6577d91
+		summarizeBy: none
+		sourceColumn: n_modelos
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_fabricantes
+		dataType: int64
+		formatString: 0
+		lineageTag: 528991e5-6273-497b-94e3-6199376b0ab2
+		summarizeBy: none
+		sourceColumn: n_fabricantes
+
+		annotation SummarizationSetBy = Automatic
+
+	column mezcla_generaciones
+		dataType: boolean
+		lineageTag: 032a6dff-8f0b-4239-bde3-cde9f0e7e12b
+		summarizeBy: none
+		sourceColumn: mezcla_generaciones
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Alertas de riesgo'
+		dataType: string
+		lineageTag: 31a9ffb4-c878-43ae-a171-97e201c38ba5
+		summarizeBy: none
+		sourceColumn: alertas_riesgo
+
+		annotation SummarizationSetBy = Automatic
+
+	column net_debt_ebitda
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 8a3e0cfe-b2bd-489c-991e-fd51a766073b
+		summarizeBy: none
+		sourceColumn: net_debt_ebitda
+
+		annotation SummarizationSetBy = Automatic
+
+	column ebitda_usdm
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 028daaa7-9c0c-4976-821b-ecbd16006f9f
+		summarizeBy: sum
+		sourceColumn: ebitda_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column revenue_usdm
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: a804ffbe-3d1f-4ec2-8007-2c31fc9dcae0
+		summarizeBy: sum
+		sourceColumn: revenue_usdm
+
+		annotation SummarizationSetBy = Automatic
+
+	column margen_operativo_pct
+		dataType: double
+		formatString: #,##0.0
+		lineageTag: 291617c5-402f-4349-8b66-c144479d0231
+		summarizeBy: none
+		sourceColumn: margen_operativo_pct
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_calculo
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 3c8f2e0a-f5eb-4247-a5c6-67d1489cf73d
+		summarizeBy: none
+		sourceColumn: fecha_calculo
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Prospectos aerolineas' = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_prospect_score_v2",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"group_id", "grupo", "region", "country", "business_model", "flota_total", "tier_tamano", "nivel", "linea_principal", "confianza_dato", "orden", "motivo", "aeronaves_en_juego", "pct_flota_en_juego", "leasing_vence_3a", "tecnico_en_juego", "ventana_reemplazo_est", "ventana_segun_informe", "en_monitoreo", "entregas_24m", "aeronaves_leasing_operativo", "aeronaves_leasing_financiero", "pct_leasing_operativo", "fuente_vencimiento", "pct_leasing_vence_3a", "pct_cobertura_edad", "pct_cobertura_edad_con_form41", "aviones_edad_form41", "edad_ponderada", "pedidos_total", "pedidos_sin_fecha", "n_modelos", "n_fabricantes", "mezcla_generaciones", "alertas_riesgo", "net_debt_ebitda", "ebitda_usdm", "revenue_usdm", "margen_operativo_pct", "fecha_calculo"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

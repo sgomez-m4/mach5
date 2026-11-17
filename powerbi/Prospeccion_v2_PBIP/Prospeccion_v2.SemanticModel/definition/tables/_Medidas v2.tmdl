@@ -1,0 +1,141 @@
+/// Medidas de la prospeccion v2 (aerolineas, talleres y mercado). No tiene datos propios.
+table '_Medidas v2'
+	lineageTag: 72640998-2ae4-4dca-bb33-9cfe06096b3d
+
+	measure 'Grupos evaluados v2' = COUNTROWS ( 'Prospectos aerolineas' )
+		formatString: #,##0
+		displayFolder: Aerolíneas
+		lineageTag: c4c73768-7a5d-40e9-93ed-9faf704cf6f7
+
+	measure 'Aerolíneas nivel A' = CALCULATE ( COUNTROWS ( 'Prospectos aerolineas' ), 'Prospectos aerolineas'[Nivel] = "A" )
+		formatString: #,##0
+		displayFolder: Aerolíneas
+		lineageTag: 92650e7b-514f-4efb-aa8b-730e19b8efb1
+
+	measure 'Aerolíneas nivel B' = CALCULATE ( COUNTROWS ( 'Prospectos aerolineas' ), 'Prospectos aerolineas'[Nivel] = "B" )
+		formatString: #,##0
+		displayFolder: Aerolíneas
+		lineageTag: e7a7602d-08f7-47ac-a05f-d59559eb8775
+
+	/// Aeronaves que pueden necesitar un servicio en el horizonte: leasing que vence en 3 años, ventana de reemplazo y entregas de 24 meses.
+	measure 'Aeronaves en juego v2' = SUM ( 'Prospectos aerolineas'[Aeronaves en juego] )
+		formatString: #,##0
+		displayFolder: Aerolíneas
+		lineageTag: a4af68b4-366f-4b3b-86f2-6b81dadc88f5
+
+	measure 'Leasing que vence 3 años' = SUM ( 'Prospectos aerolineas'[Leasing que vence en 3 años] )
+		formatString: #,##0
+		displayFolder: Aerolíneas
+		lineageTag: 7cb16d2f-0f27-4c35-9dd8-aebd5b3de4b5
+
+	measure 'Entregas 24 meses' = SUM ( 'Prospectos aerolineas'[Entregas en 24 meses] )
+		formatString: #,##0
+		displayFolder: Aerolíneas
+		lineageTag: d25870bc-770a-4fe7-b387-0f63ff987d42
+
+	measure '% flota en juego v2' = DIVIDE ( [Aeronaves en juego v2], SUM ( 'Prospectos aerolineas'[Flota total] ) )
+		formatString: 0%
+		displayFolder: Aerolíneas
+		lineageTag: 7b5b4d68-9f72-400b-b5e0-6785d9e09a0c
+
+	measure 'Aerolínea elegida' = IF ( HASONEVALUE ( 'Prospectos aerolineas'[Grupo] ), VALUES ( 'Prospectos aerolineas'[Grupo] ), "Elige una aerolínea en la lista" )
+		displayFolder: Aerolíneas
+		lineageTag: 1866c868-51cf-49c3-b655-6b56ff040fc1
+
+	measure 'Motivo aerolínea' = SELECTEDVALUE ( 'Prospectos aerolineas'[Motivo], "" )
+		displayFolder: Aerolíneas
+		lineageTag: ba7ce189-2986-4c6b-9914-1f64668f9a83
+
+	measure 'Servicio aerolínea' = IF ( HASONEVALUE ( 'Prospectos aerolineas'[Grupo] ), SELECTEDVALUE ( 'Prospectos aerolineas'[Servicio sugerido] ) & " · nivel " & SELECTEDVALUE ( 'Prospectos aerolineas'[Nivel] ) & " · confianza " & LOWER ( SELECTEDVALUE ( 'Prospectos aerolineas'[Confianza del dato] ) ), "" )
+		displayFolder: Aerolíneas
+		lineageTag: dcc53004-4e24-481f-95a5-eb42b73c8e4a
+
+	measure 'Alertas aerolínea' = SELECTEDVALUE ( 'Prospectos aerolineas'[Alertas de riesgo], "" )
+		displayFolder: Aerolíneas
+		lineageTag: c19849b9-e5f1-46dd-a902-ddf958be03ec
+
+	/// Reparaciones de estructura y motores compradas a terceros, en millones de USD, últimos cuatro trimestres (Form 41 P-5.2).
+	measure 'Mantenimiento comprado' = SUM ( 'Mercado mantenimiento'[Mantenimiento comprado (M USD)] )
+		formatString: #,##0
+		displayFolder: Mercado
+		lineageTag: b953c535-2631-4b27-bed0-d829a932c668
+
+	/// Parte del trabajo de mantenimiento que se compra fuera, frente a la mano de obra propia.
+	measure '% mantenimiento comprado' = DIVIDE ( SUM ( 'Mercado mantenimiento'[reparaciones_estructura_usdm] ) + SUM ( 'Mercado mantenimiento'[reparaciones_motores_usdm] ), SUM ( 'Mercado mantenimiento'[reparaciones_estructura_usdm] ) + SUM ( 'Mercado mantenimiento'[reparaciones_motores_usdm] ) + SUM ( 'Mercado mantenimiento'[Mano de obra propia (M USD)] ) )
+		formatString: 0%
+		displayFolder: Mercado
+		lineageTag: da210dbf-87f7-4fab-8a77-c04a2b3253b2
+
+	measure 'Talleres calificados' = COUNTROWS ( Talleres )
+		formatString: #,##0
+		displayFolder: Talleres
+		lineageTag: b0f13043-ce43-4e3c-90fb-4e840e1be1ac
+
+	measure 'Talleres nivel A' = CALCULATE ( COUNTROWS ( Talleres ), Talleres[Nivel] = "A" )
+		formatString: #,##0
+		displayFolder: Talleres
+		lineageTag: 7d0b2028-6424-490f-b5ba-d47642f0351a
+
+	measure 'Talleres nivel B' = CALCULATE ( COUNTROWS ( Talleres ), Talleres[Nivel] = "B" )
+		formatString: #,##0
+		displayFolder: Talleres
+		lineageTag: f4d5b22a-9234-4feb-af22-978fcb600075
+
+	measure 'Talleres con correo' = CALCULATE ( COUNTROWS ( Talleres ), NOT ISBLANK ( Talleres[Correo de contacto] ) )
+		formatString: #,##0
+		displayFolder: Talleres
+		lineageTag: ed05829b-c137-4c42-b2da-59013dd2c65d
+
+	measure 'Puntaje personal medio' = AVERAGE ( Talleres[Puntaje personal] )
+		formatString: 0
+		displayFolder: Talleres
+		lineageTag: 94a0ea21-126f-4433-bbfe-5592084782dd
+
+	measure 'Puntaje backoffice medio' = AVERAGE ( Talleres[Puntaje backoffice] )
+		formatString: 0
+		displayFolder: Talleres
+		lineageTag: 6d5c6594-4853-40b5-aba8-d575928cb00d
+
+	/// Cambios entre las dos últimas descargas de FAA. Con una sola descarga queda en blanco.
+	measure 'Señales de cambio' = COUNTROWS ( 'Talleres senales' )
+		formatString: #,##0
+		displayFolder: Talleres
+		lineageTag: e72185bf-ad51-44e4-95e2-7c752a56c500
+
+	measure 'Taller elegido' = IF ( HASONEVALUE ( Talleres[clave_taller] ), SELECTEDVALUE ( Talleres[Taller] ), "Elige un taller en la lista" )
+		displayFolder: Talleres
+		lineageTag: 76a4f7fd-9478-4517-867e-566265440d27
+
+	measure 'Ubicación taller' = IF ( HASONEVALUE ( Talleres[clave_taller] ), SELECTEDVALUE ( Talleres[Ciudad] ) & ", " & SELECTEDVALUE ( Talleres[Estado] ) & " · " & SELECTEDVALUE ( Talleres[Tipo de taller] ), "" )
+		displayFolder: Talleres
+		lineageTag: 837e1388-bcfc-40f1-bdb5-30655775b159
+
+	measure 'Oferta taller' = IF ( HASONEVALUE ( Talleres[clave_taller] ), SELECTEDVALUE ( Talleres[Oferta sugerida] ) & " · nivel " & SELECTEDVALUE ( Talleres[Nivel] ) & " · personal " & SELECTEDVALUE ( Talleres[Puntaje personal] ) & " · backoffice " & SELECTEDVALUE ( Talleres[Puntaje backoffice] ), "" )
+		displayFolder: Talleres
+		lineageTag: bb961501-338d-4f23-b311-c54b295a5de6
+
+	measure 'Motivo taller' = IF ( HASONEVALUE ( Talleres[clave_taller] ), SELECTEDVALUE ( Talleres[Motivo] ), "" )
+		displayFolder: Talleres
+		lineageTag: 8bf32290-f375-43af-9d2d-f9c11f09d2b2
+
+	measure 'Contacto taller' = IF ( HASONEVALUE ( Talleres[clave_taller] ), "AM: " & SELECTEDVALUE ( Talleres[Accountable Manager], "sin dato" ) & UNICHAR ( 10 ) & "Liaison: " & SELECTEDVALUE ( Talleres[Liaison], "sin dato" ) & UNICHAR ( 10 ) & SELECTEDVALUE ( Talleres[Correo de contacto], "sin correo" ) & " · " & SELECTEDVALUE ( Talleres[Teléfono de contacto], "sin teléfono" ), "" )
+		displayFolder: Talleres
+		lineageTag: dbb23a34-4851-412a-8b34-19f212a7626c
+
+	measure 'Ratings taller' = IF ( HASONEVALUE ( Talleres[clave_taller] ), SELECTEDVALUE ( Talleres[Ratings] ), "" )
+		displayFolder: Talleres
+		lineageTag: be6417c4-2100-4a15-ab4b-eafb0a23b3aa
+
+	measure 'Acuerdos taller' = IF ( HASONEVALUE ( Talleres[clave_taller] ), SELECTEDVALUE ( Talleres[Acuerdos bilaterales] ), "" )
+		displayFolder: Talleres
+		lineageTag: 373304ca-4fd7-4fab-8435-d47a6cd0ae73
+
+	column _
+		isHidden
+		lineageTag: 40e9e47a-fc07-492f-b2dd-01c12db1b771
+		isNameInferred
+		sourceColumn: [_]
+
+	partition '_Medidas v2' = calculated
+		source = ROW("_", 1)
+

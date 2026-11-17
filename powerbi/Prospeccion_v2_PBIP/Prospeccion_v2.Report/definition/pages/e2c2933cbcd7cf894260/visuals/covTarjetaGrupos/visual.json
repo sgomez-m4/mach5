@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "covTarjetaGrupos",
+  "position": {
+    "x": 16,
+    "y": 64,
+    "z": 0,
+    "height": 104,
+    "width": 408,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "card",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Grupos Evaluados"
+                }
+              },
+              "queryRef": "_Medidas.Grupos Evaluados",
+              "nativeQueryRef": "Grupos Evaluados",
+              "displayName": "Grupos evaluados"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

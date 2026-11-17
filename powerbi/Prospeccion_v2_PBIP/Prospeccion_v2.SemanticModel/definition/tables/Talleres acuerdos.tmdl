@@ -1,0 +1,34 @@
+table 'Talleres acuerdos'
+	lineageTag: c03c65ef-1826-416c-a68e-3a361d916984
+
+	column clave_taller
+		dataType: string
+		isHidden
+		lineageTag: e8d59722-6af2-4f9f-9816-e3e870ca746b
+		summarizeBy: none
+		sourceColumn: clave_taller
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Acuerdo bilateral'
+		dataType: string
+		lineageTag: 940ac25c-2eaa-45f6-a88a-35772b55e404
+		summarizeBy: none
+		sourceColumn: acuerdo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Talleres acuerdos' = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_talleres_acuerdos",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"clave_taller", "acuerdo"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

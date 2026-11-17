@@ -1,0 +1,103 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "dde11855617f5e745756",
+  "position": {
+    "x": 648,
+    "y": 482,
+    "z": 4,
+    "height": 222,
+    "width": 616,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres senales"
+                    }
+                  },
+                  "Property": "Señal"
+                }
+              },
+              "queryRef": "Talleres senales.Señal",
+              "nativeQueryRef": "Señal"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres senales"
+                    }
+                  },
+                  "Property": "Detalle"
+                }
+              },
+              "queryRef": "Talleres senales.Detalle",
+              "nativeQueryRef": "Detalle"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Talleres senales"
+                    }
+                  },
+                  "Property": "Descarga actual"
+                }
+              },
+              "queryRef": "Talleres senales.Descarga actual",
+              "nativeQueryRef": "Descarga actual"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Cambios entre descargas de FAA'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

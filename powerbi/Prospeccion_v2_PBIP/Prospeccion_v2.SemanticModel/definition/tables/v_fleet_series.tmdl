@@ -1,0 +1,96 @@
+/// Flota por ejercicio, una fila por grupo y año. Responde a la trayectoria, no solo al delta.
+table v_fleet_series
+	lineageTag: 17ed54bf-c05c-4314-8932-f2f0521e90fa
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 9c03f72c-f5d2-4cca-a957-d881fed0a7e0
+		sourceColumn: group_id
+
+	column airline_id
+		dataType: string
+		isHidden
+		lineageTag: 81bbfded-5a36-4748-8c08-df1c50dd9a8c
+		sourceColumn: airline_id
+
+	column Aerolínea
+		dataType: string
+		lineageTag: b09ecbd7-d59a-49c7-a8b7-e4748c915d5b
+		sourceColumn: Aerolínea
+
+	column region
+		dataType: string
+		lineageTag: 2ddccc99-f432-4ecf-9baf-4ed258ec78db
+		sourceColumn: region
+
+	column business_model
+		dataType: string
+		lineageTag: 06b99a76-734d-46cb-a886-1968b34a4313
+		sourceColumn: business_model
+
+	column Ejercicio
+		dataType: int64
+		lineageTag: 24418d60-501a-43bc-a435-41190b668262
+		summarizeBy: none
+		sourceColumn: Ejercicio
+
+	column Aeronaves
+		dataType: int64
+		lineageTag: fa6791c0-bcc4-4b12-ab96-9e3b8ad6484f
+		summarizeBy: none
+		sourceColumn: Aeronaves
+
+	column 'Edad ponderada'
+		dataType: double
+		lineageTag: 3acea32e-0c6f-4f08-b3a3-6ace1ce57bea
+		summarizeBy: none
+		sourceColumn: Edad ponderada
+
+	column 'Aeronaves arrendadas'
+		dataType: int64
+		lineageTag: 39a6b3c0-08f3-4ea5-8f05-c87e6f9e8aec
+		summarizeBy: none
+		sourceColumn: Aeronaves arrendadas
+
+	column '% arrendada'
+		dataType: double
+		lineageTag: 7d6f3b0b-c094-40ab-a807-553036f580f7
+		summarizeBy: none
+		sourceColumn: % arrendada
+
+	column Ejercicios
+		dataType: int64
+		lineageTag: 32064992-282a-453a-a2f4-d7c2818b561a
+		summarizeBy: none
+		sourceColumn: Ejercicios
+
+	column 'Mediana de la serie'
+		dataType: int64
+		isHidden
+		lineageTag: 473acc42-07a3-4d00-9b3b-e444483dc2ab
+		summarizeBy: none
+		sourceColumn: Mediana de la serie
+
+	column 'Año fiable'
+		dataType: boolean
+		lineageTag: a6535220-8246-4c5b-8136-dcefe4ded612
+		sourceColumn: Año fiable
+
+	column 'Variación anual'
+		dataType: int64
+		lineageTag: f4fac29d-cd2a-449c-8de3-e35ab3d4aa6c
+		summarizeBy: none
+		sourceColumn: Variación anual
+
+	partition v_fleet_series = m
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([BillingProject="mach5-gemini-project"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_integrado",Kind="Schema"]}[Data],
+				    Tabla = Dataset{[Name="v_fleet_series",Kind="View"]}[Data],
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(Tabla,{{"aerolinea", "Aerolínea"}, {"report_year", "Ejercicio"}, {"aeronaves", "Aeronaves"}, {"edad_ponderada", "Edad ponderada"}, {"aeronaves_arrendadas", "Aeronaves arrendadas"}, {"pct_arrendada", "% arrendada"}, {"ejercicios", "Ejercicios"}, {"mediana_serie", "Mediana de la serie"}, {"anio_fiable", "Año fiable"}, {"variacion_anual", "Variación anual"}})
+				in
+				    #"Columnas con nombre cambiado"
+
