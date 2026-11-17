@@ -92,6 +92,8 @@ jobs:
           # Prospeccion v2: dataset aparte del trabajo de la especializacion
           cargar config/operadores_certificados.json operadores dim_operador_certificado dataset_prospeccion
           cargar config/pedidos_complementarios.json aerolineas pedidos_complementarios dataset_prospeccion
+          cargar config/talleres_duenos.json reglas          talleres_reglas_dueno dataset_prospeccion
+          cargar config/talleres_duenos.json correo_personal talleres_correo_personal dataset_prospeccion
 
       - name: Verificar
         run: |

@@ -11,6 +11,25 @@ Todo lo de la prospección v2 vive en el dataset `dataset_prospeccion`, separado
 
 `config/operadores_certificados.json` une ambas fuentes con `dim_airline` (tabla `dim_operador_certificado`): cada grupo con sus certificados FAA (designador) y sus códigos DOT (`unique_carrier`). `sql/v_flota_b43.sql` normaliza el inventario B-43 y lo une a los grupos. `sql/v_pedidos_vigentes.sql` es el order book con las correcciones de American y Alaska, que la v2 usa en lugar de `order_book_fact` mientras esa tabla quede en el estado de la especialización.
 
+## Calificación de talleres
+
+`sql/v_talleres_calificacion.sql` califica cada taller de EE. UU. como prospecto de personal tercerizado (presencial y remoto) y de backoffice. La bandera `en_zona_objetivo` marca el sur: TX, OK, AR, LA, MS, AL, TN, GA, FL, SC, NC y AZ.
+
+- **Tipo de taller**, por sus ratings: aeronave completa de aviones grandes (estructura clase 2 o 4), aeronave completa, motores, componentes y aviónica, o servicios especializados.
+- **Dueño**, por el dominio del correo o el nombre, según las reglas editables de [config/talleres_duenos.json](../config/talleres_duenos.json): independiente, grupo MRO, fabricante, aerolínea, o gobierno y educación (excluidos). Fabricantes y aerolíneas van como cuenta corporativa.
+- **Puntaje de personal (0-100):** estructura de aviones grandes, motores de turbina, componentes, NDT, aprobación EASA o del Reino Unido y tamaño del grupo. Resta si el correo es personal (gmail y similares), indicio de un taller muy pequeño.
+- **Puntaje de backoffice (0-100):** acuerdos bilaterales (cada uno trae su suplemento de manual y sus auditorías), número de ratings, estructura, que no tenga un corporativo que absorba el trabajo y varios certificados en el grupo.
+- **Nivel:** A con 60 o más en cualquiera de los dos; B con personal de 35 o más, o backoffice de 50 o más; C el resto.
+- **Contacto:** Accountable Manager (quien decide) y Liaison (suele tener el correo), con coordenadas por ZIP desde `bigquery-public-data.geo_us_boundaries.zip_codes` (tabla `geo_zip`).
+
+Corte del 17 de noviembre de 2026, sur, venta directa: 163 en A, 270 en B y 1.211 en C. De los 433 en A o B, 424 tienen correo de contacto.
+
+Los puntajes son indicios de capacidad y de carga regulatoria, no una medición de la necesidad: FAA no publica plantilla, clientes ni finanzas de los talleres. Un rating "Limited" tampoco dice tamaño: muchos talleres de línea de aviones grandes solo tienen estructura Limited.
+
+`sql/v_talleres_senales.sql` lista los cambios entre las dos últimas descargas: certificado nuevo o retirado, rating nuevo o reducido, acuerdo bilateral nuevo y cambio de Accountable Manager. Con una sola descarga no devuelve filas. [prueba_senales.py](prueba_senales.py) la prueba con una descarga anterior sintética sin tocar la tabla real.
+
+`sql/v_mercado_mantenimiento.sql` es el contexto de mercado: cuánto mantenimiento compra a terceros cada aerolínea de EE. UU. (Form 41 P-5.2, últimos cuatro trimestres). Las cuentas 52431 y 52432 son la cuenta 43 de 14 CFR 241.12, servicios comprados a compañías externas o asociadas.
+
 ## FAA
 
 Las descargas se hacen desde los tableros de AVInfo con "Download Crosstab":

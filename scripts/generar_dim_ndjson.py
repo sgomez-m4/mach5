@@ -48,6 +48,8 @@ DERIVACIONES = {
 # Derivaciones que convierten una entrada del JSON en varias filas
 APLANADOS = {
     "aerolineas": aplanar_pedidos,
+    # config/talleres_duenos.json guarda los dominios personales como lista simple
+    "correo_personal": lambda dominio: [{"dominio": dominio}],
 }
 
 # Columnas que las vistas necesitan. bq load --autodetect omite del esquema
@@ -62,6 +64,9 @@ REQUERIDAS = {
     # Pedidos publicados fuera del Item 2 (config/pedidos_complementarios.json)
     "aerolineas": ["airline_id", "group_id", "display_name", "report_year", "fuente",
                    "aircraft_type", "quantity_committed", "delivery_period"],
+    # Dueno de los talleres Part 145 (config/talleres_duenos.json)
+    "reglas": ["prioridad", "tipo_dueno", "tipo_regla", "valor"],
+    "correo_personal": ["dominio"],
     # Puente con FAA y DOT (config/operadores_certificados.json)
     "operadores": ["airline_id", "group_id", "operador", "faa_dsgn_code",
                    "faa_certificate_number", "cfr_part", "dot_unique_carrier",
