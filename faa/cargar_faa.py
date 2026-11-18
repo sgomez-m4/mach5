@@ -11,6 +11,9 @@ Formato de las descargas (verificado el 2026-11-13):
   - Fechas dia/mes/anio ("9/11/2026" es 9 de noviembre).
   - Miles con punto en los conteos de personal ("2.158" son 2158 empleados).
   - La parte 125 se bajo como .xlsx.
+  - La parte 129 completa se bajo el 2026-11-17 solo con "Show Aircraft"
+    (Aircraft (2).csv, 512 certificados); se carga con la fecha 2026-11-13
+    junto al resto. Los operadores que solo estan ahi se toman de esa vista.
   - La vista de talleres trae una ultima columna sin nombre que repite Agency Email.
 
 Uso:
@@ -381,7 +384,15 @@ def main():
         elif a.startswith(PREFIJO_AERONAVES) and a.lower().endswith((".csv", ".xlsx")):
             modelos_crudos.extend(leer(ruta))
     operadores = normalizar_operadores(operadores_crudos, fecha_descarga)
+    # normalizar_modelos rellena la identidad del operador en las filas crudas
     modelos = normalizar_modelos(modelos_crudos, fecha_descarga)
+    # La vista "Show Aircraft" trae nombre, parte, designador, certificado y
+    # fecha del certificado. Los operadores que solo aparecen ahi (la parte 129
+    # se bajo completa solo con aeronaves el 2026-11-17) entran sin directivos
+    # ni conteos; FAA tampoco publica directivos de operadores extranjeros. Van
+    # despues de la lista de operadores para que la deduplicacion de abajo
+    # conserve la fila completa cuando existe.
+    operadores += normalizar_operadores(modelos_crudos, fecha_descarga)
 
     # Un mismo certificado bajado dos veces (p. ej. .csv y .xlsx de la misma
     # parte) se cuenta una vez. Algunos operadores 125 vienen sin numero de

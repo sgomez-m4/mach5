@@ -47,7 +47,7 @@ Sin `--cargar` solo genera los NDJSON y un resumen de conteos.
 
 Qué corrige el script: CSV en UTF-16 con tabuladores, fechas día/mes/año, miles con punto ("2.158"), la última columna sin nombre que repite el correo, el certificado de prueba "TEST CERTIFICATE FOR 121" y los ratings separados en clases (`airframe_clases = [3, 4]`) y "Limited".
 
-Pendiente: la descarga de la parte 129 del 13 de noviembre trae 117 operadores y le faltan Volaris, Copa, LATAM, Cathay y casi todas las chinas. Hay que volver a bajarla completa.
+La parte 129 se volvió a bajar completa el 17 de noviembre, solo con "Show Aircraft" (`Aircraft (2).csv`): 512 certificados, contra 117 de la primera descarga. Se carga con la fecha 2026-11-13 junto al resto. Los operadores que solo aparecen en la vista de aeronaves entran con nombre, designador, certificado y fecha, sin directivos ni conteos; FAA no publica directivos de operadores extranjeros.
 
 ## Form 41
 

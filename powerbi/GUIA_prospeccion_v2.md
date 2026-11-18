@@ -3,7 +3,8 @@
 > **Estado al 17-nov-2026:** los bloques 2, 3, 5, 6 y 7 ya están hechos. Las páginas se escribieron en PBIR con Power BI cerrado, se revisaron en Desktop y se guardaron desde ahí. Queda pendiente:
 > - El navegador de páginas (bloque 4). Por ahora las dos portadas son las dos primeras pestañas.
 > - El botón de volver en las fichas.
-> - El paso del mapa de Bing a Azure Maps. Power BI avisa que Bing se retira; se acepta con el botón «Actualizar mapa» de la página `Talleres: mapa`.
+>
+> El mapa de `Talleres: mapa` pasó a Azure Maps el 17-nov-2026.
 >
 > Lo que sigue queda como referencia de qué contiene cada página.
 
