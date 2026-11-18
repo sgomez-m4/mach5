@@ -1,10 +1,9 @@
 # Informe de prospección v2: pasos en Power BI Desktop
 
-> **Estado al 17-nov-2026:** los bloques 2, 3, 5, 6 y 7 ya están hechos. Las páginas se escribieron en PBIR con Power BI cerrado, se revisaron en Desktop y se guardaron desde ahí. Queda pendiente:
-> - El navegador de páginas (bloque 4). Por ahora las dos portadas son las dos primeras pestañas.
-> - El botón de volver en las fichas.
->
-> El mapa de `Talleres: mapa` pasó a Azure Maps el 17-nov-2026.
+> **Estado al 17-nov-2026:** los siete bloques están hechos. Las páginas se escribieron en PBIR con Power BI cerrado, se revisaron en Desktop y se guardaron desde ahí. Lo que quedó distinto de los pasos de abajo:
+> - Las tres páginas de prospección se llaman `Aerolíneas`, `Talleres` y `Mapa de talleres`, para que quepan en el navegador. El navegador, arriba a la derecha de cada una, muestra solo esas tres.
+> - Las dos fichas tienen el botón de volver arriba a la izquierda. En Desktop se usa con Ctrl + clic.
+> - El mapa usa Azure Maps.
 >
 > Lo que sigue queda como referencia de qué contiene cada página.
 
