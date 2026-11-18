@@ -28,7 +28,15 @@ Es una tabla de Excel (`tblSeguimiento`). Para agregar una cuenta, se agrega una
 
 ## Conectar el archivo de SharePoint
 
-El modelo lee la ruta del parámetro `RutaSeguimiento`. Hoy apunta a la copia local `C:\Users\samue\Desktop\airline-fleet-ia\Seguimiento_comercial_mas4.xlsx`.
+El modelo lee la ruta del parámetro `RutaSeguimiento`. El repo es público, así que guarda una ruta de ejemplo (`https://<organizacion>-my.sharepoint.com/personal/<usuario>/Documents/...`). La ruta real se pone en cada equipo con los pasos de abajo. Si el archivo se mueve, se repiten esos pasos con la ruta nueva. El enlace de «Compartir» no sirve, porque devuelve la página de SharePoint y no el archivo.
+
+Para que git no suba la ruta real después de ponerla, se marca el archivo del parámetro como cambio local:
+
+```bash
+git update-index --skip-worktree powerbi/Prospeccion_v2_PBIP/Prospeccion_v2.SemanticModel/definition/expressions.tmdl
+```
+
+Para volver a versionarlo hay que usar `--no-skip-worktree`. Ten en cuenta que el `git pull` no actualiza un archivo marcado así.
 
 1. Sube el archivo al OneDrive o SharePoint de mas4 y compártelo con el equipo.
 2. Abre el archivo en Excel de escritorio: Archivo → Información → Copiar ruta. Debe quedar un enlace que empiece por `https://` y termine en `.xlsx`. Si al final trae `?web=1`, quítalo.

@@ -1,6 +1,6 @@
 /// Ruta o enlace del Excel de seguimiento comercial. Una ruta local (C:\...) o el enlace
 /// directo al archivo en OneDrive o SharePoint de mas4 (https://..., sin ?web=1).
-expression RutaSeguimiento = "C:\Users\samue\Desktop\airline-fleet-ia\Seguimiento_comercial_mas4.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression RutaSeguimiento = "https://<organizacion>-my.sharepoint.com/personal/<usuario>/Documents/Seguimiento_comercial_mas4.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: 871297b2-ac9e-4cc5-b60e-1a4398f4a75a
 
 	annotation PBI_ResultType = Text
