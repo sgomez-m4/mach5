@@ -129,6 +129,21 @@
               },
               "queryRef": "Talleres.Certificado",
               "nativeQueryRef": "Certificado"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas v2"
+                    }
+                  },
+                  "Property": "Estado comercial"
+                }
+              },
+              "queryRef": "_Medidas v2.Estado comercial",
+              "nativeQueryRef": "Estado comercial",
+              "displayName": "Estado comercial"
             }
           ]
         }

@@ -146,6 +146,33 @@ table '_Medidas v2'
 		displayFolder: Eventos
 		lineageTag: c06e8e8e-24be-448c-93b9-d2d668f2a6bd
 
+	measure 'Estado comercial' = IF ( COUNTROWS ( Seguimiento ) = 0, "Sin registro", IF ( HASONEVALUE ( Seguimiento[Estado] ), VALUES ( Seguimiento[Estado] ), "Varios" ) )
+		displayFolder: Seguimiento
+		lineageTag: 039491e0-4bdc-4a65-a0eb-4eaeaa5a041a
+
+	measure 'Próxima acción cuenta' = IF ( COUNTROWS ( Seguimiento ) = 1, VAR a = VALUES ( Seguimiento[Próxima acción] ) VAR f = VALUES ( Seguimiento[Fecha próxima acción] ) VAR r = VALUES ( Seguimiento[Responsable] ) RETURN IF ( ISBLANK ( a ), "", a & IF ( ISBLANK ( f ), "", " · " & FORMAT ( f, "dd/mm/yyyy" ) ) & IF ( ISBLANK ( r ), "", " · " & r ) ), "" )
+		displayFolder: Seguimiento
+		lineageTag: e835e316-7c81-4b0c-8e19-3c3046eb1ca5
+
+	measure 'Seguimiento cuenta' = VAR e = [Estado comercial] VAR p = [Próxima acción cuenta] RETURN "Seguimiento: " & e & IF ( p = "", "", " · " & p )
+		displayFolder: Seguimiento
+		lineageTag: 66bf571f-0a02-44cd-a6fd-3af5f836e398
+
+	measure 'Cuentas en conversación' = COUNTROWS ( FILTER ( Seguimiento, Seguimiento[Estado] IN { "Contactado", "Reunión agendada", "Propuesta enviada", "Negociación" } ) ) + 0
+		formatString: #,##0
+		displayFolder: Seguimiento
+		lineageTag: 073bf061-f52d-485e-9272-9e5f871d9d6a
+
+	measure 'Acciones vencidas' = COUNTROWS ( FILTER ( Seguimiento, Seguimiento[Situación] = "Vencida" ) ) + 0
+		formatString: #,##0
+		displayFolder: Seguimiento
+		lineageTag: fde2376f-17bf-42a3-b60c-f18ef2c56a06
+
+	measure 'Cuentas ganadas' = COUNTROWS ( FILTER ( Seguimiento, Seguimiento[Estado] = "Ganado" ) ) + 0
+		formatString: #,##0
+		displayFolder: Seguimiento
+		lineageTag: b8451422-7658-42f1-9924-e65fbdbb1056
+
 	column _
 		isHidden
 		lineageTag: 40e9e47a-fc07-492f-b2dd-01c12db1b771

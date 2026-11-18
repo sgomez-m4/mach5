@@ -73,3 +73,11 @@ relationship 87ee6959-3863-4306-94e9-2f9ce1c473e6
 	fromColumn: 'Clientes de talleres'.clave_taller
 	toColumn: Talleres.clave_taller
 
+relationship 4f304780-5f89-4ab4-9a46-26d5a6b49c77
+	fromColumn: Seguimiento.group_id
+	toColumn: dim_airline.airline_id
+
+relationship af4ac725-717d-491c-a62b-4347529bfa15
+	fromColumn: Seguimiento.clave_taller
+	toColumn: Talleres.clave_taller
+

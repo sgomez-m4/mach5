@@ -10232,6 +10232,90 @@ cultureInfo es-MX
 			          }
 			        }
 			      ]
+			    },
+			    "table_medidas_v2.estado_comercial": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas v2",
+			          "ConceptualProperty": "Estado comercial"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Estado comercial": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_medidas_v2.cuentas_ganadas": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas v2",
+			          "ConceptualProperty": "Cuentas ganadas"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Ganadas": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_medidas_v2.acciones_vencidas": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas v2",
+			          "ConceptualProperty": "Acciones vencidas"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Vencidas": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_medidas_v2.cuentas_en_conversación": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas v2",
+			          "ConceptualProperty": "Cuentas en conversación"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "En conversación": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
 			    }
 			  },
 			  "Relationships": {

@@ -1,0 +1,140 @@
+/// Seguimiento comercial: una fila por cuenta, editada por el equipo en Excel en linea (tabla tblSeguimiento).
+table Seguimiento
+	lineageTag: a4b93670-20ad-4c4f-81f8-36411a23d586
+
+	column Tipo
+		dataType: string
+		lineageTag: 323a02fd-b88e-4de6-b50a-30273f91f6a4
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID
+		dataType: string
+		isHidden
+		lineageTag: 72d9ced2-0dd8-418e-b3a9-567ca31af7d2
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cuenta
+		dataType: string
+		lineageTag: 9c4f0638-e827-463f-8099-f4ff4551d35d
+		summarizeBy: none
+		sourceColumn: Cuenta
+
+		annotation SummarizationSetBy = Automatic
+
+	column Detalle
+		dataType: string
+		lineageTag: bf0997d3-544e-4d9f-aa69-0520e5024d82
+		summarizeBy: none
+		sourceColumn: Detalle
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: 9b846430-a791-4fe9-a0b1-aa39d6162bd8
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Responsable
+		dataType: string
+		lineageTag: ac3d1b08-8672-4311-af35-c69bda37fd55
+		summarizeBy: none
+		sourceColumn: Responsable
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Próxima acción'
+		dataType: string
+		lineageTag: 613a95bd-0f0a-480e-ab49-52e2553d6812
+		summarizeBy: none
+		sourceColumn: Próxima acción
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fecha próxima acción'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 707fc894-e884-42ee-91cb-932a4fed5a69
+		summarizeBy: none
+		sourceColumn: Fecha próxima acción
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Último contacto'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: ad068aa6-2921-4e19-b8ad-61f4b206632b
+		summarizeBy: none
+		sourceColumn: Último contacto
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Notas
+		dataType: string
+		lineageTag: a0fa0970-113a-4ae5-8d39-3cadb6c7c952
+		summarizeBy: none
+		sourceColumn: Notas
+
+		annotation SummarizationSetBy = Automatic
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 88ae5d51-20b7-41dd-873f-01ba476ebf92
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column clave_taller
+		dataType: string
+		isHidden
+		lineageTag: a47c2f14-5ddc-4a6b-afdd-2e8c26198650
+		summarizeBy: none
+		sourceColumn: clave_taller
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Cerrada (Ganado o Perdido), Sin contactar (sin accion), Sin fecha, Vencida o Al dia.
+	column Situación =
+			SWITCH (
+			    TRUE (),
+			    Seguimiento[Estado] IN { "Ganado", "Perdido" }, "Cerrada",
+			    Seguimiento[Estado] = "Sin contactar" && ISBLANK ( Seguimiento[Próxima acción] ), "Sin contactar",
+			    ISBLANK ( Seguimiento[Fecha próxima acción] ), "Sin fecha",
+			    Seguimiento[Fecha próxima acción] < TODAY (), "Vencida",
+			    "Al día"
+			)
+		dataType: string
+		lineageTag: 0e8653bf-ff07-41e5-a7a3-6cf34334ed17
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Seguimiento = m
+		mode: import
+		source =
+				let
+				    Contenido = if Text.StartsWith(RutaSeguimiento, "http") then Web.Contents(RutaSeguimiento) else File.Contents(RutaSeguimiento),
+				    Libro = Excel.Workbook(Contenido, null, true),
+				    Tabla = Libro{[Item="tblSeguimiento",Kind="Table"]}[Data],
+				    Tipos = Table.TransformColumnTypes(Tabla, {{"Tipo", type text}, {"ID", type text}, {"Cuenta", type text}, {"Detalle", type text}, {"Estado", type text}, {"Responsable", type text}, {"Próxima acción", type text}, {"Fecha próxima acción", type date}, {"Último contacto", type date}, {"Notas", type text}}),
+				    ConGrupo = Table.AddColumn(Tipos, "group_id", each if [Tipo] = "Aerolínea" and [ID] <> "" then [ID] else null, type text),
+				    ConTaller = Table.AddColumn(ConGrupo, "clave_taller", each if [Tipo] = "Taller" and [ID] <> "" then [ID] else null, type text)
+				in
+				    ConTaller
+
+	annotation PBI_ResultType = Table
+

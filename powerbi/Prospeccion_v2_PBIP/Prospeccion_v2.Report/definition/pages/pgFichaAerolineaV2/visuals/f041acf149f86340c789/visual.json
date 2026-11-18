@@ -98,6 +98,34 @@
               },
               "queryRef": "_Medidas.Edad Promedio Ponderada",
               "nativeQueryRef": "Edad Promedio Ponderada"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas v2"
+                    }
+                  },
+                  "Property": "Estado comercial"
+                }
+              },
+              "queryRef": "_Medidas v2.Estado comercial",
+              "nativeQueryRef": "Estado comercial"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas v2"
+                    }
+                  },
+                  "Property": "Próxima acción cuenta"
+                }
+              },
+              "queryRef": "_Medidas v2.Próxima acción cuenta",
+              "nativeQueryRef": "Próxima acción cuenta"
             }
           ]
         }

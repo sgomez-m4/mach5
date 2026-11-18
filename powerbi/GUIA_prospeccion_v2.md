@@ -8,6 +8,10 @@
 >   - En `Aerolíneas`, «Último disparador» va en el panel, donde estaban las tres cifras, y la lista tiene la columna «Disparadores 90 d».
 >   - En la ficha de aerolínea, «Eventos del último año» reemplaza al gráfico de flota por modelo.
 >   - La ficha de taller muestra las aerolíneas que nombran a su proveedor.
+> - Seguimiento comercial (18-nov):
+>   - Página `Seguimiento`, cuarta pestaña del navegador. `Talleres: mapa` pasó a llamarse `Mapa`.
+>   - Estado comercial en las listas y en las fichas.
+>   - Lee el Excel del parámetro `RutaSeguimiento`. Ver `seguimiento/README.md`.
 >
 > Lo que sigue queda como referencia de qué contiene cada página.
 

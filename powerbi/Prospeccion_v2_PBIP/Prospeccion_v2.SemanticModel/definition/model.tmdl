@@ -9,7 +9,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["v_prospect_score","dim_airline","dim_aircraft_type","v_fleet_normalized","v_order_book_normalized","v_fleet_transition","v_financial_trend","v_fleet_series","Prospectos aerolineas","Talleres","Talleres ratings","Talleres acuerdos","Talleres senales","Mercado mantenimiento","Directivos","Modelos FAA","Eventos","Clientes de talleres"]
+annotation PBI_QueryOrder = ["v_prospect_score","dim_airline","dim_aircraft_type","v_fleet_normalized","v_order_book_normalized","v_fleet_transition","v_financial_trend","v_fleet_series","Prospectos aerolineas","Talleres","Talleres ratings","Talleres acuerdos","Talleres senales","Mercado mantenimiento","Directivos","Modelos FAA","Eventos","Clientes de talleres","Seguimiento","RutaSeguimiento"]
 
 annotation PBI_ProTooling = ["DevMode"]
 
@@ -38,6 +38,7 @@ ref table '_Medidas v2'
 ref table 'Modelos FAA'
 ref table Eventos
 ref table 'Clientes de talleres'
+ref table Seguimiento
 
 ref cultureInfo es-MX
 
