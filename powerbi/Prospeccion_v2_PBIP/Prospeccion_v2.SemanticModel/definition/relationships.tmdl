@@ -61,3 +61,7 @@ relationship 2a7ba49e-03f8-4695-8d56-e11e4b356172
 	fromColumn: 'Talleres senales'.clave_taller
 	toColumn: Talleres.clave_taller
 
+relationship 9bfa1381-0e55-48c5-8e5b-decd4d1ec2ce
+	fromColumn: 'Modelos FAA'.group_id
+	toColumn: dim_airline.airline_id
+

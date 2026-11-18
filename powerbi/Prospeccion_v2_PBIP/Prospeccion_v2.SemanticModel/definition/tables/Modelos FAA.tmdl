@@ -1,0 +1,63 @@
+/// Modelos que cada certificado del grupo tiene registrados ante FAA (vista v_modelos_operador).
+table 'Modelos FAA'
+	lineageTag: da50a8a0-352c-47a2-834b-411cf0b6dd2b
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 4202cda2-1291-4873-b429-ea3768b9f044
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Operador FAA'
+		dataType: string
+		lineageTag: 9c943c7a-effd-4476-be5f-fc95b1a004ea
+		summarizeBy: none
+		sourceColumn: operador
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Parte CFR'
+		dataType: string
+		lineageTag: d6b6276e-be4b-4929-b79a-e2098c0671f1
+		summarizeBy: none
+		sourceColumn: cfr_part
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Modelo FAA'
+		dataType: string
+		lineageTag: bbcecfe2-3410-4776-ad6f-626b4654efca
+		summarizeBy: none
+		sourceColumn: modelo_faa
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_descarga
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 11c04791-0fe2-4316-a060-538728100c5e
+		summarizeBy: none
+		sourceColumn: fecha_descarga
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Modelos FAA' = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_modelos_operador",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"group_id", "operador", "cfr_part", "modelo_faa", "fecha_descarga"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+
