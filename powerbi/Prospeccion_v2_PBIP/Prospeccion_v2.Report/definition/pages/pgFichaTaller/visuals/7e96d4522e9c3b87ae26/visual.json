@@ -1,0 +1,134 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "7e96d4522e9c3b87ae26",
+  "position": {
+    "x": 648,
+    "y": 338,
+    "z": 21002,
+    "height": 136,
+    "width": 616,
+    "tabOrder": 21002
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clientes de talleres"
+                    }
+                  },
+                  "Property": "Aerolínea cliente"
+                }
+              },
+              "queryRef": "Clientes de talleres.Aerolínea cliente",
+              "nativeQueryRef": "Aerolínea cliente"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clientes de talleres"
+                    }
+                  },
+                  "Property": "Proveedor nombrado"
+                }
+              },
+              "queryRef": "Clientes de talleres.Proveedor nombrado",
+              "nativeQueryRef": "Proveedor nombrado"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clientes de talleres"
+                    }
+                  },
+                  "Property": "Servicio"
+                }
+              },
+              "queryRef": "Clientes de talleres.Servicio",
+              "nativeQueryRef": "Servicio"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Clientes de talleres"
+                    }
+                  },
+                  "Property": "Documento"
+                }
+              },
+              "queryRef": "Clientes de talleres.Documento",
+              "nativeQueryRef": "Documento"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Clientes de talleres"
+                  }
+                },
+                "Property": "Aerolínea cliente"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Aerolíneas que nombran a este proveedor en su 10-K o 20-F'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

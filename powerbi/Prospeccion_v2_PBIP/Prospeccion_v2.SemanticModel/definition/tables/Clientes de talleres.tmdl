@@ -1,0 +1,104 @@
+/// Aerolineas que nombran en su 10-K o 20-F al proveedor duenio del taller (vista v_talleres_clientes).
+table 'Clientes de talleres'
+	lineageTag: a442121d-cb2c-4b3c-bf6b-37526c93aac8
+
+	column clave_taller
+		dataType: string
+		isHidden
+		lineageTag: f26bf62c-7f83-4359-a82b-e4e332082d40
+		summarizeBy: none
+		sourceColumn: clave_taller
+
+		annotation SummarizationSetBy = Automatic
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 39ed6b22-ecd0-43b6-963c-e80962efa5ad
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Aerolínea cliente'
+		dataType: string
+		lineageTag: 738dc6f8-21d6-4f3d-979c-af9a26a584d4
+		summarizeBy: none
+		sourceColumn: aerolinea
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Proveedor nombrado'
+		dataType: string
+		lineageTag: dbe0f502-a149-4047-9d00-93f00894d2d6
+		summarizeBy: none
+		sourceColumn: proveedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Servicio
+		dataType: string
+		lineageTag: 002788ec-12ec-41d4-8fbb-74981a78dc09
+		summarizeBy: none
+		sourceColumn: servicio
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tipo de proveedor'
+		dataType: string
+		lineageTag: 01455145-462b-4c62-8651-db84663ca9e5
+		summarizeBy: none
+		sourceColumn: tipo_proveedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Documento
+		dataType: string
+		lineageTag: f590cac7-e313-469f-ad45-03f201cb8afa
+		summarizeBy: none
+		sourceColumn: documento
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fecha del documento'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: b328c5a9-e86a-49af-86d0-c9da5c8ad9fb
+		summarizeBy: none
+		sourceColumn: fecha_documento
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Cita
+		dataType: string
+		lineageTag: c0e1acc4-239e-49f5-aff0-d7149539eb18
+		summarizeBy: none
+		sourceColumn: cita
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Enlace al documento'
+		dataType: string
+		lineageTag: 01b88ff9-dab9-4d92-8a00-f19b064cf7ed
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: url
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Clientes de talleres' = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_talleres_clientes",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"clave_taller", "group_id", "aerolinea", "proveedor", "servicio", "tipo_proveedor", "documento", "fecha_documento", "cita", "url"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

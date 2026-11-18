@@ -130,6 +130,22 @@ table '_Medidas v2'
 		displayFolder: Talleres
 		lineageTag: 373304ca-4fd7-4fab-8435-d47a6cd0ae73
 
+	/// Eventos de relevancia Alta (pedidos, entregas, leasing, MRO, director tecnico) de los ultimos 90 dias.
+	measure 'Disparadores 90 días' = CALCULATE ( COUNTROWS ( Eventos ), Eventos[Relevancia] = "Alta", Eventos[Días] <= 90 )
+		formatString: 0
+		displayFolder: Eventos
+		lineageTag: 384a0949-4988-448a-9be0-f919e7829da0
+
+	/// El evento de relevancia Alta mas reciente del grupo elegido.
+	measure 'Último disparador' = VAR ultimo = TOPN ( 1, FILTER ( Eventos, Eventos[Relevancia] = "Alta" ), Eventos[Fecha], DESC, Eventos[id_evento], DESC ) RETURN IF ( HASONEVALUE ( 'Prospectos aerolineas'[Grupo] ), IF ( ISEMPTY ( ultimo ), "Sin disparadores en el último año", FORMAT ( MAXX ( ultimo, Eventos[Fecha] ), "dd/mm/yyyy" ) & " · " & MAXX ( ultimo, Eventos[Resumen] ) ), "" )
+		displayFolder: Eventos
+		lineageTag: 7a824d63-d227-4b27-869d-7574e08036a8
+
+	measure 'Eventos último año' = COUNTROWS ( Eventos )
+		formatString: 0
+		displayFolder: Eventos
+		lineageTag: c06e8e8e-24be-448c-93b9-d2d668f2a6bd
+
 	column _
 		isHidden
 		lineageTag: 40e9e47a-fc07-492f-b2dd-01c12db1b771

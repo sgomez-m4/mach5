@@ -15,6 +15,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+import registro_eventos
+
 # =====================================================================
 # CONFIGURACIÓN
 # =====================================================================
@@ -345,8 +347,11 @@ def monitorear_aerolineas_chinas(request):
     t_inicio = time.time()
 
     historial = obtener_historial()
+    # Codigo de Cninfo -> group_id del score v2 (config/eventos_fuentes.json)
+    grupos = registro_eventos.cargar_fuentes(storage_client, BUCKET_NAME)
+    eventos_registrados = 0
 
-    stats = {"anuncios_nuevos": 0, "alertas_enviadas": 0, "sin_impacto": 0, "errores": 0}
+    stats ={"anuncios_nuevos": 0, "alertas_enviadas": 0, "sin_impacto": 0, "errores": 0}
     alertas_detalle = []
 
     for aerolinea in AEROLINEAS:
@@ -388,6 +393,15 @@ def monitorear_aerolineas_chinas(request):
                 stats["sin_impacto"] += 1
                 print(f"   ℹ️ Sin impacto en flota. Sin correo.")
 
+            # Disparadores del informe de prospeccion. La fecha es la de la
+            # consulta: el listado de esta funcion no trae la del anuncio.
+            if aerolinea["codigo"] in grupos and anuncio.get("fuente") == "CNINFO":
+                eventos_registrados += registro_eventos.registrar({
+                    "id_evento": f"cninfo:{anuncio['id']}", "group_id": grupos[aerolinea["codigo"]],
+                    "fecha": time.strftime("%Y-%m-%d"), "fuente": "Cninfo", "formulario": "Anuncio",
+                    "items": None, "titulo": anuncio["titulo"], "url": anuncio["url"],
+                }, texto, ai_client)
+
             # Se marca como procesado SIEMPRE (con o sin alerta)
             guardar_historial(historial, anuncio_id)
 
@@ -404,5 +418,6 @@ def monitorear_aerolineas_chinas(request):
         "alertas_enviadas": stats["alertas_enviadas"],
         "sin_impacto": stats["sin_impacto"],
         "errores_analisis": stats["errores"],
+        "eventos_registrados": eventos_registrados,
         "alertas": alertas_detalle
     }, 200

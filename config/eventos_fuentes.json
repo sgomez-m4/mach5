@@ -1,0 +1,30 @@
+{
+  "version": "2026-11-17",
+  "descripcion": "Fuentes de eventos corporativos por grupo del score v2: CIK de EDGAR (8-K de emisores de EE. UU., 6-K de emisores extranjeros) o codigo de Cninfo (anuncios de las aerolineas chinas; column sse, szse o hke). Los CIK y codigos son los mismos que vigilan rss-8k, rss-6k y revision-diaria-china, mas FedEx y Allegiant. Juneyao (603885) cotiza en Shanghai: column sse, no szse como en revision-diaria-china.",
+  "fuentes": [
+    {"group_id": "AAL",      "tipo": "sec",    "cik": "0000006201", "formulario": "8-K"},
+    {"group_id": "DAL",      "tipo": "sec",    "cik": "0000027904", "formulario": "8-K"},
+    {"group_id": "UAL",      "tipo": "sec",    "cik": "0000100517", "formulario": "8-K"},
+    {"group_id": "ALK",      "tipo": "sec",    "cik": "0000766421", "formulario": "8-K"},
+    {"group_id": "LUV",      "tipo": "sec",    "cik": "0000092380", "formulario": "8-K"},
+    {"group_id": "JBLU",     "tipo": "sec",    "cik": "0001158463", "formulario": "8-K"},
+    {"group_id": "ULCC",     "tipo": "sec",    "cik": "0001670076", "formulario": "8-K"},
+    {"group_id": "SKYW",     "tipo": "sec",    "cik": "0000793733", "formulario": "8-K"},
+    {"group_id": "RJET",     "tipo": "sec",    "cik": "0000810332", "formulario": "8-K"},
+    {"group_id": "FDX",      "tipo": "sec",    "cik": "0001048911", "formulario": "8-K"},
+    {"group_id": "ALGT",     "tipo": "sec",    "cik": "0001362468", "formulario": "8-K"},
+    {"group_id": "AZUL",     "tipo": "sec",    "cik": "0001432364", "formulario": "6-K"},
+    {"group_id": "VLRS",     "tipo": "sec",    "cik": "0001520504", "formulario": "6-K"},
+    {"group_id": "CPA",      "tipo": "sec",    "cik": "0001345105", "formulario": "6-K"},
+    {"group_id": "AEROMEX",  "tipo": "sec",    "cik": "0001561861", "formulario": "6-K"},
+    {"group_id": "LTM",      "tipo": "sec",    "cik": "0001047716", "formulario": "6-K"},
+    {"group_id": "CAO",      "tipo": "cninfo", "codigo": "601111", "column": "sse"},
+    {"group_id": "CEA",      "tipo": "cninfo", "codigo": "600115", "column": "sse"},
+    {"group_id": "CSN",      "tipo": "cninfo", "codigo": "600029", "column": "sse"},
+    {"group_id": "HNA",      "tipo": "cninfo", "codigo": "600221", "column": "sse"},
+    {"group_id": "SPRING",   "tipo": "cninfo", "codigo": "601021", "column": "sse"},
+    {"group_id": "JUNEYAO",  "tipo": "cninfo", "codigo": "603885", "column": "sse"},
+    {"group_id": "CHEXP",    "tipo": "cninfo", "codigo": "002928", "column": "szse"},
+    {"group_id": "CPACIFIC", "tipo": "cninfo", "codigo": "00293",  "column": "hke"}
+  ]
+}

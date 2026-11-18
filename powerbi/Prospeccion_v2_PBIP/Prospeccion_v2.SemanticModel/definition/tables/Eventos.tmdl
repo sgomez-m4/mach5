@@ -1,0 +1,140 @@
+/// Eventos corporativos clasificados (vista v_eventos_aerolinea). Relevancia Alta = disparador.
+table Eventos
+	lineageTag: 285542c2-d8da-455e-b047-6a7b3968b4d8
+
+	column id_evento
+		dataType: string
+		isHidden
+		lineageTag: 0f218069-4531-4701-b391-98a85ee5542a
+		summarizeBy: none
+		sourceColumn: id_evento
+
+		annotation SummarizationSetBy = Automatic
+
+	column group_id
+		dataType: string
+		isHidden
+		lineageTag: 78009cfb-e159-4bd7-bab9-98afde2c650d
+		summarizeBy: none
+		sourceColumn: group_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: a34712d9-5784-4a62-bf27-7823f09a4d53
+		summarizeBy: none
+		sourceColumn: fecha
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Días
+		dataType: int64
+		formatString: 0
+		lineageTag: 46ea00a5-2c6b-49ab-8971-b6f74ea93975
+		summarizeBy: none
+		sourceColumn: dias
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fuente
+		dataType: string
+		lineageTag: b3f8d941-8b43-42c8-bfb1-c0b7dda76dc9
+		summarizeBy: none
+		sourceColumn: fuente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Formulario
+		dataType: string
+		lineageTag: 928d8255-9c2f-4f8e-9afa-ab1a55b3f6db
+		summarizeBy: none
+		sourceColumn: formulario
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Items 8-K'
+		dataType: string
+		lineageTag: 774d4724-f2f6-468e-a0ef-6f14b8623480
+		summarizeBy: none
+		sourceColumn: items
+
+		annotation SummarizationSetBy = Automatic
+
+	column Título
+		dataType: string
+		lineageTag: aa2d2179-4d29-4361-aa2b-36c3f34c4986
+		summarizeBy: none
+		sourceColumn: titulo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Enlace
+		dataType: string
+		lineageTag: 346983b7-429d-4e49-a497-33c14b5b06ed
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: url
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoría
+		dataType: string
+		lineageTag: f970795c-e63c-4c57-837f-6821c6e3a49b
+		summarizeBy: none
+		sourceColumn: categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column Relevancia
+		dataType: string
+		lineageTag: 4c361de9-c665-4bde-9116-3c654a98bde3
+		summarizeBy: none
+		sourceColumn: relevancia
+		sortByColumn: 'Orden relevancia'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Orden relevancia'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 31656613-f034-4af9-8060-ba22426133d9
+		summarizeBy: none
+		sourceColumn: orden_relevancia
+
+		annotation SummarizationSetBy = Automatic
+
+	column Resumen
+		dataType: string
+		lineageTag: 4cda75f0-b65c-4d73-8d6f-b15f4179ab5f
+		summarizeBy: none
+		sourceColumn: resumen
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Es disparador'
+		dataType: boolean
+		lineageTag: 3f36ccc9-030e-4062-9b0d-4a80239f24f7
+		summarizeBy: none
+		sourceColumn: es_disparador
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Eventos = m
+		mode: import
+		source =
+				let
+				    Origen = GoogleBigQuery.Database([Implementation="2.0"]),
+				    Proyecto = Origen{[Name="mach5-gemini-project",Kind="Database"]}[Data],
+				    Dataset = Proyecto{[Name="dataset_prospeccion",Kind="Schema"]}[Data],
+				    Vista = Dataset{[Name="v_eventos_aerolinea",Kind="View"]}[Data],
+				    Columnas = Table.SelectColumns(Vista, {"id_evento", "group_id", "fecha", "dias", "fuente", "formulario", "items", "titulo", "url", "categoria", "relevancia", "orden_relevancia", "resumen", "es_disparador"})
+				in
+				    Columnas
+
+	annotation PBI_ResultType = Table
+

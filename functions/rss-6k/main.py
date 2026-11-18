@@ -14,6 +14,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+import registro_eventos
+
 CORREO_ORIGEN = os.environ.get("CORREO_ORIGEN", "tu_correo@gmail.com")
 PASSWORD_APP = os.environ.get("PASSWORD_APP", "tu_contraseña_de_aplicacion")
 CORREO_DESTINO = os.environ.get("CORREO_DESTINO", "tu-correo-destino@email.com")
@@ -321,6 +323,9 @@ def monitorear_sec_event(request):
     """Punto de entrada HTTP de la Cloud Function para 6-K (aerolíneas extranjeras)."""
     print("Iniciando verificación periódica de reportes 6-K en la SEC (Aerolíneas Extranjeras)...")
     historial_ids = obtener_historial_ids()
+    # CIK -> group_id del score v2 (config/eventos_fuentes.json en el bucket)
+    grupos = registro_eventos.cargar_fuentes(storage_client, BUCKET_NAME)
+    eventos_registrados = 0
     filings_procesados = 0
     alertas_impacto_confirmado = 0
     alertas_por_error_analisis = 0
@@ -366,6 +371,16 @@ def monitorear_sec_event(request):
                 else:
                     print(f"   ℹ️ Sin impacto en flota. No se envía correo. CIK {cik} — {titulo[:60]}")
 
+                # Disparadores del informe de prospeccion: se guarda todo 6-K de
+                # un grupo del score, con o sin impacto en flota
+                id_evento = registro_eventos.id_sec(reporte_id) or registro_eventos.id_sec(link_reporte)
+                if cik in grupos and id_evento:
+                    eventos_registrados += registro_eventos.registrar({
+                        "id_evento": id_evento, "group_id": grupos[cik],
+                        "fecha": (entrada.get("updated") or "")[:10] or None, "fuente": "EDGAR",
+                        "formulario": "6-K", "items": None, "titulo": titulo, "url": link_reporte,
+                    }, texto_completo, ai_client)
+
                 # Se marca como procesado siempre, tenga o no impacto en flota,
                 # para no volver a analizarlo en la siguiente ejecución.
                 guardar_nuevo_id(historial_ids, reporte_id)
@@ -377,5 +392,6 @@ def monitorear_sec_event(request):
         "status": "success",
         "filings_6k_procesados": filings_procesados,
         "alertas_con_impacto_flota_enviadas": alertas_impacto_confirmado,
-        "alertas_por_error_analisis_enviadas": alertas_por_error_analisis
+        "alertas_por_error_analisis_enviadas": alertas_por_error_analisis,
+        "eventos_registrados": eventos_registrados
     }, 200

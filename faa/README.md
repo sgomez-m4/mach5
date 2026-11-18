@@ -28,6 +28,29 @@ Los puntajes son indicios de capacidad y de carga regulatoria, no una medición 
 
 `sql/v_talleres_senales.sql` lista los cambios entre las dos últimas descargas: certificado nuevo o retirado, rating nuevo o reducido, acuerdo bilateral nuevo y cambio de Accountable Manager. Con una sola descarga no devuelve filas. [prueba_senales.py](prueba_senales.py) la prueba con una descarga anterior sintética sin tocar la tabla real.
 
+## Clientes de los talleres
+
+[clientes_filings.py](clientes_filings.py) baja el último 10-K o 20-F de cada grupo del score que presenta en EDGAR. Se queda con los párrafos que hablan de mantenimiento, y Gemini extrae los proveedores que la aerolínea nombra, con el servicio y la cita textual. La tabla resultante es `talleres_clientes_filing`.
+
+`sql/v_talleres_clientes.sql` cruza esos proveedores con los talleres de FAA mediante alias. Por ejemplo, GE Aerospace también aparece en FAA como GE Aviation o Unison.
+
+Corte del 18-nov-2026:
+
+- **Menciones:** 37 de proveedores en 16 informes.
+- **Talleres cruzados:** 39 talleres de EE. UU., 17 de ellos en el sur. Entre otros:
+  - Pratt & Whitney en West Palm Beach y Atlanta.
+  - GE en Texas y Florida.
+  - Lufthansa Technik en Tulsa.
+  - MTU en Fort Worth.
+  - Embraer en Nashville.
+- **Aerolíneas de EE. UU.:** casi nunca nombran talleres. Las menciones salen sobre todo de los 20-F latinoamericanos.
+- **Alcance del cruce:** dice que la empresa le trabaja a esa aerolínea, no que lo haga ese certificado en particular.
+- **Chinas:** quedan fuera porque no presentan en EDGAR.
+
+```bash
+python -I -X utf8 faa/clientes_filings.py <carpeta de trabajo> --cargar
+```
+
 `sql/v_mercado_mantenimiento.sql` es el contexto de mercado: cuánto mantenimiento compra a terceros cada aerolínea de EE. UU. (Form 41 P-5.2, últimos cuatro trimestres). Las cuentas 52431 y 52432 son la cuenta 43 de 14 CFR 241.12, servicios comprados a compañías externas o asociadas.
 
 ## FAA

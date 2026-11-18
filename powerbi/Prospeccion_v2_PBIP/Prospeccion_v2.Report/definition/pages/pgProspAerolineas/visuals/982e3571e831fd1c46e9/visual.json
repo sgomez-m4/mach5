@@ -159,6 +159,21 @@
               },
               "queryRef": "Prospectos aerolineas.Confianza del dato",
               "nativeQueryRef": "Confianza del dato"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas v2"
+                    }
+                  },
+                  "Property": "Disparadores 90 días"
+                }
+              },
+              "queryRef": "_Medidas v2.Disparadores 90 días",
+              "nativeQueryRef": "Disparadores 90 días",
+              "displayName": "Disparadores 90 d"
             }
           ]
         }

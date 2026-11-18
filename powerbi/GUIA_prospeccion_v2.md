@@ -4,6 +4,10 @@
 > - Las tres páginas de prospección se llaman `Aerolíneas`, `Talleres` y `Mapa de talleres`, para que quepan en el navegador. El navegador, arriba a la derecha de cada una, muestra solo esas tres.
 > - Las dos fichas tienen el botón de volver arriba a la izquierda. En Desktop se usa con Ctrl + clic.
 > - El mapa usa Azure Maps.
+> - Disparadores (18-nov):
+>   - En `Aerolíneas`, «Último disparador» va en el panel, donde estaban las tres cifras, y la lista tiene la columna «Disparadores 90 d».
+>   - En la ficha de aerolínea, «Eventos del último año» reemplaza al gráfico de flota por modelo.
+>   - La ficha de taller muestra las aerolíneas que nombran a su proveedor.
 >
 > Lo que sigue queda como referencia de qué contiene cada página.
 

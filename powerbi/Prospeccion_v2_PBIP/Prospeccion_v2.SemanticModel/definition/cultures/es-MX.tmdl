@@ -10190,6 +10190,48 @@ cultureInfo es-MX
 			          }
 			        }
 			      ]
+			    },
+			    "table_medidas_v2.último_disparador": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas v2",
+			          "ConceptualProperty": "Último disparador"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Último disparador": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "table_medidas_v2.disparadores_90_días": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "_Medidas v2",
+			          "ConceptualProperty": "Disparadores 90 días"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Disparadores 90 d": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
 			    }
 			  },
 			  "Relationships": {

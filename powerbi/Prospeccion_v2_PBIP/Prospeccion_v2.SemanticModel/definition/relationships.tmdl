@@ -65,3 +65,11 @@ relationship 9bfa1381-0e55-48c5-8e5b-decd4d1ec2ce
 	fromColumn: 'Modelos FAA'.group_id
 	toColumn: dim_airline.airline_id
 
+relationship 540cb621-d789-40a2-bd88-d2984be24230
+	fromColumn: Eventos.group_id
+	toColumn: dim_airline.airline_id
+
+relationship 87ee6959-3863-4306-94e9-2f9ce1c473e6
+	fromColumn: 'Clientes de talleres'.clave_taller
+	toColumn: Talleres.clave_taller
+
